@@ -1,0 +1,1189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26">
+<Class name="ompare.SourceHandler.Class">
+<Description><![CDATA[
+<pre>
+Copyright (c) Alex Woodhead 2020
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+License MIT
+Source: https://github.com/alexatwoodhead/ompare
+Version: 1.0
+</pre>
+Source Analyser for Class Definitions.
+Extracts:
+<ol><li>Implemention signatures for highlevel diffs for Parameters, Properties, Method Signature, Method Body, XData and Class Summary.</li>
+<li><em>Optionally</em> Functional source code lines for full-diff reporting of Parameters, Properties, Method Signature, Method Body, XData and Class Summary.</li>
+<li>Creates an summary signature of Class independent of the order in which Parameters, Methods, XData are defined</li>
+</ol>
+Source line leading and trailing whitespace is normalised.<br/>
+To exclude source code from being captured for detailed reports use schedule configuration
+option IncludeSourceCode=0<br/>
+To control which packages are included in each target namespace for analysis 
+update the lookup global using Interoperability LookupTables in SMP or directly.
+When first run in each namespace the following default will be established:
+<example>
+^ompare("Config","Exclude","%*.cls")=1
+^ompare("Config","Exclude","Ens.*.cls")=1
+^ompare("Config","Exclude","EnsPortal.*.cls")=1
+^ompare("Config","Exclude","EnsLib.*.cls")=1
+^ompare("Config","Exclude","CSPX.*.cls")=1
+^ompare("Config","Exclude","INFORMATION.*.cls")=1
+^ompare("Config","Exclude","HS.*.cls")=1
+^ompare("Config","Exclude","HSMOD.*.cls")=1
+</example>
+Where value "1" means exclude and "0" means include
+Exclusions can layer for example to exclude all classes within package "ompare"
+except do include analysis of the SourceHandler subpackage:
+<example>
+^ompare("Config","Exclude","ompare.*.cls")=1
+^ompare("Config","Exclude","ompare.SourceHandler.*.cls")=0
+</example>]]></Description>
+<Super>ompare.SourceHandler.Base</Super>
+<TimeCreated>64118,38047.434169</TimeCreated>
+
+<Parameter name="TypeCode">
+<Description>
+Ensure this Code doesn't collide with other sub-class implementations of Base
+Eg: "CLS" abbreviation for class</Description>
+<Type>%String</Type>
+<Default>C</Default>
+</Parameter>
+
+<Method name="IndexNamespace">
+<Description>
+Main entry point for Class Definition Source Handler
+Do ##class(ompare.SourceHandler.Class).IndexNamespace($namespace,1)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>namespace="",logging=0,includeSource=0,schedule:ompare.Schedule=$$$NULLOREF</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	if '$IsObject(schedule) {
+		set schedule=##class(ompare.Schedule).%New()
+		//W !,"schedule.SrcVersionParameter:",schedule.SrcVersionParameter
+		//W !,"schedule.SrcVersionTokenStart:",schedule.SrcVersionTokenStart
+		//W !,"schedule.SrcVersionTokenEnd:",schedule.SrcVersionTokenEnd
+		// Uses defaults
+	}
+#define RPTType "C"
+#define RPTSubTypeConfig "CFG"
+#define RPTItemConfigMapped "IsMapped"
+#define RPTItemConfigSourceControlled "IsSourceControlled"
+#define RPTItemConfigSourceVersion "SrcVer"
+#define RPTSubTypeSummary "S"
+#define RPTSubTypeProperty "P"
+#define RPTSubTypeParameter "PR"
+#define RPTSubTypeMethod "M"
+#define RPTSubTypeMethodSignature "MS"
+#define RPTSubTypeXData "X"
+ // Persistent Storage
+#define RPTSubTypeStorage "ST" 
+
+ // Testing
+ // Do ##class(ompare.SourceHandler.ClassDefinition).IndexNamespace("INTEG-MARS",0,0)
+
+	#dim tmpStream as %Stream.TmpCharacter
+	Set tmpStream=##class(%Stream.TmpCharacter).%New()
+	/*****************************
+	 Start Template
+	******************************/
+	// It is necessary to switch namespace context within the method call as source code may not be 
+	// deployed to target namespace
+	set ret=$$$OK
+	
+		Quit:namespace=""
+	
+		New $NAMESPACE  // Ensures when method exits process will be returned to the original namespace
+	
+		try {	
+			 // Generates <NAMESPACE> error if namespace doesn't exist
+			 // Generate <PROTECT> error if user does not have access privilage
+			set $NAMESPACE=namespace
+		} catch errobj {
+			// Name
+			// Code
+			// Location
+			// Data
+			if errobj.Name="<NAMESPACE>" {
+				set ret=$$$ERROR(5001,"Cannot index namespace "_namespace_". Namespace does not exist.")
+			} elseif errobj.Name="" {
+				set ret=$$$ERROR(50001,"Cannot index namesapce "_namespace_". User "_$USERNAME_" does not have permission.")
+			} else {
+				set ret=$$$ERROR(5001,"Unknow error "_errobj.Name_". In code "_errobj.Code_" at location "_errobj.Location)
+			}
+		}
+		Quit:$$$ISERR(ret) ret
+	
+	try {
+		// Invoke sub-class extension code
+		Do IndexerMain  //(logging, includeSource)
+	} catch ex {
+		// Always report issue in output
+		Do Log("Error","In SourceHandler.ClassDefinition")
+		Do Log("  Name:",ex.Name)
+		Do Log("  Code:",ex.Code)
+		Do Log("  Location:",ex.Location)
+		Do Log("  Data:",ex.Data)
+		Set ret=ex.AsStatus()
+	}
+	
+	Quit ret
+SetIsMapped(typeName="")
+	quit:$$$RPTType=""
+	quit:typeName=""
+	quit:'##class(%Dictionary.CompiledMethod).%ExistsId("%Studio.SourceControl.ISC||IsMapped")
+	// Assumes if the source control file is present on the filesystem then it is being source controlled
+	// Requires both 3rd and 4th key to reuse generic export / import mechanism
+	set ^||Data($$$RPTType,typeName,$$$RPTSubTypeConfig,$$$RPTItemConfigMapped)=##class(%Studio.SourceControl.ISC).IsMapped(typeName_".CLS")
+	quit
+SetIsSourceControlled(typeName="")
+	quit:$$$RPTType=""
+	quit:typeName=""
+	quit:$Data(^Sources)<11
+	quit:$$SourceControlClass^%occLibrary($Namespace)'="%Studio.SourceControl.ISC"
+	// Assumes if the source control file is present on the filesystem then it is being source controlled
+	// Requires both 3rd and 4th key to reuse generic export / import mechanism
+	set ^||Data($$$RPTType,typeName,$$$RPTSubTypeConfig,$$$RPTItemConfigSourceControlled)=##class(%File).Exists(##class(%Studio.SourceControl.ISC).ExtName(typeName_".CLS"))
+	quit
+SetSourceVersion(classname)
+	quit:$$$RPTType=""
+	quit:classname=""
+	quit:'$IsObject(schedule)
+	
+	set obj=##class(%Dictionary.CompiledParameter).%OpenId(classname_"||"_schedule.SrcVersionParameter,0)
+	if '$IsObject(obj) Do:logging Log("SrcVer no object",classname_"||"_schedule.SrcVersionParameter)
+	Quit:'$IsObject(obj)
+	set data=$ZSTRIP(obj.Default,"<>W")
+	set:$E(data,1)=":" data=$ZSTRIP($E(data,2,*),"<>W")
+	if data="" Do:logging Log("SrcVer no default",classname_"||SrcVer")
+	quit:data=""
+	// Requires both 3rd and 4th key to reuse generic export / import mechanism
+	set ^||Data($$$RPTType,classname,$$$RPTSubTypeConfig,$$$RPTItemConfigSourceVersion)=data
+	quit
+SetSignature(typeName="", signature="",subTypeCode="", subTypeName="")
+	Quit:$$$RPTType=""
+	Quit:typeName=""
+	Quit:signature=""
+	if subTypeCode'="",subTypeName'="" {
+		set ^||Data($$$RPTType,typeName,subTypeCode,subTypeName)=signature
+	} else {
+		set ^||Data($$$RPTType,typeName)=signature
+	}
+	quit
+	// To itterate on the names and signatures of a particular subType
+	// pass typeName by value required
+	// pass signature by reference
+	// pass subTypeCode by value required
+	// pass subTypeName by reference required
+NextSignature(typeName,signature,subTypeCode, subTypeName)
+  set signature=""
+  // subTypeName may be empty string at start of itteration
+  Quit:typeName="" 0
+  Quit:subTypeCode="" 0
+  set subTypeName=$Order(^||Data($$$RPTType,typeName,subTypeCode,subTypeName),+1,signature)
+  Quit:subTypeName="" 0 
+  Quit 1
+  // Write to stream AND conditionally to DataSrc
+
+WriteLine(stream,data)
+  // Intercept Source Control Tokens
+  // eg: $I + d: //some/org/project/product/BASE/rtn/PRTDR9ORG.rtn#1 $
+  // Converts to $I + d$
+  set dataNoTokenVersion=""
+  if schedule.SrcVersionTokenStart'="" {
+	if schedule.SrcVersionTokenEnd'="" {
+		set pattern=".E1"""_schedule.SrcVersionTokenStart_"""1.E1"""_schedule.SrcVersionTokenEnd_""""
+  		for {
+		  quit:data'?@pattern
+		  s dataNoTokenVersion=dataNoTokenVersion_$P(data,schedule.SrcVersionTokenStart)_schedule.SrcVersionTokenStart_schedule.SrcVersionTokenEnd
+		  set data=$P($P(data,schedule.SrcVersionTokenStart,2,999999),schedule.SrcVersionTokenEnd,2,999999)
+	  	}
+	} elseif data[schedule.SrcVersionTokenStart {
+		// The source control token effectively matches to the end of the line
+		set data=$P(data,schedule.SrcVersionTokenStart)	
+	}
+  }
+  // Include remainder of line after token end if token version content removed
+  set:$L(dataNoTokenVersion)>0 data=dataNoTokenVersion_data
+  Do tmpStream.WriteLine(data)
+  Do:includeSource AddLine($I(line),data)
+  Quit
+AddLine(line,data)
+  Quit:+line=0
+  // remove previous data
+  if line=1 {
+	 kill ^||DataSrcTmp
+	 set ^||DataSrcTmp=+$H
+  }
+  set ^||DataSrcTmp(line)=data
+  Quit
+SaveLines(sig="")
+  quit:sig=""
+  if $Data(^||DataSrc(sig)) {
+	// if the source record already exists simply update the last referenced date to today
+	set ^||DataSrc(sig)=+$H
+  } else {
+	merge ^||DataSrc(sig)=^||DataSrcTmp
+	Kill ^||DataSrcTmp
+  }
+  Quit 1
+Log(label, value="")
+	W !,label,":",value
+	Quit
+IsExcluded(name,reason)
+	Quit:name="" 1
+	// Change the type extension to uppercase 
+	set extension=$ZCVT($P(name,".",$L(name,".")),"L")
+	set name=$e(name,1,*-($L(extension)+1))
+	// Check Exact match for exlcusion
+	if +$G(^ompare("Config","Exclude",name_"."_extension)) {
+		set reason=name_"."_extension
+		quit 1	
+	} elseif $Data(^ompare("Config","Exclude",name_"."_extension)) {
+		// Explicitly NOT excluded
+		quit 0	
+	}
+	
+	// now recursively look to exclude by wildcard match.
+	set found=0
+	set reason=""
+	set prefix=$e(name,1,*-1)_"*"
+	for {
+		set found=+$G(^ompare("Config","Exclude",prefix_"."_extension))
+		set:found reason=prefix_"."_extension
+		quit:found
+		if $Data(^ompare("Config","Exclude",prefix_"."_extension)) {
+			// Explicitly NOT excluded
+			quit	
+		}
+		set prefix=$E(prefix,1,*-2)_"*"
+		q:prefix="*"
+	}
+	quit found
+	
+IndexerMain  //(logging, includeSource)
+	/*****************************
+	 End Template
+	 Add sub-class code and supporting line labels from this point forward.
+	******************************/
+	
+	// No need to delete class information from previous processing
+	// as output will REPLACE previous information on signatures
+	
+	
+	// Default exclusions in this namespace
+	// Start set once in first run namespace
+	set hasClassConfig=0
+	set testExclude=""
+	for {
+		set testExclude=$O(^ompare("Config","Exclude",testExclude))
+		quit:testExclude=""
+		if $E(testExclude,*-3,*)=".cls" {
+			set hasClassConfig=1
+			quit  // exit on first encountered
+		}
+	}
+	if 'hasClassConfig {
+		set ^ompare("Config","Exclude","%*.cls")=1
+		set ^ompare("Config","Exclude","Ens.*.cls")=1
+		set ^ompare("Config","Exclude","EnsPortal.*.cls")=1
+		set ^ompare("Config","Exclude","EnsLib.*.cls")=1
+		set ^ompare("Config","Exclude","CSPX.*.cls")=1
+		set ^ompare("Config","Exclude","INFORMATION.*.cls")=1
+		set ^ompare("Config","Exclude","HS.*.cls")=1
+		set ^ompare("Config","Exclude","HSMOD.*.cls")=1
+	}
+	// End set once in first run namespace
+	
+	s rs=##class(%ResultSet).%New()
+	set rs.ClassName="%Dictionary.ClassDefinition"
+	set rs.QueryName="ClassIndex"
+	do rs.Execute()
+	for {
+		quit:'rs.Next()
+		set classname=rs.Data("ClassName")
+		Do:logging Log("Found classname",classname)
+		
+		// Ignorning classes marked "system" is not reliable
+		// excludes some application classes needed
+		//if (rs.Data("System")>0) {
+		//	// ignore system classes
+		//	Do:logging Log("Ignore System",rs.Data("System"))
+		//	continue
+		if (rs.Data("Generated")>0) {
+			// "csp.*" is a reserved prefix for generated Classes from CSP pages
+			// Due to issue detecting differences in compiled classes after refresh,
+			// we leave in a profile of Classes from CSP pages
+			// in order to detect compiled differences between environments
+			if classname'?1"csp.".E {
+		    	// ignore generated classes
+		    	Do:logging Log("Ignore Generated",rs.Data("Generated"))
+		    	continue
+			}
+		}
+		
+		if $$IsExcluded(classname_".cls",.reason) {
+			Do:logging Log("Ignore """_classname_""" matches filter",reason)
+			continue	
+		}
+		Do:logging Log("IndexClass",classname_tmpStream)
+		Do IndexClass(classname,tmpStream) //,includeSource)
+	}
+	do rs.Close()
+	Quit
+IndexClass(classname,tmpStream) //,includeSource)
+	Quit:classname=""
+	Quit:'$IsObject(tmpStream)
+	Do tmpStream.Rewind()
+	
+	set classobj=##class(%Dictionary.ClassDefinition).%OpenId(classname,0)
+	quit:'$IsObject(classobj)
+	set deployed=classobj.Deployed
+	
+	// Class Summary
+	#dim stream as %Stream.TmpCharacter
+	set line=0
+	
+	Do WriteLine(tmpStream,"Abstract:"_classobj.Abstract)
+	Do WriteLine(tmpStream,"ClassType:"_classobj.ClassType)
+	Do WriteLine(tmpStream,"ClientDataType:"_classobj.ClientDataType)
+	Do WriteLine(tmpStream,"ClientName:"_classobj.ClientName)
+	Do WriteLine(tmpStream,"CompileAfter:"_classobj.CompileAfter)
+	Do WriteLine(tmpStream,"ConstrainClass:"_classobj.ConstraintClass)
+	Do WriteLine(tmpStream,"DdlAllowed:"_classobj.DdlAllowed)
+	Do WriteLine(tmpStream,"DependsOn:"_classobj.DependsOn)
+	Do WriteLine(tmpStream,"Final:"_classobj.Final)
+	Do WriteLine(tmpStream,"Hidden:"_classobj.Hidden)
+	Do WriteLine(tmpStream,"Import:"_classobj.Import)
+	Do WriteLine(tmpStream,"IncludeCode:"_classobj.IncludeCode)
+	Do WriteLine(tmpStream,"IncludeGenerator:"_classobj.IncludeGenerator)
+	Do WriteLine(tmpStream,"IndexClass:"_classobj.IndexClass)
+	Do WriteLine(tmpStream,"Inheritance:"_classobj.Inheritance)
+	// Ensure same output as for IRIS
+	if classobj.Language="cache" {
+		Do WriteLine(tmpStream,"Language:objectscript")
+	} else {
+		Do WriteLine(tmpStream,"Language:"_classobj.Language)
+	}
+	Do WriteLine(tmpStream,"MemberSuper:"_classobj.MemberSuper)
+	Do WriteLine(tmpStream,"NoExtent:"_classobj.NoExtent)
+	Do WriteLine(tmpStream,"OdbcType:"_classobj.OdbcType)
+	Do WriteLine(tmpStream,"ProcedureBlock:"_classobj.ProcedureBlock)
+	Do WriteLine(tmpStream,"ProjectionClass:"_classobj.ProjectionClass)
+	Do WriteLine(tmpStream,"PropertyClass:"_classobj.PropertyClass)
+	Do WriteLine(tmpStream,"QueryClass:"_classobj.QueryClass)
+	Do WriteLine(tmpStream,"ServerOnly:"_classobj.ServerOnly)
+	Do WriteLine(tmpStream,"SoapBindingStyle:"_classobj.SoapBindingStyle)
+	Do WriteLine(tmpStream,"SoapBodyUse:"_classobj.SoapBodyUse)
+	Do WriteLine(tmpStream,"SqlCategory:"_classobj.SqlCategory)
+	Do WriteLine(tmpStream,"SqlRowIdName:"_classobj.SqlRowIdName)
+	Do WriteLine(tmpStream,"SqlRowIdPrivate:"_classobj.SqlRowIdPrivate)
+	Do WriteLine(tmpStream,"SqlTableName:"_classobj.SqlTableName)
+	Do WriteLine(tmpStream,"StorageStratergy:"_classobj.StorageStrategy)
+	Do WriteLine(tmpStream,"Super:"_classobj.Super)
+	Do WriteLine(tmpStream,"ViewQuery:"_classobj.ViewQuery)
+	
+	set classobj=""
+	
+	set obj=""
+	Do tmpStream.Rewind()
+	set sig=$SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.SHA1HashStream(tmpStream))
+	Do SetSignature(classname, sig,$$$RPTSubTypeSummary,"Summary")
+	Do:includeSource SaveLines(sig)
+	
+	// End Class Summary
+	
+	// Get all the parameters associated with this class definition
+	set rsProp=##class(%ResultSet).%New()
+	set rsProp.ClassName="%Dictionary.ParameterDefinition"  // %Dictionary.CompiledParameter
+	set rsProp.QueryName="Summary"
+	set tSC=rsProp.Execute(classname)
+	if $$$ISOK(tSC) {
+		for {
+			Quit:'rsProp.Next()
+			// Ignore Perforce Parameter "SrcVer"
+			continue:rsProp.Data("Name")="SrcVer"
+			
+			// Special processing for classes generated from CSP pages
+			if classname?1"csp.".E {
+				// Parameters to always / maybe different between environments
+				continue:rsProp.Data("Name")?1(1"CSPFILE",1"CSPURL",1"FileTimestamp")
+			}
+			
+			do IndexParameter(rsProp.Data("Name"),tmpStream)
+		}
+	}
+	do rsProp.Close()
+	
+	
+	// Get all properties associated with this class definition
+	set rsProp=##class(%ResultSet).%New()
+	set rsProp.ClassName="%Dictionary.PropertyDefinition"
+	set rsProp.QueryName="Summary"
+	set tSC=rsProp.Execute(classname)
+	if $$$ISOK(tSC) {
+		for {
+			Quit:'rsProp.Next()
+			do IndexProperty(rsProp.Data("Name"),tmpStream)
+		}
+	}
+	do rsProp.Close()
+
+	// Get all methods associated with this classdefinition
+	set rsMeth=##class(%ResultSet).%New()
+	set rsMeth.ClassName="%Dictionary.MethodDefinition"
+	set rsMeth.QueryName="Summary"
+	set tSC=rsMeth.Execute(classname)
+	if $$$ISOK(tSC) {
+		for {
+			Quit:'rsMeth.Next()
+			Do tmpStream.Clear()
+			do IndexMethod(rsMeth.Data("Name"),tmpStream,deployed) //,includeSource)
+			Do tmpStream.Clear()
+			do IndexMethodSig(rsMeth.Data("Name"),tmpStream,deployed)
+		}
+	}
+	do rsMeth.Close()
+		
+	if 'deployed {
+		//XData processing. Eg: For Ensemble Transforms
+		set rsXData=##class(%ResultSet).%New()
+		set rsXData.ClassName="%Dictionary.XDataDefinition"
+		set rsXData.QueryName="Summary"
+		set tSC=rsXData.Execute(classname)
+		if $$$ISOK(tSC) {
+			for {
+				Quit:'rsXData.Next()
+				Do tmpStream.Clear()
+				do IndexXData(rsXData.Data("Name"),tmpStream) //,includeSource)
+			}
+		}
+		do rsXData.Close()
+	}
+
+	do IndexStorage(classname,tmpStream)
+
+	set classSummary=classname
+	// After completing detail for line labels make a signature for the whole routine
+	// Note that the order of the line labels is not functionally important
+	set classSuper=""
+	for {
+		Quit:'$$NextSignature(classname,.sig,$$$RPTSubTypeSummary,.classSuper)
+		set classSummary=classSummary_";"_classSuper_":"_sig
+	}
+	set currentParameter=""
+	for {
+		Quit:'$$NextSignature(classname,.sig,$$$RPTSubTypeParameter,.currentParameter)
+		set classSummary=classSummary_";"_currentParameter_":"_sig
+	}	
+	set currentProperty=""
+	for {
+		Quit:'$$NextSignature(classname,.sig,$$$RPTSubTypeProperty,.currentProperty)
+		set classSummary=classSummary_";"_currentProperty_":"_sig
+	}
+	set currentMethodSig=""
+	for {
+		Quit:'$$NextSignature(classname,.sig,$$$RPTSubTypeMethodSignature,.currentMethodSig)
+		set classSummary=classSummary_";"_currentMethodSig_":"_sig	
+	}
+	set currentMethod=""
+	for {
+		Quit:'$$NextSignature(classname,.sig,$$$RPTSubTypeMethod,.currentMethod)
+		set classSummary=classSummary_";"_currentMethod_":"_sig	
+	}
+	set currentXData=""
+	for {
+		Quit:'$$NextSignature(classname,.sig,$$$RPTSubTypeXData,.currentXData)
+		set classSummary=classSummary_";"_currentXData_":"_sig	
+	}
+	set currentStorage=""
+	for {
+		Quit:'$$NextSignature(classname,.sig,$$$RPTSubTypeStorage,.currentStorage)
+		set classSummary=classSummary_";"_currentStorage_":"_sig
+	}
+	
+	Do SetSignature(classname, $SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.SHA1Hash(classSummary)))
+	Do SetIsMapped(classname)
+	Do SetIsSourceControlled(classname)
+	Do SetSourceVersion(classname)
+	Quit
+IndexParameter(parametername="",tmpStream="")
+	quit:parametername=""
+	Quit:'$IsObject(tmpStream)
+	Do tmpStream.Rewind()
+	set obj=##class(%Dictionary.ParameterDefinition).%OpenId(classname_"||"_parametername,0)
+	//set obj=##class(%Dictionary.CompiledParameter).%OpenId(classname_"||"_parametername,0)
+	Quit:'$IsObject(obj)
+	set line=0
+	Do WriteLine(tmpStream,"Abstract:"_obj.Abstract)
+	Do WriteLine(tmpStream,"Default:"_obj.Default)
+	Do WriteLine(tmpStream,"Final:"_obj.Final)
+	Do WriteLine(tmpStream,"Flags:"_obj.Flags)
+	// Not interested in Sequence
+
+	set obj=""
+	Do tmpStream.Rewind()
+	set sig=$SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.SHA1HashStream(tmpStream))
+	Do SetSignature(classname, sig,$$$RPTSubTypeParameter,parametername)
+	Do:includeSource SaveLines(sig)
+	Quit
+IndexProperty(propertyname="",tmpStream="")
+	Quit:propertyname=""
+	Quit:'$IsObject(tmpStream)
+	Do tmpStream.Rewind()
+	#dim stream as %Stream.TmpCharacter
+	
+	set line=0
+	
+	//Do ##class(ompare.Report.Template).IndexProperty("BASE","TRAKLAB","ompare.Report.Template","ReportName")
+	
+	// Open the property (NO CONCURRENCY) and get the specification
+	s obj=##class(%Dictionary.PropertyDefinition).%OpenId(classname_"||"_propertyname,0)
+	Quit:'$IsObject(obj)
+	
+	Do WriteLine(tmpStream,"Calculated:"_obj.Calculated)
+	Do WriteLine(tmpStream,"Cardinality:"_obj.Cardinality)
+	Do WriteLine(tmpStream,"ClientName:"_obj.ClientName)
+	Do WriteLine(tmpStream,"Collection:"_obj.Collection)
+	Do WriteLine(tmpStream,"Final:"_obj.Final)
+	Do WriteLine(tmpStream,"Identity:"_obj.Identity)
+	Do WriteLine(tmpStream,"InitialExpression:"_obj.InitialExpression)
+	Do WriteLine(tmpStream,"Internal:"_obj.Internal)
+	Do WriteLine(tmpStream,"Inverse:"_obj.Inverse)
+	Do WriteLine(tmpStream,"MultiDimensional:"_obj.MultiDimensional)
+	Do WriteLine(tmpStream,"Parameters:")
+	s key=""
+	for {
+		set value=obj.Parameters.GetNext(.key)
+		quit:key=""
+		Do WriteLine(tmpStream,"  "_key_"="_value)
+	}
+	Do WriteLine(tmpStream,"Private:"_obj.Private)
+	Do WriteLine(tmpStream,"ReadOnly:"_obj.ReadOnly)
+	Do WriteLine(tmpStream,"Relationship:"_obj.Relationship)
+	Do WriteLine(tmpStream,"Required:"_obj.Required)
+	// Not interested in SequenceNumber
+	Do WriteLine(tmpStream,"ServerOnly:"_obj.ServerOnly)
+	Do WriteLine(tmpStream,"SqlColumnNumber:"_obj.SqlColumnNumber)
+	Do WriteLine(tmpStream,"SqlComputeCode:"_obj.SqlComputeCode)
+	Do WriteLine(tmpStream,"SqlComputeOnChange:"_obj.SqlComputeOnChange)
+	Do WriteLine(tmpStream,"SqlComputed:"_obj.SqlComputed)
+	Do WriteLine(tmpStream,"SqlFieldName:"_obj.SqlFieldName)
+	Do WriteLine(tmpStream,"SqlListDelimiter:"_obj.SqlListDelimiter)
+	Do WriteLine(tmpStream,"SqlListType:"_obj.SqlListType)
+	Do WriteLine(tmpStream,"Transient:"_obj.Transient)
+	Do WriteLine(tmpStream,"Type:"_obj.Type)
+	
+	set obj=""
+	Do tmpStream.Rewind()
+	set sig=$SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.SHA1HashStream(tmpStream))
+	Do SetSignature(classname, sig,$$$RPTSubTypeProperty,propertyname)
+	Do:includeSource SaveLines(sig)
+	
+	Quit
+	// This line label is now only interested in the source implementation
+	// See IndexMethodSig for method paramater configuration
+IndexMethod(methodname="",tmpStream,deployed) //,includeSource)
+	quit:methodname=""
+	Quit:'$IsObject(tmpStream)
+	Do tmpStream.Rewind()
+	s obj=##class(%Dictionary.MethodDefinition).%OpenId(classname_"||"_methodname,0)
+	Quit:'$IsObject(obj)
+	
+	set line=0
+	
+	//Do tmpStream.WriteLine(methodname)
+	#dim stream as %Stream.TmpCharacter
+	if deployed {
+		Do WriteLine(tmpStream,"Implementation:Deployed")
+	} else {	
+		
+		s stream=obj.Implementation
+		if $IsObject(stream) {
+			//Do tmpStream.WriteLine("Implementation:")
+			do stream.Rewind()
+			set inmultilinecomment=0
+			for {
+				quit:stream.AtEnd
+				set data=$ZSTRIP(stream.ReadLine(32000),">W")
+				continue:data=""
+				
+				// Remove multiline comments from signatures
+				if inmultilinecomment=0,$L(data,"/*")>1 {
+					if $L(data,"*/")=1 {
+						// No end comment
+						set inmultilinecomment=1
+						set data=$P(data,"/*")  // Throw away the comment information
+					} else {
+						set data=$P(data,"/*")_$P(data,"*/",2) // Throw away the comment section
+					}
+				} elseif inmultilinecomment {
+					if $L(data,"*/")=1 {
+						continue  // still in the multi-line comment	
+					} else {
+						set inmultilinecomment=0
+						// Allow code after comment end to be processed
+						// Prefix with space as this is not a line label within a method
+						set data=" "_$P(data,"*/",2)  
+					}
+				}
+				// If line is not a line label
+				if $E(data,1)'?1(1A,1"%") {
+					// Discard leading whitespace that is simply followed by comments
+					// Discard leading dot syntax that is simply followed by comments
+					set tmpdata1=$ZSTRIP($TR(data,"."),"<W")
+					if tmpdata1="" {
+						continue
+					}
+					if $E(tmpdata1,1)=";" {
+						continue
+					}
+					if $E(tmpdata1,1,2)="//" {
+						continue
+					}
+				}
+				// TODO - Question regarding lines with leading TABS $C(9) not being added to source code for signature?
+				Do WriteLine(.tmpStream,.data)
+			}
+		} else {
+
+		}
+	}
+	set obj=""
+	Do tmpStream.Rewind()
+	set sig=$SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.SHA1HashStream(tmpStream))
+	Do SetSignature(classname, sig,$$$RPTSubTypeMethod,methodname)
+	Do:includeSource SaveLines(sig)
+	
+	w:logging !,!,!,"******************************"
+	// Logging
+	Do:logging tmpStream.Rewind()
+	Do:logging tmpStream.OutputToDevice()
+	W:logging !,"******************************",!,!,!
+	
+	Do tmpStream.Clear()
+	Quit
+IndexMethodSig(methodname="",tmpStream,deployed)
+	quit:methodname=""
+	quit:'$IsObject(tmpStream)
+	Do tmpStream.Rewind()
+	set obj=##class(%Dictionary.MethodDefinition).%OpenId(classname_"||"_methodname,0)
+	quit:'$IsObject(obj)
+	
+	set line=0
+	
+	// Do tmpStream.WriteLine(methodname)
+	Do WriteLine(tmpStream,"Abstract:"_obj.Abstract)
+	Do WriteLine(tmpStream,"ClassMethod:"_obj.ClassMethod)
+	Do WriteLine(tmpStream,"ClientMethod:"_obj.ClientMethod)
+	Do WriteLine(tmpStream,"ClientName:"_obj.ClientName)
+	Do WriteLine(tmpStream,"CodeMode:"_obj.CodeMode)
+	Do WriteLine(tmpStream,"ExternalProcName:"_obj.ExternalProcName)
+	Do WriteLine(tmpStream,"Final:"_obj.Final)
+	Do WriteLine(tmpStream,"ForceGenerate:"_obj.ForceGenerate)
+	Do WriteLine(tmpStream,"FormalSpec:"_obj.FormalSpec)  // List of arguements in format [&|*]<name>[:<type>][=<default>]
+	Do WriteLine(tmpStream,"GenerateAfter:"_obj.GenerateAfter)
+	Do WriteLine(tmpStream,"Internal:"_obj.Internal)
+	if obj.Language="cache" {
+		Do WriteLine(tmpStream,"Language:objectscript")
+	} else {
+		Do WriteLine(tmpStream,"Language:"_obj.Language)
+	}
+	Do WriteLine(tmpStream,"NoContext:"_obj.NoContext)
+	Do WriteLine(tmpStream,"NotInheritable:"_obj.NotInheritable)
+	Do WriteLine(tmpStream,"PlaceAfter:"_obj.PlaceAfter)
+	Do WriteLine(tmpStream,"ProcedureBlock:"_obj.ProcedureBlock)
+	Do WriteLine(tmpStream,"PublicList:"_obj.PublicList)
+	Do WriteLine(tmpStream,"ReturnResultsets:"_obj.ReturnResultsets)
+	Do WriteLine(tmpStream,"ReturnType:"_obj.ReturnType)
+	// A comma separated list of any parameters on the ReturnType keyword
+	Do WriteLine(tmpStream,"ReturnTypeParams:"_obj.ReturnTypeParams)
+	// Do tmpStream.WriteLine("SequenceNumber:"_obj.SequenceNumber)  Not interested in sequence
+	// Removing Sequence number from criteria. Assuming this indicates the order for source code editing
+	// which currently is not taken as functional difference with manual intergration of code
+	if obj.SoapAction="[default]" {
+		Do WriteLine(tmpStream,"SoapAction:")
+	} else {
+		Do WriteLine(tmpStream,"SoapAction:"_obj.SoapAction)
+	}
+	Do WriteLine(tmpStream,"SoapBindingStyle:"_obj.SoapBindingStyle)
+	Do WriteLine(tmpStream,"SoapBodyUse :"_obj.SoapBodyUse)
+	Do WriteLine(tmpStream,"SoapMessageName:"_obj.SoapMessageName)
+	Do WriteLine(tmpStream,"SoapNameSpace:"_obj.SoapNameSpace)
+	Do WriteLine(tmpStream,"SoapTypeNameSpace:"_obj.SoapTypeNameSpace)
+	Do WriteLine(tmpStream,"SqlName:"_obj.SqlName)
+	Do WriteLine(tmpStream,"SqlProc:"_obj.SqlProc)
+	Do WriteLine(tmpStream,"WebMethod"_obj.WebMethod)
+	Do WriteLine(tmpStream,"ZenMethod:"_obj.ZenMethod)
+	set obj=""
+		
+	Do tmpStream.Rewind()
+	set sig=$SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.SHA1HashStream(tmpStream))
+	Do SetSignature(classname, sig,$$$RPTSubTypeMethodSignature,methodname)
+	Do:includeSource SaveLines(sig)
+	
+	do tmpStream.Clear()
+	quit
+IndexXData(xdataname="",tmpStream) //,includeSource)
+	quit:xdataname=""
+	Quit:'$IsObject(tmpStream)
+	Do tmpStream.Rewind()
+	s obj=##class(%Dictionary.XDataDefinition).%OpenId(classname_"||"_xdataname,0)
+	Quit:'$IsObject(obj)
+	
+	set line=0
+	s stream=obj.Data
+	if $IsObject(stream) {
+		Do tmpStream.WriteLine("Data:IsObject")
+		do stream.Rewind()
+		for {
+			quit:stream.AtEnd
+			set data=$ZSTRIP(stream.ReadLine(32000),">W")
+			continue:data=""
+			
+			// xdataname="DTL" WHERE class = Ens.DataTransformDTL
+			// xdataname="BPL" WHERE class = Ens.BusinessProcess
+			if ((xdataname="DTL")||(xdataname="BPL")),$E(data,1)'?1(1A,1"%") {
+
+				// ignore lines of ". . ." do level nesting with no actual content
+				// Discard leading dot syntax that is simply followed by comments
+				set tmpdata1=$ZSTRIP($TR(data,"."),"<W")
+				if tmpdata1="" {
+					continue
+				}
+				
+				// Discard leading whitespace that is simply followed by comments
+				// Simple approach to manage comments in CDATA in <CODE> elements
+				
+				// Old COS style comments
+				if $E(tmpdata1,1)=";" {
+					continue
+				}
+				// New COS style comments
+				if $E(tmpdata1,1,2)="//" {
+					continue
+				}
+				
+				// TODO Cater for "/* Comment */" style of comment
+				// TODO Cater for <!- Comment ->
+			}
+			// TODO - Question regarding lines with leading TABS $C(9) not being added to source code for signature?
+			Do WriteLine(tmpStream,data)
+		}
+	} else {
+		Do tmpStream.WriteLine("Data:")
+	}
+	
+	set obj=""
+	Do tmpStream.Rewind()
+	set sig=$SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.SHA1HashStream(tmpStream))
+	Do SetSignature(classname, sig,$$$RPTSubTypeXData,xdataname)
+	Do:includeSource SaveLines(sig)
+	
+	if logging {
+		W !,!,!,"******************************"
+		// Logging
+		Do tmpStream.Rewind()
+		Do tmpStream.OutputToDevice()
+		W !,"******************************",!,!,!
+	}
+	
+	Do tmpStream.Clear()
+	
+	Quit
+	// Suppresses:
+	// * SequenceNumber - This seems to be different / higher between Cache 2010.2 and Cache 2015
+	// * Properties()->Selectivity
+	// * Properties()->ChildExtentSize
+	// * ExtentSize
+	// Depreciates:
+	// * Origin - No longer used in Cache 2015+
+IndexStorage(classname="",tmpStream) //,includeSource)
+	quit:classname=""
+	Quit:'$IsObject(tmpStream)
+	
+	#dim objSt as %Dictionary.StorageDefinition
+	#dim dataSt as %Dictionary.StorageDataDefinition
+	#dim indexSt as %Dictionary.StorageIndexDefinition
+	#dim propertySt as %Dictionary.StoragePropertyDefinition
+	#dim sqlmapSt as Dictionary.StorageSQLMapDefinition
+	
+	s rsSt=##class(%ResultSet).%New("%Dictionary.StorageDefinition:Summary")
+	set tSC=rsSt.Execute(classname)
+	quit:$$$ISERR(tSC)
+	for {
+		quit:'rsSt.Next()
+		set storage=rsSt.Data("Name")
+		quit:storage=""
+	
+		set objSt=##class(%Dictionary.StorageDefinition).%OpenId(classname_"||"_storage,0)
+		quit:objSt=""
+		
+		// For each storage defintion, 1. Rewind Source Stream, 2. Reset Source Global to begining
+		Do tmpStream.Rewind()
+		set line=0
+		
+		//Do WriteLine(tmpStream,"CounterLocation:"_objSt.CounterLocation)
+		Set def("CounterLocation")=objSt.CounterLocation
+		//Do WriteLine(tmpStream,"Data:")
+		
+		kill def
+		set key=""
+		for {
+			set dataSt=objSt.Data.GetNext(.key)	
+			quit:key=""
+			continue:'$IsObject(dataSt)
+			//Do WriteLine(tmpStream,"  Name:"_dataSt.Name)
+			set def("Data","Name:"_dataSt.Name)=""
+			//Do WriteLine(tmpStream,"    Attribute:"_dataSt.Attribute)
+			set def("Data","Name:"_dataSt.Name,"Attribute")=dataSt.Attribute
+			//Do WriteLine(tmpStream,"    Structure:"_dataSt.Structure)
+			set def("Data","Name:"_dataSt.Name,"Structure")=dataSt.Structure
+			//Do WriteLine(tmpStream,"    Subscript:"_dataSt.Subscript)
+			set def("Data","Name:"_dataSt.Name,"Subscript")=dataSt.Subscript
+			//Do WriteLine(tmpStream,"    Values:")
+			
+			set keyValues=""
+			for {
+				set valueSt=dataSt.Values.GetNext(.keyValues)
+				quit:keyValues=""
+				continue:'$IsObject(valueSt)
+				//Do WriteLine(tmpStream,"      Name:"_valueSt.Name)
+				
+				//Do WriteLine(tmpStream,"        Value:"_valueSt.Value)
+				set def("Data","Name:"_dataSt.Name,"Values","Name:"_valueSt.Name,"Value")=valueSt.Value
+			}
+		}
+		//Do WriteLine(tmpStream,"DataLocation:"_objSt.DataLocation)
+		set def("DataLocation")=objSt.DataLocation
+		//Do WriteLine(tmpStream,"DefaultData:"_objSt.DefaultData)
+		set def("DefaultData")=objSt.DefaultData
+		//Do WriteLine(tmpStream,"ExtentSize:"_objSt.ExtentSize)
+		//set def("ExtentSize")=objSt.ExtentSize - Suppressed
+		//Do WriteLine(tmpStream,"Final:"_objSt.Final)
+		set def("Final")=objSt.Final
+		//Do WriteLine(tmpStream,"IdExpression:"_objSt.IdExpression)
+		set def("IdExpression")=objSt.IdExpression
+		//Do WriteLine(tmpStream,"IdLocation:"_objSt.IdLocation)
+		set def("IdLocation")=objSt.IdLocation
+		//Do WriteLine(tmpStream,"IndexLocation:"_objSt.IndexLocation)
+		set def("IndexLocation")=objSt.IndexLocation
+		//Do WriteLine(tmpStream,"Indices:")  //%Dictionary.StorageIndexDefinition 
+		set keyIndices=""
+		for {
+			set indexSt=objSt.Indices.GetNext(.keyIndices)
+			quit:keyIndices=""
+			continue:'$IsObject(indexSt)
+			//Do WriteLine(tmpStream,"  Name:"_indexSt.Name)
+			//Do WriteLine(tmpStream,"    Location:"_indexSt.Location)
+			set def("Indices","Name:"_indexSt.Name,"Location")=indexSt.Location
+		}
+		//Do WriteLine(tmpStream,"Internal:"_objSt.Internal)
+		set def("Internal")=objSt.Internal
+		//Do WriteLine(tmpStream,"Name:"_objSt.Name)
+		set def("Name")=objSt.Name
+		//Do WriteLine(tmpStream,"Origin:"_objSt.Origin)
+		//set def("Origin")=objSt.Origin  // Does not Exist on 2016!!
+		//Do WriteLine(tmpStream,"Properties:") //%Dictionary.StoragePropertyDefinition
+		set keyProperties=""
+		for {
+			set propertySt=objSt.Properties.GetNext(.keyProperties)
+			quit:keyProperties=""
+			continue:'$IsObject(propertySt)
+			//Do WriteLine(tmpStream,"  Name:"_propertySt.Name)
+			//Do WriteLine(tmpStream,"    ChildExtentSize:"_propertySt.ChildExtentSize)
+			//set def("Properties","Name:"_propertySt.Name,"ChildExtentSize")=propertySt.ChildExtentSize - Suppressed
+			//Do WriteLine(tmpStream,"    Selectivity:"_propertySt.Selectivity)
+			//set def("Properties","Name:"_propertySt.Name,"Selectivity")=propertySt.Selectivity - Suppressed
+			//Do WriteLine(tmpStream,"    StreamLocation:"_propertySt.StreamLocation)
+			set def("Properties","Name:"_propertySt.Name,"StreamLocation")=propertySt.StreamLocation
+		}
+		
+		//Do WriteLine(tmpStream,"SQLMaps :") // %Dictionary.StorageSQLMapDefinition
+		set keySqlmaps=""
+		for {
+			set sqlmapSt=objSt.SQLMaps.GetNext(.keySqlmaps)
+			quit:keySqlmaps=""
+			continue:'$IsObject(sqlmapSt)
+			//Do WriteLine(tmpStream,"  Name:"_sqlmapSt.Name)  // Not sure whether necessary to order by name?
+			//Do WriteLine(tmpStream,"    BlockCount:"_sqlmapSt.BlockCount)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"BlockCount")=sqlmapSt.BlockCount
+			//Do WriteLine(tmpStream,"    Condition:"_sqlmapSt.Condition)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"Condition")=sqlmapSt.Condition
+			//Do WriteLine(tmpStream,"    ConditionFields:"_sqlmapSt.ConditionFields)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"ConditionFields")=sqlmapSt.ConditionFields
+			//Do WriteLine(tmpStream,"    ConditionalWithHostVars:"_sqlmapSt.ConditionalWithHostVars)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"ConditionalWithHostVars")=sqlmapSt.ConditionalWithHostVars
+			//Do WriteLine(tmpStream,"    Data:")  //%Dictionary.StorageSQLMapDataDefinition
+			set keySqlMapData=""
+			for {
+				set sqlManDefSt=sqlmapSt.Data.GetNext(.keySqlMapData)
+				quit:keySqlMapData=""
+				continue:'$IsObject(sqlManDefSt)
+				//Do WriteLine(tmpStream,"      Name:"_sqlManDefSt.Name)
+				//Do WriteLine(tmpStream,"        Delimiter:"_sqlManDefSt.Delimiter)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Data","Name:"_sqlManDefSt.Name,"Delimiter")=sqlManDefSt.Delimiter
+				//Do WriteLine(tmpStream,"        Node:"_sqlManDefSt.Node)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Data","Name:"_sqlManDefSt.Name,"Node")=sqlManDefSt.Node
+				//Do WriteLine(tmpStream,"        Piece:"_sqlManDefSt.Piece)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Data","Name:"_sqlManDefSt.Name,"Piece")=sqlManDefSt.Piece
+				//Do WriteLine(tmpStream,"        RetrievalCode:"_sqlManDefSt.RetrievalCode)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Data","Name:"_sqlManDefSt.Name,"RetrievalCode")=sqlManDefSt.RetrievalCode
+			}
+			//Do WriteLine(tmpStream,"    Global:"_sqlmapSt.Global)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"Global")=sqlmapSt.Global
+			//Do WriteLine(tmpStream,"    PopulationPct:"_sqlmapSt.PopulationPct)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"PopulationPct")=sqlmapSt.PopulationPct
+			//Do WriteLine(tmpStream,"    PopulationType:"_sqlmapSt.PopulationType)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"PopulationType")=sqlmapSt.PopulationType
+			//Do WriteLine(tmpStream,"    RowIdSpecs:")
+			set keyRowIdSpecs=""
+			for {
+				set IdSpecSt=sqlmapSt.RowIdSpecs.GetNext(.keyRowIdSpecs)
+				quit:keyRowIdSpecs=""
+				continue:'$IsObject(IdSpecSt)
+				
+				//Do WriteLine(tmpStream,"      Name:"_IdSpecSt.Name)
+				//Do WriteLine(tmpStream,"        Expression:"_IdSpecSt.Expression)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"RowIdSpecs","Name:"_IdSpecSt.Name,"Expression")=IdSpecSt.Expression
+				//Do WriteLine(tmpStream,"        Field:"_IdSpecSt.Field)			
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"RowIdSpecs","Name:"_IdSpecSt.Name,"Field")=IdSpecSt.Field
+			}
+			//Do WriteLine(tmpStream,"    RowReference:"_sqlmapSt.RowReference)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"RowReference")=sqlmapSt.RowReference
+			//Do WriteLine(tmpStream,"    Structure:"_sqlmapSt.Structure)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"Structure")=sqlmapSt.Structure
+			//Do WriteLine(tmpStream,"    Subscripts:")
+			set keySubscripts=""
+			for {
+				set subscriptSt=sqlmapSt.Subscripts.GetNext(.keySubscripts)
+				quit:keySubscripts=""
+				continue:'$IsObject(subscriptSt)
+				//Do WriteLine(tmpStream,"      Name:"_subscriptSt.Name)
+				//Do WriteLine(tmpStream,"        AccessType:"_subscriptSt.AccessType)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"AccessType")=subscriptSt.AccessType
+				//Do WriteLine(tmpStream,"        Accessvars:")
+				set keyAccessvars=""
+				for {
+					set accessVarsSt=subscriptSt.Accessvars.GetNext(.keyAccessvars)
+					quit:keyAccessvars=""
+					continue:'$IsObject(accessVarsSt)
+					//Do WriteLine(tmpStream,"          Name:"_accessVarsSt.Name)
+					//Do WriteLine(tmpStream,"            Code:"_accessVarsSt)
+					set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"Accessvars","Name:"_accessVarsSt.Name,"Code")=accessVarsSt.Code
+					//Do WriteLine(tmpStream,"            Variable:"_accessVarsSt)
+					set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"Accessvars","Name:"_accessVarsSt.Name,"Variable")=accessVarsSt.Variable
+				}
+				
+				//Do WriteLine(tmpStream,"        DataAccess:"_subscriptSt.DataAccess)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"DataAccess")=subscriptSt.DataAccess
+				//Do WriteLine(tmpStream,"        Delimiter:"_subscriptSt.Delimiter)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"Delimiter")=subscriptSt.Delimiter
+				//Do WriteLine(tmpStream,"        Expression:"_subscriptSt.Expression)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"Expression")=subscriptSt.Expression
+				//Do WriteLine(tmpStream,"        Invalidconditions:")
+				
+				set keyInvalidconditions=""
+				for {
+					set InvalidconditionSt=subscriptSt.Invalidconditions.GetNext(.keyInvalidconditions)
+					quit:keyInvalidconditions=""
+					continue:'$IsObject(InvalidconditionSt)
+					//Do WriteLine(tmpStream,"          Name:"_InvalidconditionSt.Name)
+					//Do WriteLine(tmpStream,"            Expression:"_InvalidconditionSt.Expression)
+					set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"Invalidconditions","Name:"_InvalidconditionSt.Name,"Expression")=InvalidconditionSt.Expression
+				}
+				
+				//Do WriteLine(tmpStream,"        LoopInitValue:"_subscriptSt.LoopInitValue)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"LoopInitValue")=subscriptSt.LoopInitValue
+				//Do WriteLine(tmpStream,"        NextCode:"_subscriptSt.NextCode)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"NextCode")=subscriptSt.NextCode
+				//Do WriteLine(tmpStream,"        NullMarker:"_subscriptSt.NullMarker)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"NullMarker")=subscriptSt.NullMarker
+				//Do WriteLine(tmpStream,"        StartValue:"_subscriptSt.StartValue)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"StartValue")=subscriptSt.StartValue
+				//Do WriteLine(tmpStream,"        StopExpression:"_subscriptSt.StopExpression)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"StopExpression")=subscriptSt.StopExpression
+				//Do WriteLine(tmpStream,"        StopValue:"_subscriptSt.StopValue)
+				set def("SQLMaps","Name:"_sqlmapSt.Name,"Subscripts","Name:"_subscriptSt.Name,"StopValue")=subscriptSt.StopValue
+				
+			}
+			//Do WriteLine(tmpStream,"    Type:"_sqlmapSt.Type)
+			set def("SQLMaps","Name:"_sqlmapSt.Name,"Type")=sqlmapSt.Type
+		}
+		
+		//Do WriteLine(tmpStream,"SequenceNumber:"_objSt.SequenceNumber)
+		//set def("SequenceNumber")=objSt.SequenceNumber - Suppressed
+		//Do WriteLine(tmpStream,"SqlChildSub:"_objSt.SqlChildSub)
+		set def("SqlChildSub")=objSt.SqlChildSub
+		//Do WriteLine(tmpStream,"SqlIdExpression:"_objSt.SqlIdExpression)
+		set def("SqlIdExpression")=objSt.SqlIdExpression
+		//Do WriteLine(tmpStream,"SqlRowIdName:"_objSt.SqlRowIdName)
+		set def("SqlRowIdName")=objSt.SqlRowIdName
+		//Do WriteLine(tmpStream,"SqlRowIdProperty:"_objSt.SqlRowIdProperty)
+		set def("SqlRowIdProperty")=objSt.SqlRowIdProperty
+		//Do WriteLine(tmpStream,"SqlTableNumber:"_objSt.SqlTableNumber)
+		set def("SqlTableNumber")=objSt.SqlTableNumber
+		//Do WriteLine(tmpStream,"State:"_objSt.State)
+		set def("State")=objSt.State
+		//Do WriteLine(tmpStream,"StreamLocation:"_objSt.StreamLocation)
+		set def("StreamLocation")=objSt.StreamLocation
+		// Ensure same output for IRIS
+		if objSt.Type="%Library.CacheStorage" {
+			set def("Type")="%Storage.Persistent"
+		} elseif objSt.Type="%Library.CacheSerialState" {
+			set def("Type")="%Storage.Serial"
+		} else  {
+			set def("Type")=objSt.Type
+		}
+		//Do WriteLine(tmpStream,"VersionLocation:"_objSt.VersionLocation)
+		set def("VersionLocation")=objSt.VersionLocation
+		
+		set objSt=""
+		set sqlmapSt=""
+		set subscriptSt=""
+		set sqlmapSt=""
+		set IdSpecSt=""
+		set sqlManDefSt=""
+		set propertySt=""
+		
+		set st1=""
+		for {
+			set st1=$O(def(st1))
+			quit:st1=""
+			if st1[":" {
+				Do WriteLine(tmpStream,st1)
+			} elseif $D(def(st1))#10=1 {  // 1 or 11
+				Do WriteLine(tmpStream,st1_":"_def(st1))
+			} elseif $D(def(st1))=10 {  // 10
+				Do WriteLine(tmpStream,st1_":")
+			} else {  // 0
+				continue	
+			}
+			
+			set st2=""
+			for {
+				set st2=$O(def(st1,st2))
+				quit:st2=""
+				kill pad set $P(pad," ",3)=""
+				if st2[":" {
+					Do WriteLine(tmpStream,pad_st2)
+				} elseif $D(def(st1,st2))#10=1 {  // 1 or 11
+					Do WriteLine(tmpStream,pad_st2_":"_def(st1,st2))
+				} elseif $D(def(st1,st2))=10 {  // 10
+					Do WriteLine(tmpStream,pad_st2_":")
+				} else {  // 0
+					continue	
+				}
+				
+				set st3=""
+				for {
+					set st3=$O(def(st1,st2,st3))
+					quit:st3=""
+					kill pad set $P(pad," ",5)=""
+					if st3[":" {
+						Do WriteLine(tmpStream,pad_st3)
+					} elseif $D(def(st1,st2,st3))#10=1 {  // 1 or 11
+						Do WriteLine(tmpStream,pad_st3_":"_def(st1,st2,st3))
+					} elseif $D(def(st1,st2,st3))=10 {  // 10
+						Do WriteLine(tmpStream,pad_st3_":")
+					} else {  // 0
+						continue	
+					}
+					
+					set st4=""
+					for {
+						set st4=$O(def(st1,st2,st3,st4))
+						quit:st4=""
+						kill pad set $P(pad," ",7)=""
+						if st4[":" {
+							Do WriteLine(tmpStream,pad_st4)
+						} elseif $D(def(st1,st2,st3,st4))#10=1 {  // 1 or 11
+							Do WriteLine(tmpStream,pad_st4_":"_def(st1,st2,st3,st4))
+						} elseif $D(def(st1,st2,st3,st4))=10 {  // 10
+							Do WriteLine(tmpStream,pad_st4_":")
+						} else {  // 0
+							continue	
+						}
+						set st5=""
+						for {
+							set st5=$O(def(st1,st2,st3,st4,st5))
+							quit:st5=""
+							kill pad set $P(pad," ",9)=""
+							if st5[":" {
+								Do WriteLine(tmpStream,pad_st5)
+							} elseif $D(def(st1,st2,st3,st4,st5))#10=1 {  // 1 or 11
+								Do WriteLine(tmpStream,pad_st5_":"_def(st1,st2,st3,st4,st5))
+							} elseif $D(def(st1,st2,st3,st4,st5))=10 {  // 10
+								Do WriteLine(tmpStream,pad_st5_":")
+							} else {  // 0
+								continue	
+							}
+							set st6=""
+							for {
+								set st6=$O(def(st1,st2,st3,st4,st5,st6))
+								quit:st6=""
+								kill pad set $P(pad," ",11)=""
+								if st6[":" {
+									Do WriteLine(tmpStream,pad_st6)
+								} elseif $D(def(st1,st2,st3,st4,st5,st6))#10=1 {  // 1 or 11
+									Do WriteLine(tmpStream,pad_st6_":"_def(st1,st2,st3,st4,st5,st6))
+								} elseif $D(def(st1,st2,st3,st4,st5,st6))=10 {  // 10
+									Do WriteLine(tmpStream,pad_st6_":")
+								} else {  // 0
+									continue	
+								}
+								set st7=""
+								for {
+									set st7=$O(def(st1,st2,st3,st4,st5,st6,st7))
+									quit:st7=""
+									kill pad set $P(pad," ",13)=""
+									if st7[":" {
+										Do WriteLine(tmpStream,pad_st7)
+									} elseif $D(def(st1,st2,st3,st4,st5,st6,st7))#10=1 {  // 1 or 11
+										Do WriteLine(tmpStream,pad_st7_":"_def(st1,st2,st3,st4,st5,st6,st7))
+									} elseif $D(def(st1,st2,st3,st4,st5,st6,st7))=10 {  // 10
+										Do WriteLine(tmpStream,pad_st7_":")
+									} else {  // 0
+										continue	
+									}
+									set st8=""
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		Do tmpStream.Rewind()
+		set sig=$SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.SHA1HashStream(tmpStream))
+		Do SetSignature(classname, sig,$$$RPTSubTypeStorage,storage)
+		Do:includeSource SaveLines(sig)
+	}
+	Do tmpStream.Clear()
+	/***********************
+	  End Indexer Specific code
+	************************/
+	Quit
+]]></Implementation>
+</Method>
+
+<Method name="TestStorage">
+<Description>
+Set tmpStream=##class(%Stream.TmpCharacter).%New()
+Do ##class(ompare.SourceHandler.ClassDefinition).TestStorage(classname,tmpStream)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>classname,tmpStream</FormalSpec>
+<Implementation><![CDATA[
+	//IndexStorage(classname="",tmpStream) //,includeSource)
+	
+WriteLine(stream,data)  
+  W !,data
+  Q
+]]></Implementation>
+</Method>
+</Class>
+</Export>

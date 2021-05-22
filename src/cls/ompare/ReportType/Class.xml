@@ -1,0 +1,1211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26">
+<Class name="ompare.ReportType.Class">
+<Description><![CDATA[
+<pre>
+Copyright (c) Alex Woodhead 2020
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+License MIT
+Source: https://github.com/alexatwoodhead/ompare
+Version: 1.0
+</pre>]]></Description>
+<Super>ompare.ReportType.Base</Super>
+<TimeCreated>65745,33693.930298</TimeCreated>
+
+<Parameter name="DocumentType">
+<Description>
+Ensure this Code doesn't collide with other sub-class implementations of Base
+Eg: "C" abbreviation for class</Description>
+<Type>%String</Type>
+<Default>cls</Default>
+</Parameter>
+
+<Parameter name="RPTTypeClasses">
+<Default>C</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeSummary">
+<Default>S</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeStorage">
+<Default>ST</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeParameter">
+<Default>PR</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeProperty">
+<Default>P</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeMethod">
+<Default>M</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeMethodSignature">
+<Default>MS</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeXData">
+<Default>X</Default>
+</Parameter>
+
+<Property name="PatternClassesExclude">
+<Description>
+Subscript 1 = pattern</Description>
+<Type>%String</Type>
+<Collection>list</Collection>
+<Parameter name="MAXLEN" value="10000"/>
+</Property>
+
+<Property name="PatternClassesInclude">
+<Description>
+Subscript 2 = pattern</Description>
+<Type>%String</Type>
+<Collection>list</Collection>
+<Parameter name="MAXLEN" value="10000"/>
+</Property>
+
+<Property name="PatternMethodsExclude">
+<Description>
+Subscript 11 = pattern</Description>
+<Type>%String</Type>
+<Collection>list</Collection>
+<Parameter name="MAXLEN" value="10000"/>
+</Property>
+
+<Property name="PatternMethodsInclude">
+<Description>
+Subscript 12 = pattern</Description>
+<Type>%String</Type>
+<Collection>list</Collection>
+<Parameter name="MAXLEN" value="10000"/>
+</Property>
+
+<Property name="SummaryShowSameClasses">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="SummaryShowDifferentClasses">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="SummaryShowMissingClasses">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="SummaryShowExtraClasses">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="SummaryIncludeMappedClasses">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="SummaryIncludeUncontrolledClasses">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowSameSummary">
+<Description>
+Always have a class configuration even if empty string</Description>
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DetailShowDifferentSummary">
+<Description>
+Where the class configuration is different</Description>
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowSameStorage">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DetailShowDifferentStorage">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowMissingStorage">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowExtraStorage">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowSameParameters">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DetailShowDifferentParameters">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowMissingParameters">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowExtraParameters">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowSameProperties">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DetailShowDifferentProperties">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowMissingProperties">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowExtraProperties">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowSameMethodsSig">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DetailShowDifferentMethodsSig">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowMissingMethodsSig">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowExtraMethodsSig">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowSameMethods">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DetailShowDifferentMethods">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowMissingMethods">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowExtraMethods">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowSameXData">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DetailShowDifferentXData">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowMissingXData">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Property name="DetailShowExtraXData">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Parameter name="PageAnchor">
+<Default>Classes</Default>
+</Parameter>
+
+<Parameter name="ReportOrder">
+<Default>1</Default>
+</Parameter>
+
+<Method name="CreateDynamicReport">
+<Description>
+Called from ompare.Report.Defintion on subclass on ompare.ReportType.Base
+Override in subclass</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>name:%String</FormalSpec>
+<ReturnType>ompare.ReportType.Base</ReturnType>
+<Implementation><![CDATA[
+	set obj=..%New()
+	set obj.SummaryShowSameClasses=1
+	set obj.SummaryShowDifferentClasses=1
+	set obj.SummaryShowMissingClasses=1
+	set obj.SummaryShowExtraClasses=1
+	set obj.SummaryIncludeMappedClasses=1
+	set obj.SummaryIncludeUncontrolledClasses=1
+	
+	set obj.DetailShowSameSummary=1
+	set obj.DetailShowDifferentSummary=1
+	
+	set obj.DetailShowSameMethodsSig=1
+	set obj.DetailShowDifferentMethodsSig=1
+	set obj.DetailShowMissingMethodsSig=1
+	set obj.DetailShowExtraMethodsSig=1
+	
+	set obj.DetailShowSameMethods=1
+	set obj.DetailShowDifferentMethods=1
+	set obj.DetailShowMissingMethods=1
+	set obj.DetailShowExtraMethods=1
+	
+	set obj.DetailShowSameParameters=1
+	set obj.DetailShowDifferentParameters=1
+	set obj.DetailShowMissingParameters=1
+	set obj.DetailShowExtraParameters=1
+	
+	set obj.DetailShowSameProperties=1
+	set obj.DetailShowDifferentProperties=1
+	set obj.DetailShowMissingProperties=1
+	set obj.DetailShowExtraProperties=1
+	
+	set obj.DetailShowSameXData=1
+	set obj.DetailShowDifferentXData=1
+	set obj.DetailShowMissingXData=1
+	set obj.DetailShowExtraXData=1
+	
+	do obj.PatternClassesExclude.Insert("*")
+	do obj.PatternClassesInclude.Insert(name)
+	
+	quit obj
+]]></Implementation>
+</Method>
+
+<Method name="PopulateReportParams">
+<Description>
+Called from ompare.Report.Defintion on subclass on ompare.ReportType.Base
+Override in subclass</Description>
+<FormalSpec><![CDATA[&config,&summary,&detail,&exclude,&include]]></FormalSpec>
+<Implementation><![CDATA[
+	// set up summary paramaters
+	set:..SummaryShowSameClasses summary(..#RPTTypeClasses,..#RPTSame)=1
+	set:..SummaryShowDifferentClasses summary(..#RPTTypeClasses,..#RPTDifferent)=1
+	set:..SummaryShowMissingClasses summary(..#RPTTypeClasses,..#RPTMissing)=1
+	set:..SummaryShowExtraClasses summary(..#RPTTypeClasses,..#RPTExtra)=1
+	set:..SummaryIncludeMappedClasses config(..#RPTTypeClasses,..#RPTMapped)=1
+	set:..SummaryIncludeUncontrolledClasses config(..#RPTTypeClasses,..#RPTSourceControlled)=1
+	
+	// set up detail parameters
+	set:..DetailShowSameSummary detail(..#RPTSubTypeSummary,..#RPTSame)=1
+	set:..DetailShowDifferentSummary detail(..#RPTSubTypeSummary,..#RPTDifferent)=1
+	
+	set:..DetailShowSameMethodsSig detail(..#RPTSubTypeMethodSignature,..#RPTSame)=1
+	set:..DetailShowDifferentMethodsSig detail(..#RPTSubTypeMethodSignature,..#RPTDifferent)=1
+	set:..DetailShowMissingMethodsSig detail(..#RPTSubTypeMethodSignature,..#RPTMissing)=1
+	set:..DetailShowExtraMethodsSig detail(..#RPTSubTypeMethodSignature,..#RPTExtra)=1
+	
+	set:..DetailShowSameMethods detail(..#RPTSubTypeMethod,..#RPTSame)=1
+	set:..DetailShowDifferentMethods detail(..#RPTSubTypeMethod,..#RPTDifferent)=1
+	set:..DetailShowMissingMethods detail(..#RPTSubTypeMethod,..#RPTMissing)=1
+	set:..DetailShowExtraMethods detail(..#RPTSubTypeMethod,..#RPTExtra)=1
+	
+	set:..DetailShowSameParameters detail(..#RPTSubTypeParameter,..#RPTSame)=1
+	set:..DetailShowDifferentParameters detail(..#RPTSubTypeParameter,..#RPTDifferent)=1
+	set:..DetailShowMissingParameters detail(..#RPTSubTypeParameter,..#RPTMissing)=1
+	set:..DetailShowExtraParameters detail(..#RPTSubTypeParameter,..#RPTExtra)=1
+	
+	set:..DetailShowSameProperties detail(..#RPTSubTypeProperty,..#RPTSame)=1
+	set:..DetailShowDifferentProperties detail(..#RPTSubTypeProperty,..#RPTDifferent)=1
+	set:..DetailShowMissingProperties detail(..#RPTSubTypeProperty,..#RPTMissing)=1
+	set:..DetailShowExtraProperties detail(..#RPTSubTypeProperty,..#RPTExtra)=1
+	
+	set:..DetailShowSameXData detail(..#RPTSubTypeXData,..#RPTSame)=1
+	set:..DetailShowDifferentXData detail(..#RPTSubTypeXData,..#RPTDifferent)=1
+	set:..DetailShowMissingXData detail(..#RPTSubTypeXData,..#RPTMissing)=1
+	set:..DetailShowExtraXData detail(..#RPTSubTypeXData,..#RPTExtra)=1
+	
+	set:..DetailShowSameStorage detail(..#RPTSubTypeStorage,..#RPTSame)=1
+	set:..DetailShowDifferentStorage detail(..#RPTSubTypeStorage,..#RPTDifferent)=1
+	set:..DetailShowMissingStorage detail(..#RPTSubTypeStorage,..#RPTMissing)=1
+	set:..DetailShowExtraStorage detail(..#RPTSubTypeStorage,..#RPTExtra)=1
+	
+	set key=""
+	for {
+		set pattern=..PatternClassesExclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		set exclude(..#RPTTypeClasses,pattern)=""	
+	}
+	for {
+		set pattern=..PatternClassesInclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		set include(..#RPTTypeClasses,pattern)=""	
+	}
+	for {
+		set pattern=..PatternMethodsExclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		set exclude(..#RPTSubTypeMethod,pattern)=""	
+		set exclude(..#RPTSubTypeMethodSignature,pattern)=""
+	}
+	for {
+		set pattern=..PatternMethodsInclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		set include(..#RPTSubTypeMethod,pattern)=""	
+		set include(..#RPTSubTypeMethodSignature,pattern)=""
+	}
+]]></Implementation>
+</Method>
+
+<Method name="IsEmptyReport">
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	Quit:..SummaryShowSameClasses 0
+	Quit:..SummaryShowDifferentClasses 0
+	Quit:..SummaryShowMissingClasses 0
+	Quit:..SummaryShowExtraClasses 0
+	Quit 1
+]]></Implementation>
+</Method>
+
+<Method name="IsEmptyReportType">
+<FormalSpec>type:%String</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	Quit:type'=..#RPTTypeClasses 1
+	Quit ..IsEmptyReport()
+]]></Implementation>
+</Method>
+
+<Method name="PopulateFromHttpRequest">
+<Implementation><![CDATA[
+	set ..SummaryShowSameClasses=$G(%request.Data(..#DocumentType_"SummaryShowSameClasses",1),0)
+	set ..SummaryShowDifferentClasses=$G(%request.Data(..#DocumentType_"SummaryShowDifferentClasses",1),0)
+	set ..SummaryShowMissingClasses=$G(%request.Data(..#DocumentType_"SummaryShowMissingClasses",1),0)
+	set ..SummaryShowExtraClasses=$G(%request.Data(..#DocumentType_"SummaryShowExtraClasses",1),0)
+	set ..SummaryIncludeMappedClasses=$G(%request.Data(..#DocumentType_"SummaryIncludeMappedClasses",1),0)
+	set ..SummaryIncludeUncontrolledClasses=$G(%request.Data(..#DocumentType_"SummaryIncludeUncontrolledClasses",1),0)
+	set ..DetailShowSameSummary=$G(%request.Data(..#DocumentType_"DetailShowSameSummary",1),0)
+	set ..DetailShowDifferentSummary=$G(%request.Data(..#DocumentType_"DetailShowDifferentSummary",1),0)
+	set ..DetailShowSameStorage=$G(%request.Data(..#DocumentType_"DetailShowSameStorage",1),0)
+	set ..DetailShowDifferentStorage=$G(%request.Data(..#DocumentType_"DetailShowDifferentStorage",1),0)
+	set ..DetailShowMissingStorage=$G(%request.Data(..#DocumentType_"DetailShowMissingStorage",1),0)
+	set ..DetailShowExtraStorage=$G(%request.Data(..#DocumentType_"DetailShowExtraStorage",1),0)
+	set ..DetailShowSameParameters=$G(%request.Data(..#DocumentType_"DetailShowSameParameters",1),0)
+	set ..DetailShowDifferentParameters=$G(%request.Data(..#DocumentType_"DetailShowDifferentParameters",1),0)
+	set ..DetailShowMissingParameters=$G(%request.Data(..#DocumentType_"DetailShowMissingParameters",1),0)
+	set ..DetailShowExtraParameters=$G(%request.Data(..#DocumentType_"DetailShowExtraParameters",1),0)
+	set ..DetailShowSameProperties=$G(%request.Data(..#DocumentType_"DetailShowSameProperties",1),0)
+	set ..DetailShowDifferentProperties=$G(%request.Data(..#DocumentType_"DetailShowDifferentProperties",1),0)
+	set ..DetailShowMissingProperties=$G(%request.Data(..#DocumentType_"DetailShowMissingProperties",1),0)
+	set ..DetailShowExtraProperties=$G(%request.Data(..#DocumentType_"DetailShowExtraProperties",1),0)
+	set ..DetailShowSameMethodsSig=$G(%request.Data(..#DocumentType_"DetailShowSameMethodsSig",1),0)
+	set ..DetailShowDifferentMethodsSig=$G(%request.Data(..#DocumentType_"DetailShowDifferentMethodsSig",1),0)
+	set ..DetailShowMissingMethodsSig=$G(%request.Data(..#DocumentType_"DetailShowMissingMethodsSig",1),0)
+	set ..DetailShowExtraMethodsSig=$G(%request.Data(..#DocumentType_"DetailShowExtraMethodsSig",1),0)
+	set ..DetailShowSameMethods=$G(%request.Data(..#DocumentType_"DetailShowSameMethods",1),0)
+	set ..DetailShowDifferentMethods=$G(%request.Data(..#DocumentType_"DetailShowDifferentMethods",1),0)
+	set ..DetailShowMissingMethods=$G(%request.Data(..#DocumentType_"DetailShowMissingMethods",1),0)
+	set ..DetailShowExtraMethods=$G(%request.Data(..#DocumentType_"DetailShowExtraMethods",1),0)
+	set ..DetailShowSameXData=$G(%request.Data(..#DocumentType_"DetailShowSameXData",1),0)
+	set ..DetailShowDifferentXData=$G(%request.Data(..#DocumentType_"DetailShowDifferentXData",1),0)
+	set ..DetailShowMissingXData=$G(%request.Data(..#DocumentType_"DetailShowMissingXData",1),0)
+	set ..DetailShowExtraXData=$G(%request.Data(..#DocumentType_"DetailShowExtraXData",1),0)
+
+	do ..PatternClassesExclude.Clear()
+	set data=$TR($G(%request.Data(..#DocumentType_"PatternClassesExclude",1),""),$C(13))
+	kill ary
+	set pattern=""
+	set len=$L(data,$C(10))
+	for i=1:1:len {
+		set pattern=$ZSTRIP($P(data,$C(10),i),"<>W")
+		continue:pattern=""
+		set ary(pattern)="" // Sort the user input
+	}
+	set pattern=""
+	for {
+		set pattern=$O(ary(pattern))
+		quit:pattern=""
+		do ..PatternClassesExclude.Insert(pattern)	
+	}
+	do ..PatternClassesInclude.Clear()
+	kill ary
+	set data=$TR($G(%request.Data(..#DocumentType_"PatternClassesInclude",1),""),$C(13))
+	set pattern=""
+	set len=$L(data,$C(10))
+	for i=1:1:len {
+		set pattern=$ZSTRIP($P(data,$C(10),i),"<>W")
+		continue:pattern=""
+		set ary(pattern)="" // Sort the user input
+	}
+	set pattern=""
+	for {
+		set pattern=$O(ary(pattern))
+		quit:pattern=""
+		do ..PatternClassesInclude.Insert(pattern)
+	}
+	kill ary
+	do ..PatternMethodsExclude.Clear()
+	set data=$TR($G(%request.Data(..#DocumentType_"PatternMethodsExclude",1),""),$C(13))
+	set pattern=""
+	set len=$L(data,$C(10))
+	for i=1:1:len {
+		set pattern=$ZSTRIP($P(data,$C(10),i),"<>W")
+		continue:pattern=""
+		set ary(pattern)="" // Sort the user input
+	}
+	set pattern=""
+	for {
+		set pattern=$O(ary(pattern))
+		quit:pattern=""
+		do ..PatternMethodsExclude.Insert(pattern)
+	}
+	kill ary
+	do ..PatternMethodsInclude.Clear()
+	set data=$TR($G(%request.Data(..#DocumentType_"PatternMethodsInclude",1),""),$C(13))
+	set pattern=""
+	set len=$L(data,$C(10))
+	for i=1:1:len {
+		set pattern=$ZSTRIP($P(data,$C(10),i),"<>W")
+		continue:pattern=""
+		set ary(pattern)="" // Sort the user input
+	}
+	set pattern=""
+	for {
+		set pattern=$O(ary(pattern))
+		quit:pattern=""
+		do ..PatternMethodsInclude.Insert(pattern)
+	}
+]]></Implementation>
+</Method>
+
+<Method name="DrawEditConfigForm">
+<Implementation><![CDATA[
+	W !,"<fieldset><legend>Class Configuration</legend>"
+	W !,"Show Same Classes <input name="""_..#DocumentType_"SummaryShowSameClasses"" type=""checkbox"" value=""1""",$Select(..SummaryShowSameClasses:" checked",1:""),"/><br/>"
+	W !,"Show Different Classes <input name="""_..#DocumentType_"SummaryShowDifferentClasses"" type=""checkbox"" value=""1""",$Select(..SummaryShowDifferentClasses:" checked",1:""),"/><br/>"
+	W !,"Show Missing Classes <input name="""_..#DocumentType_"SummaryShowMissingClasses"" type=""checkbox"" value=""1""",$Select(..SummaryShowMissingClasses:" checked",1:""),"/><br/>"
+	W !,"Show Extra Classes <input name="""_..#DocumentType_"SummaryShowExtraClasses"" type=""checkbox"" value=""1""",$Select(..SummaryShowExtraClasses:" checked",1:""),"/><br/>"
+	W !,"Include Mapped <input name="""_..#DocumentType_"SummaryIncludeMappedClasses"" type=""checkbox"" value=""1""",$Select(..SummaryIncludeMappedClasses:" checked",1:""),"/><br/>"	
+	W !,"Include Source Uncontrolled <input name="""_..#DocumentType_"SummaryIncludeUncontrolledClasses"" type=""checkbox"" value=""1""",$Select(..SummaryIncludeUncontrolledClasses:" checked",1:""),"/><br/>"	
+	W !,"Show Same Class Summary <input name="""_..#DocumentType_"DetailShowSameSummary"" type=""checkbox"" value=""1""",$Select(..DetailShowSameSummary:" checked",1:""),"/><br/>"
+	W !,"Show Different Class Summary <input name="""_..#DocumentType_"DetailShowDifferentSummary"" type=""checkbox"" value=""1""",$Select(..DetailShowDifferentSummary:" checked",1:""),"/><br/>"
+	
+	W !,"Exclude&nbsp;pattern&nbsp;<textarea name="""_..#DocumentType_"PatternClassesExclude"" rows=""4"" cols=""50"">"
+	set key="",pattern=""
+	for {
+		set pattern=..PatternClassesExclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		W $ZCONVERT(pattern,"O","HTML"),$C(10)	
+	}
+	W "</textarea><br/>"
+	W !,"Include&nbsp;pattern&nbsp;<textarea name="""_..#DocumentType_"PatternClassesInclude"" rows=""4"" cols=""50"">"
+	//,$ZCONVERT(..GetClassesIncludePattern(report),"O","HTML")
+	set key="",pattern=""
+	for {
+		set pattern=..PatternClassesInclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		W $ZCONVERT(pattern,"O","HTML"),$C(10)	
+	}
+	W "</textarea><br/>"
+	
+	W !,"<fieldset><legend>Storage Configuration</legend>"
+	W !,"Show Same Storage <input name="""_..#DocumentType_"DetailShowSameStorage"" type=""checkbox"" value=""1""",$Select(..DetailShowSameStorage:" checked",1:""),"/><br/>"
+	W !,"Show Different Storage <input name="""_..#DocumentType_"DetailShowDifferentStorage"" type=""checkbox"" value=""1""",$Select(..DetailShowDifferentStorage:" checked",1:""),"/><br/>"
+	W !,"Show Missing Storage <input name="""_..#DocumentType_"DetailShowMissingStorage"" type=""checkbox"" value=""1""",$Select(..DetailShowMissingStorage:" checked",1:""),"/><br/>"
+	W !,"Show Extra Storage <input name="""_..#DocumentType_"DetailShowExtraStorage"" type=""checkbox"" value=""1""",$Select(..DetailShowExtraStorage:" checked",1:""),"/><br/>"
+	W !,"</fieldset>"
+	
+	W !,"<fieldset><legend>Method Configuration</legend>"
+	
+	W !,"Show Same Method Signature <input name="""_..#DocumentType_"DetailShowSameMethodsSig"" type=""checkbox"" value=""1""",$Select(..DetailShowSameMethodsSig:" checked",1:""),"/><br/>"
+	W !,"Show Different Signature <input name="""_..#DocumentType_"DetailShowDifferentMethodsSig"" type=""checkbox"" value=""1""",$Select(..DetailShowDifferentMethodsSig:" checked",1:""),"/><br/>"
+	W !,"Show Missing Signature <input name="""_..#DocumentType_"DetailShowMissingMethodsSig"" type=""checkbox"" value=""1""",$Select(..DetailShowMissingMethodsSig:" checked",1:""),"/><br/>"
+	W !,"Show Extra Signature <input name="""_..#DocumentType_"DetailShowExtraMethodsSig"" type=""checkbox"" value=""1""",$Select(..DetailShowExtraMethodsSig:" checked",1:""),"/><br/>"
+	
+	W !,"Show Same Methods <input name="""_..#DocumentType_"DetailShowSameMethods"" type=""checkbox"" value=""1""",$Select(..DetailShowSameMethods:" checked",1:""),"/><br/>"
+	W !,"Show Different Methods <input name="""_..#DocumentType_"DetailShowDifferentMethods"" type=""checkbox"" value=""1""",$Select(..DetailShowDifferentMethods:" checked",1:""),"/><br/>"
+	W !,"Show Missing Methods <input name="""_..#DocumentType_"DetailShowMissingMethods"" type=""checkbox"" value=""1""",$Select(..DetailShowMissingMethods:" checked",1:""),"/><br/>"
+	W !,"Show Extra Methods <input name="""_..#DocumentType_"DetailShowExtraMethods"" type=""checkbox"" value=""1""",$Select(..DetailShowExtraMethods:" checked",1:""),"/><br/>"
+	W !,"Exclude&nbsp;pattern&nbsp;<textarea name="""_..#DocumentType_"PatternMethodsExclude"" rows=""4"" cols=""50"">"
+	set key="",pattern=""
+	for {
+		set pattern=..PatternMethodsExclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		W $ZCONVERT(pattern,"O","HTML"),$C(10)
+	}
+	W "</textarea><br/>"
+	W !,"Include&nbsp;pattern&nbsp;<textarea name="""_..#DocumentType_"PatternMethodsInclude"" rows=""4"" cols=""50"">"
+	set key="",pattern=""
+	for {
+		set pattern=..PatternMethodsInclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""  
+		W $ZCONVERT(pattern,"O","HTML"),$C(10)
+	}
+	W "</textarea><br/>"
+	W !,"</fieldset>"
+	
+	W !,"<fieldset><legend>Parameter Configuration</legend>"
+	W !,"Show Same Parameters <input name="""_..#DocumentType_"DetailShowSameParameters"" type=""checkbox"" value=""1""",$Select(..DetailShowSameParameters:" checked",1:""),"/><br/>"
+	W !,"Show Different Parameters <input name="""_..#DocumentType_"DetailShowDifferentParameters"" type=""checkbox"" value=""1""",$Select(..DetailShowDifferentParameters:" checked",1:""),"/><br/>"
+	W !,"Show Missing Parameters <input name="""_..#DocumentType_"DetailShowMissingParameters"" type=""checkbox"" value=""1""",$Select(..DetailShowMissingParameters:" checked",1:""),"/><br/>"
+	W !,"Show Extra Parameters <input name="""_..#DocumentType_"DetailShowExtraParameters"" type=""checkbox"" value=""1""",$Select(..DetailShowExtraParameters:" checked",1:""),"/><br/>"
+	W !,"</fieldset>"
+	
+	W !,"<fieldset><legend>Property Configuration</legend>"
+	W !,"Show Same Properties <input name="""_..#DocumentType_"DetailShowSameProperties"" type=""checkbox"" value=""1""",$Select(..DetailShowSameProperties:" checked",1:""),"/><br/>"
+	W !,"Show Different Properties <input name="""_..#DocumentType_"DetailShowDifferentProperties"" type=""checkbox"" value=""1""",$Select(..DetailShowDifferentProperties:" checked",1:""),"/><br/>"
+	W !,"Show Missing Properties <input name="""_..#DocumentType_"DetailShowMissingProperties"" type=""checkbox"" value=""1""",$Select(..DetailShowMissingProperties:" checked",1:""),"/><br/>"
+	W !,"Show Extra Properties <input name="""_..#DocumentType_"DetailShowExtraProperties"" type=""checkbox"" value=""1""",$Select(..DetailShowExtraProperties:" checked",1:""),"/><br/>"
+	W !,"</fieldset>"
+	
+	W !,"<fieldset><legend>XData Configuration</legend>"
+	W !,"Show Same XData <input name="""_..#DocumentType_"DetailShowSameXData"" type=""checkbox"" value=""1""",$Select(..DetailShowSameXData:" checked",1:""),"/><br/>"
+	W !,"Show Different XData <input name="""_..#DocumentType_"DetailShowDifferentXData"" type=""checkbox"" value=""1""",$Select(..DetailShowDifferentXData:" checked",1:""),"/><br/>"
+	W !,"Show Missing XData <input name="""_..#DocumentType_"DetailShowMissingXData"" type=""checkbox"" value=""1""",$Select(..DetailShowMissingXData:" checked",1:""),"/><br/>"
+	W !,"Show Extra XData <input name="""_..#DocumentType_"DetailShowExtraXData"" type=""checkbox"" value=""1""",$Select(..DetailShowExtraXData:" checked",1:""),"/><br/>"
+	W !,"</fieldset>"
+	
+	W !,"</fieldset>"
+]]></Implementation>
+</Method>
+
+<Method name="DrawReport">
+<FormalSpec>definition:ompare.Report.Definition,isFirstDisplayed:%Boolean=0</FormalSpec>
+<Implementation><![CDATA[
+	quit:..IsEmptyReport()
+	set elapstart=$P($ZTS,",",2)
+
+	W !,"<span class=""SectionTitle"">Section: Classes</span>"
+	W "<a name=""show"_..#PageAnchor_"""></a>"
+	W:'isFirstDisplayed "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<a href=""#showTop"">Back to Top</a>]"
+	W !,"<table border=1>"
+	set sequence=0
+	W !," <tr>"
+	W !,"  <th>Item</th>"
+	W !,"  <th>ClassName</th>"
+	W !,"  <th>",definition.FromEnvironment,"<br/>",..GetDateTimeOfData(definition.FromEnvironment),"</th>"
+		set env=""
+	for {
+		if definition.HistoricView {
+			set env=$Order(^||ReportData("Meta","To",env),-1,data)
+		} else {
+			set env=$Order(^||ReportData("Meta","To",env),+1,data)
+		}
+		quit:env=""
+		set date=$P(data,"^")
+		set ns=$P(data,"^",2)
+		W !,"<th>",$ZCONVERT(env,"O","HTML"),"<br/>",$ZCONVERT(ns,"O","HTML"),"<br/>",$ZD(date,3),"<br/>"
+		//W "<a target=""_blank"" href=""ompare.Report.GenerateReportAsIRISProject.cls?report="
+		//W $ZCONVERT(definition.ReportName,"O","URL")
+		//W "&targetEnv="
+		//W $ZCONVERT(env,"O","URL")
+		//W """>[Project]</a>"
+		W "</th>"
+	}
+
+	set classname=""
+	for {
+		set classname=$O(^||ReportData(..#RPTTypeClasses,classname))
+		quit:classname=""
+		// skipping empty analysis
+		// For example there is a difference in Properties BUT Property differences has not been selected in the report
+		// Validate for when no difference detail has been requested?
+		// Unless an artifact has been included in the report subType
+		// configuration, ignore SubTypes that are not of interest.
+		if '..SummaryShowMissingClasses,'..SummaryShowExtraClasses,'..SummaryShowSameClasses {
+			continue:'$Data(^||ReportData(..#RPTTypeClasses,classname,"d"))
+		}
+		W !," <tr>"
+		W !,"   <td>",$Increment(sequence),"</td>"
+		W !,"  <td>",$ZCONVERT(classname,"O","HTML"),"</td>"
+	
+		set toNs=$O(^||ReportData(..#RPTTypeClasses,classname,"s",definition.FromEnvironment,""),+1,result)
+
+		if toNs="" {
+			W "<td>"
+			set depRSrow=0
+			if ##class(%ClassDefinition).%ExistsId(classname) {
+				set oClassDef=##class(%ClassDefinition).%OpenId(classname,0)
+				if $IsObject(oClassDef),'oClassDef.Abstract {
+					set depRS=##class(%ResultSet).%New()
+					set depRS.ClassName="%Dictionary.ClassDefinitionQuery"
+					set depRS.QueryName="SubclassOf"
+					do depRS.Execute(classname)
+			
+					for {
+						quit:'depRS.Next(.sc)
+						set depRSrow=depRSrow+1
+						W:depRSrow=1 ..ASHTML("Dependencies:")_"<br/>"
+						W ..ASHTML(depRS.Data("Name"))_"<br/>"
+					}
+					do depRS.Close()
+				}
+			}
+			W:depRSrow=0 " - "
+			W "</td>"
+		} else {
+			W "<td>",$Case(result,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - "),"</td>"
+		}
+		set env=""
+		for {
+			// TODO - Limitation of Date Ordering for Historic
+			if (definition.HistoricView) {
+				set env=$Order(^||ReportData("Meta","To",env),-1,date)
+			} else {
+				set env=$Order(^||ReportData("Meta","To",env),+1,date)
+			}
+			quit:env=""
+				set toNs=$O(^||ReportData(..#RPTTypeClasses,classname,"s",env,""),+1,result)
+			if toNs="" {
+				W "<td> - </td>"
+			} else {
+				// From date is always current
+				set lnk("sfEnv")=definition.FromEnvironment
+				set lnk("sfNS")=$Select($D(lnk("sfEnv")):$O(definition.EnvironmentsMD(lnk("sfEnv"),"")),1:"")
+				set lnk("sfT")="C"
+				set lnk("sfTN")=classname
+				set lnk("sfST")=""  // eg: "M"
+				set lnk("sfSTN")=""  // eg: OnProcessInput
+				if definition.HistoricView {
+					set lnk("stD")=+date
+					set lnk("stEnv")=$ZSTRIP($P(env,"("),">W")  // Remove History Discriptor
+				} else {
+					kill lnk("stD")
+					set lnk("stEnv")=env
+				}
+				set lnk("stNS")=$Select($D(lnk("stEnv")):$O(definition.EnvironmentsMD(lnk("stEnv"),"")),1:"")
+				set lnk("stT")="C"
+				set lnk("stTN")=classname
+				set lnk("stST")=""  // eg: "M"
+				set lnk("stSTN")=""  // eg: OnProcessInput
+			
+				W "<td style=""vertical-align:top"""
+				if result=..#RPTDifferent {
+					if definition.DisplayDifferenceDetail {
+						W "><div>",..ReportDetailAltTextWithLink(..#RPTTypeClasses,classname,env,,.lnk,result,definition.DisplayComments),"</div>"
+					} else {
+						W " title=""",$ZCONVERT(..ReportDetailAltText(..#RPTTypeClasses,classname,env),"O","HTML"),""">Different"
+					}
+				} else {
+					// TODO - If comments are active then have some link / mechanism to add change comment
+					W ">",$Case(result,..#RPTSame:"Same Class",..#RPTMissing:"Missing Class",..#RPTExtra:"Extra Class",:" - ")
+				}
+				W "</td>"
+			}
+		}
+		W !," </tr>"
+	}	
+	W !,"</table>"
+	set elapend=$P($ZTS,",",2)
+	W !,"(Time taken:",$FN(elapend-elapstart,"",2),") seconds"
+	W !,"<hr/>"
+	W !,"<br/>"
+]]></Implementation>
+</Method>
+
+<Method name="DrawDetailAltText">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&out,return:%String,eol]]></FormalSpec>
+<Implementation><![CDATA[
+	if +$G(out(..#RPTSubTypeSummary))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Summary: "
+		for i=1:1:out(..#RPTSubTypeSummary) {
+			set return=return_eol_" *"_$G(out(..#RPTSubTypeSummary,i,"name"))_" ("_..RTPEnumToText($G(out(..#RPTSubTypeSummary,i,"result")))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeParameter))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Parameters:"
+		for i=1:1:out(..#RPTSubTypeParameter) {
+			set return=return_eol_" *"_out(..#RPTSubTypeParameter,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeParameter,i,"result"))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeProperty))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Proprties:"
+		for i=1:1:out(..#RPTSubTypeProperty) {
+			set return=return_eol_" *"_out(..#RPTSubTypeProperty,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeProperty,i,"result"))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeMethodSignature))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Method Signature:"
+		for i=1:1:out(..#RPTSubTypeMethodSignature) {
+			set return=return_eol_" *"_out(..#RPTSubTypeMethodSignature,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeMethodSignature,i,"result"))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeMethod))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Method:"
+		for i=1:1:out(..#RPTSubTypeMethod) {
+			set return=return_eol_" *"_out(..#RPTSubTypeMethod,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeMethod,i,"result"))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeXData))>0 {
+		set return=return_$S($L(return):eol,1:"")_"XData:"
+		for i=1:1:out(..#RPTSubTypeXData) {
+			set return=return_eol_" *"_out(..#RPTSubTypeXData,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeXData,i,"result"))_")"
+		}
+	}
+	quit return
+]]></Implementation>
+</Method>
+
+<Method name="DrawDetailAltTextWithLink">
+<Description>
+Override in ReportType</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&out,return:%String,&lnk,eol,displayComments]]></FormalSpec>
+<Implementation><![CDATA[
+	if +$G(out(..#RPTSubTypeSummary))>0 {
+		W $S($L(return):eol,1:"")_"Summary:"
+		set:$L(return)=0 return=" "
+		set lnk("sfST")=..#RPTSubTypeSummary
+		set lnk("sfSTN")="Summary"
+		//set lnk("sfSTN")=out(..#RPTSubTypeSummary,1,"name")
+		set lnk("stST")=..#RPTSubTypeSummary
+		set lnk("stSTN")="Summary"
+		//set lnk("stSTN")=out(..#RPTSubTypeProperty,1,"name")
+		set result=$G(out(..#RPTSubTypeSummary,1,"result"))
+		W eol_" * ("
+			Do ..AddSourceLink(..RTPEnumToText(result),.lnk,result)
+		W ")"
+		d:displayComments ..DisplayComment(.lnk)
+	}
+	
+	if +$G(out(..#RPTSubTypeParameter))>0 {
+		W $S($L(return):eol,1:"")_"Parameters:"
+		set:$L(return)=0 return=" "
+		for i=1:1:out(..#RPTSubTypeParameter) {
+			//W eol_" *"_out(..#RPTSubTypeProperty,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeProperty,i,"result"))_")"
+			set lnk("sfST")=..#RPTSubTypeParameter
+			set lnk("sfSTN")=out(..#RPTSubTypeParameter,i,"name")
+			set lnk("stST")=..#RPTSubTypeParameter
+			set lnk("stSTN")=out(..#RPTSubTypeParameter,i,"name")
+			set result=$G(out(..#RPTSubTypeParameter,i,"result"))
+			W eol_" *"_out(..#RPTSubTypeParameter,i,"name")_" ("
+			//if result=..#RPTDifferent {
+				Do ..AddSourceLink(..RTPEnumToText(result),.lnk,result)
+			//} else {
+			//	W ..RPTResultToText(result)
+			//}
+			W ")"
+			d:displayComments ..DisplayComment(.lnk)
+		}
+	}
+	
+	if +$G(out(..#RPTSubTypeProperty))>0 {
+		W $S($L(return):eol,1:"")_"Properties:"
+		set:$L(return)=0 return=" "
+		for i=1:1:out(..#RPTSubTypeProperty) {
+			//W eol_" *"_out(..#RPTSubTypeProperty,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeProperty,i,"result"))_")"
+			set lnk("sfST")=..#RPTSubTypeProperty
+			set lnk("sfSTN")=out(..#RPTSubTypeProperty,i,"name")
+			set lnk("stST")=..#RPTSubTypeProperty
+			set lnk("stSTN")=out(..#RPTSubTypeProperty,i,"name")
+			set result=$G(out(..#RPTSubTypeProperty,i,"result"))
+			W eol_" *"_out(..#RPTSubTypeProperty,i,"name")_" ("
+			//if result=..#RPTDifferent {
+				Do ..AddSourceLink(..RTPEnumToText(result),.lnk,result)
+			//} else {
+			//	W ..RPTResultToText(result)
+			//}
+			W ")"
+			d:displayComments ..DisplayComment(.lnk)
+		}
+	}
+	if +$G(out(..#RPTSubTypeMethodSignature))>0 {
+		W $S($L(return):eol,1:"")_"Method Signature:"
+		set:$L(return)=0 return=" "
+		for i=1:1:out(..#RPTSubTypeMethodSignature) {
+			//set return=return_eol_" *"_out(..#RPTSubTypeMethodSignature,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeMethodSignature,i,"result"))_")<br/>"
+			//W eol_" *"_out(..#RPTSubTypeMethodSignature,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeMethodSignature,i,"result"))_")<br/>"
+			set lnk("sfST")=..#RPTSubTypeMethodSignature
+			set lnk("sfSTN")=out(..#RPTSubTypeMethodSignature,i,"name")
+			set lnk("stST")=..#RPTSubTypeMethodSignature
+			set lnk("stSTN")=out(..#RPTSubTypeMethodSignature,i,"name")
+			set result=$G(out(..#RPTSubTypeMethodSignature,i,"result"))
+			W eol_" *"_out(..#RPTSubTypeMethodSignature,i,"name")_" ("
+			//if result=..#RPTDifferent {
+				Do ..AddSourceLink(..RTPEnumToText(result),.lnk,result)
+			//} else {
+			//	W ..RPTResultToText(result)
+			//}
+			W ")"
+			d:displayComments ..DisplayComment(.lnk)
+		}
+	}
+	if +$G(out(..#RPTSubTypeMethod))>0 {
+		W $S($L(return):eol,1:"")_"Method:"
+		set:$L(return)=0 return=" "
+		for i=1:1:out(..#RPTSubTypeMethod) {
+			set lnk("sfST")=..#RPTSubTypeMethod
+			set lnk("sfSTN")=out(..#RPTSubTypeMethod,i,"name")
+			set lnk("stST")=..#RPTSubTypeMethod
+			set lnk("stSTN")=out(..#RPTSubTypeMethod,i,"name")
+			set result=$G(out(..#RPTSubTypeMethod,i,"result"))
+			W eol_" *"_out(..#RPTSubTypeMethod,i,"name")_" ("
+			//if result=..#RPTDifferent {
+				Do ..AddSourceLink(..RTPEnumToText(result),.lnk,result)
+			//} else {
+			//	W ..RPTResultToText(result)
+			//}
+			W ")"
+			d:displayComments ..DisplayComment(.lnk)
+		}
+	}
+	if +$G(out(..#RPTSubTypeXData))>0 {
+		W $S($L(return):eol,1:"")_"XData:"
+		set:$L(return)=0 return=" "
+		for i=1:1:out(..#RPTSubTypeXData) {
+			set lnk("sfST")=..#RPTSubTypeXData
+			set lnk("sfSTN")=out(..#RPTSubTypeXData,i,"name")
+			set lnk("stST")=..#RPTSubTypeXData
+			set lnk("stSTN")=out(..#RPTSubTypeXData,i,"name")
+			set result=$G(out(..#RPTSubTypeXData,i,"result"))
+			W eol_" *"_out(..#RPTSubTypeXData,i,"name")_" ("
+			Do ..AddSourceLink(..RTPEnumToText(result),.lnk,result)
+			W ")"
+			d:displayComments ..DisplayComment(.lnk)
+		}
+	}
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+ClassMethod ReportDetailAltText(tname = "", env = "", eol = {$C(10)})
+{
+	// ^||ReportData(type,name,"d",subtype,subname,toEnv,toNs)
+	set return=""
+	set out=""
+	//quit:type="" "type is empty"
+	quit:name="" "name is empty"
+	quit:env="" "env is empty"
+	
+	set sec=0
+	set subname=""
+	
+	set subtype=""
+	for {
+		set subtype=$O(^||ReportData(..#RPTTypeClasses,name,"d",subtype))
+		quit:subtype=""
+		
+		for {
+			set subname=$Order(^||ReportData(type,name,"d",subtype,subname))
+			quit:subname=""
+		
+			set ns=$Order(^||ReportData(type,name,"d",subtype,subname,env,""),+1,result)
+			continue:ns=""
+		
+			set next=$I(out(subtype))
+			set out(subtype,next,"name")=subname
+			set out(subtype,next,"result")=result
+		}
+	}
+	//quit $Data(out)
+	if +$G(out(..#RPTSubTypeSummary))>0 {
+		//set return="Inheritance: "_..RTPEnumToText(out(..#RPTSubTypeSuper,1))
+		//set return="TODO: Class Summary"
+		//set return=return_$S($L(return):eol,1:"")_"Summary ("_..RTPEnumToText(out(..#RPTSubTypeParameter,i,"result"))_")"
+		set return=return_$S($L(return):eol,1:"")_"Summary: "
+		for i=1:1:out(..#RPTSubTypeSummary) {
+			set return=return_eol_" *"_$G(out(..#RPTSubTypeSummary,i,"name"))_" ("_..RTPEnumToText($G(out(..#RPTSubTypeSummary,i,"result")))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeParameter))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Parameters:"
+		for i=1:1:out(..#RPTSubTypeParameter) {
+			set return=return_eol_" *"_out(..#RPTSubTypeParameter,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeParameter,i,"result"))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeProperty))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Proprties:"
+		for i=1:1:out(..#RPTSubTypeProperty) {
+			set return=return_eol_" *"_out(..#RPTSubTypeProperty,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeProperty,i,"result"))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeMethodSignature))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Method Signature:"
+		for i=1:1:out(..#RPTSubTypeMethodSignature) {
+			set return=return_eol_" *"_out(..#RPTSubTypeMethodSignature,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeMethodSignature,i,"result"))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeMethod))>0 {
+		set return=return_$S($L(return):eol,1:"")_"Method:"
+		for i=1:1:out(..#RPTSubTypeMethod) {
+			set return=return_eol_" *"_out(..#RPTSubTypeMethod,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeMethod,i,"result"))_")"
+		}
+	}
+	if +$G(out(..#RPTSubTypeXData))>0 {
+		set return=return_$S($L(return):eol,1:"")_"XData:"
+		for i=1:1:out(..#RPTSubTypeXData) {
+			set return=return_eol_" *"_out(..#RPTSubTypeXData,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeXData,i,"result"))_")"
+		}
+	}
+	quit return
+} */
+]]></Content>
+</UDLText>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DefaultData>ClassDefaultData</DefaultData>
+<Data name="ClassDefaultData">
+<Subscript>"Class"</Subscript>
+<Value name="1">
+<Value>PatternClassesExclude</Value>
+</Value>
+<Value name="2">
+<Value>PatternClassesInclude</Value>
+</Value>
+<Value name="3">
+<Value>PatternMethodsExclude</Value>
+</Value>
+<Value name="4">
+<Value>PatternMethodsInclude</Value>
+</Value>
+<Value name="5">
+<Value>SummaryShowSameClasses</Value>
+</Value>
+<Value name="6">
+<Value>SummaryShowDifferentClasses</Value>
+</Value>
+<Value name="7">
+<Value>SummaryShowMissingClasses</Value>
+</Value>
+<Value name="8">
+<Value>SummaryShowExtraClasses</Value>
+</Value>
+<Value name="9">
+<Value>SummaryIncludeMappedClasses</Value>
+</Value>
+<Value name="10">
+<Value>SummaryIncludeUncontrolledClasses</Value>
+</Value>
+<Value name="11">
+<Value>DetailShowSameSummary</Value>
+</Value>
+<Value name="12">
+<Value>DetailShowDifferentSummary</Value>
+</Value>
+<Value name="13">
+<Value>DetailShowSameStorage</Value>
+</Value>
+<Value name="14">
+<Value>DetailShowDifferentStorage</Value>
+</Value>
+<Value name="15">
+<Value>DetailShowMissingStorage</Value>
+</Value>
+<Value name="16">
+<Value>DetailShowExtraStorage</Value>
+</Value>
+<Value name="17">
+<Value>DetailShowSameParameters</Value>
+</Value>
+<Value name="18">
+<Value>DetailShowDifferentParameters</Value>
+</Value>
+<Value name="19">
+<Value>DetailShowMissingParameters</Value>
+</Value>
+<Value name="20">
+<Value>DetailShowExtraParameters</Value>
+</Value>
+<Value name="21">
+<Value>DetailShowSameProperties</Value>
+</Value>
+<Value name="22">
+<Value>DetailShowDifferentProperties</Value>
+</Value>
+<Value name="23">
+<Value>DetailShowMissingProperties</Value>
+</Value>
+<Value name="24">
+<Value>DetailShowExtraProperties</Value>
+</Value>
+<Value name="25">
+<Value>DetailShowSameMethodsSig</Value>
+</Value>
+<Value name="26">
+<Value>DetailShowDifferentMethodsSig</Value>
+</Value>
+<Value name="27">
+<Value>DetailShowMissingMethodsSig</Value>
+</Value>
+<Value name="28">
+<Value>DetailShowExtraMethodsSig</Value>
+</Value>
+<Value name="29">
+<Value>DetailShowSameMethods</Value>
+</Value>
+<Value name="30">
+<Value>DetailShowDifferentMethods</Value>
+</Value>
+<Value name="31">
+<Value>DetailShowMissingMethods</Value>
+</Value>
+<Value name="32">
+<Value>DetailShowExtraMethods</Value>
+</Value>
+<Value name="33">
+<Value>DetailShowSameXData</Value>
+</Value>
+<Value name="34">
+<Value>DetailShowDifferentXData</Value>
+</Value>
+<Value name="35">
+<Value>DetailShowMissingXData</Value>
+</Value>
+<Value name="36">
+<Value>DetailShowExtraXData</Value>
+</Value>
+</Data>
+</Storage>
+
+<Method name="DrawExcelReportSection">
+<Description>
+Add new sections to generated Excel Report projection
+Subclass in ompare.ReportType.[ViewName]</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<Implementation><![CDATA[
+	// Class Report Header Information
+ 	for i=1:1:2 {
+ 		W !,"<Row ss:AutoFitHeight=""0"" ss:Index=""",i,""" ss:StyleID=""s62"">"
+ 		
+ 		if i=1 {
+	 		W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String""></Data></Cell>"  //seq
+		 	W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String""></Data></Cell>"
+			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(definition.FromEnvironment),"</Data></Cell>" 	
+	 	} else {
+		 	W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">Item</Data></Cell>"  //seq
+	 		W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">ClassName</Data></Cell>"
+	 		W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(definition.GetDateTimeOfData(definition.FromEnvironment)),"</Data></Cell>"
+	  	}
+  		set env="",key=""
+  		for {
+			//set env=$Order(definition.Environments(env))
+			set env=definition.Environments.GetNext(.key)
+			quit:key=""
+			continue:env=""
+			continue:definition.FromEnvironment=env.Name	
+			//W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String""></Data></Cell>"  // seq
+			if i=1 {
+				W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(env.Name),"</Data></Cell>" 	
+ 			} else {
+				W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(definition.GetDateTimeOfData(env.Name)),"</Data></Cell>"
+  			}
+ 		}
+ 		W !,"</Row>" 	
+ 	}
+ 	
+ 	if $Data(^||ReportData(..#RPTTypeClasses))=0 {	 	
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameClasses,definition.SummaryShowDifferentClasses,definition.SummaryShowMissingClasses,definition.SummaryShowExtraClasses)
+ 	} else {
+	 
+	 	// Class Content
+	 	set sequenceNumber=0
+ 		set classname=""
+		for {
+			set classname=$O(^||ReportData(..#RPTTypeClasses,classname))
+			quit:classname=""
+				
+			// Need to look through and count the number of lines
+			set clines=0
+			set subtype=""
+			for {
+				set subtype=$O(^||ReportData(..#RPTTypeClasses,classname,"d",subtype))
+				quit:subtype=""
+				set clines=clines+1  // Each subtype has an informational header
+					
+				set subname=""
+				for {
+					set subname=$O(^||ReportData(..#RPTTypeClasses,classname,"d",subtype,subname))
+					quit:subname=""  // Each subtype item prints a line
+					set clines=clines+1
+				}
+			}
+			//set:clines=0 clines=1
+			if clines=0 {
+				// Unless an artifact has been included in the report subType
+				// configuration, ignore Types without SubTypes of interest.
+				continue
+			}
+				
+			W !,"<Row ss:AutoFitHeight=""0"" ss:Height=""",##class(ompare.Report.ExportExcelWorkbook).CapLineHeight((clines)*$PARAMETER("ompare.Report.ExportExcelWorkbook","LineHeight")),""">"
+			W !,"<Cell><Data ss:Type=""String"">",$Increment(sequenceNumber),"</Data></Cell>"  //
+			
+			W !,"<Cell><Data ss:Type=""String"">",..XMLO(classname),"</Data></Cell>"
+				
+			set toNs=$O(^||ReportData(..#RPTTypeClasses,classname,"s",definition.FromEnvironment,""),+1,result)
+			if toNs="" {
+				W !,"<Cell><Data ss:Type=""String""> - </Data></Cell>"
+			} else {
+				W !,"<Cell><Data ss:Type=""String"">",..XMLO($Case(result,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - ")),"</Data></Cell>"
+			}
+				
+			set env="",key=""
+			for {
+				//set env=$Order(definition.Environments(env))
+				set env=definition.Environments.GetNext(.key)
+				quit:key=""
+				quit:'$IsObject(env)
+				continue:definition.FromEnvironment=env.Name
+				
+				set toNs=$O(^||ReportData(..#RPTTypeClasses,classname,"s",env.Name,""),+1,result)
+				if toNs="" {
+					W !,"<Cell><Data ss:Type=""String""> - </Data></Cell>"
+				} else {
+					if result'=..#RPTDifferent {
+						W !,"<Cell><Data ss:Type=""String"">",..XMLO($Case(result,..#RPTSame:"Same",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - "))," Class</Data></Cell>"	
+					} else {
+						// Style to wrap text
+						W !,"<Cell ss:StyleID=""s67""><Data ss:Type=""String"">"
+						Do ##class(ompare.Report.ExportExcelWorkbook).ReportDetailText(..#RPTTypeClasses, classname, env.Name)
+						W "</Data></Cell>"
+					}
+				}
+			}
+			W !,"</Row>"
+		}	
+ 	}
+]]></Implementation>
+</Method>
+</Class>
+</Export>

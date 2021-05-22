@@ -1,0 +1,1435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26">
+<Class name="ompare.Report.Definition">
+<Description><![CDATA[
+<pre>
+Copyright (c) Alex Woodhead 2020
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+License MIT
+Source: https://github.com/alexatwoodhead/ompare
+Version: 1.0
+</pre>
+This is a test]]></Description>
+<Super>%Persistent</Super>
+<TimeCreated>64033,53022.755584</TimeCreated>
+
+<Parameter name="RPTSame">
+<Default>1</Default>
+</Parameter>
+
+<Parameter name="RPTDifferent">
+<Default>2</Default>
+</Parameter>
+
+<Parameter name="RPTMissing">
+<Default>3</Default>
+</Parameter>
+
+<Parameter name="RPTExtra">
+<Default>4</Default>
+</Parameter>
+
+<Parameter name="RPTMapped">
+<Default>5</Default>
+</Parameter>
+
+<Parameter name="RPTSourceControlled">
+<Default>6</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeConfig">
+<Description>
+Generic Sub Type</Description>
+<Default>CFG</Default>
+</Parameter>
+
+<Parameter name="RPTItemConfigMapped">
+<Description>
+Generic Item</Description>
+<Default>IsMapped</Default>
+</Parameter>
+
+<Parameter name="RPTItemConfigSourceControlled">
+<Description>
+Generic Item</Description>
+<Default>IsSourceControlled</Default>
+</Parameter>
+
+<Property name="ReportName">
+<Description>
+Unique</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="IdxReportName">
+<IdKey>1</IdKey>
+<Properties>ReportName</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Property name="FromEnvironment">
+<Description>
+Comparisons will be made against this named environment as the "expected"
+If this is not a Historical View Report enter here the name of the Environment 
+against which other environments will be compared.</Description>
+<Type>%String</Type>
+</Property>
+
+<Property name="HistoricView">
+<Description>
+If this is a Historical Report then historical changes for the FROM environment will be shown only</Description>
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DisplayDifferenceDetail">
+<Description>
+If enabled a full list of differences are displayed in report view
+If disabled only a concise summary information is visible with some difference detail available as "Tool Tip"</Description>
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="DisplayComments">
+<Description>
+If enabled - show recorded comments aginst differences</Description>
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Property name="WorksheetTabName">
+<Description>
+Excel Worksheet TabName are constrained to a 31 characters
+Allows shorter worksheet Alias</Description>
+<Type>%String</Type>
+</Property>
+
+<Property name="Environments">
+<Description>
+An array of available environments and namespaces to analyse</Description>
+<Type>ompare.Report.Environment</Type>
+<Collection>list</Collection>
+</Property>
+
+<Property name="EnvironmentsMD">
+<Type>%String</Type>
+<MultiDimensional>1</MultiDimensional>
+</Property>
+
+<Property name="ListCategory">
+<Description>
+A Textual Category to Aggregate / Organise Reports within thir List View</Description>
+<Type>%String</Type>
+</Property>
+
+<Property name="FilterOrganisation">
+<Type>%String</Type>
+</Property>
+
+<Property name="FilterSystem">
+<Type>%String</Type>
+</Property>
+
+<Property name="FilterEnvironment">
+<Type>%String</Type>
+</Property>
+
+<Property name="ConfigurationDescription">
+<Type>%String</Type>
+</Property>
+
+<Property name="ReportTypes">
+<Description>
+Extension point</Description>
+<Type>ompare.ReportType.Base</Type>
+<Collection>list</Collection>
+</Property>
+
+<Method name="FromEnvironmentNameSpace">
+<Implementation><![CDATA[
+	
+	set ns="",env="",key=""
+  	for {
+		set env=..Environments.GetNext(.key)
+		quit:key=""
+		continue:'$IsObject(env)
+		if ..FromEnvironment=env.Name	{
+			set ns=env.Namespaces.GetNext("")
+			quit
+		}
+  	}
+  	quit ns
+]]></Implementation>
+</Method>
+
+<Method name="CreateDynamicReport">
+<Description><![CDATA[
+Generate a new dynamic report based on a specific class or routine only
+<example>
+set type="cls"
+set name="Interfaces.Common.Base"
+set tSC=##class(LabTechUK.SourceUtil.Report.Definition).CreateDynamicReport(,, type,name,.report)
+<example>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>sources=$G(^Sources),pNamespace=$Namespace,type="",name="",*report:ompare.Report.Definition=$$$NULLOREF,logging=0</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	if name="" {
+		quit $$$ERROR(5001,"ProcessDynamicReport::Mandatory Name parameter is empty")
+	}
+	set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
+	if 'rs.Execute("ompare.ReportType.Base")
+	{
+		quit $$$ERROR(5001,"No ompare.ReportType.Base subclass found")
+	}
+	set oReportType=$$$NULLOREF
+	for {
+		quit:'rs.Next()
+		set reportType=rs.Data("Name")
+		continue:'##class(%Dictionary.CompiledClass).%ExistsId(reportType)
+		if ##class(%Dictionary.CompiledMethod).%ExistsId(reportType_"||CreateDynamicReport") {
+			if $CLASSMETHOD(reportType,"IsDocumentType",type) {
+				set oReportType=$CLASSMETHOD(reportType,"CreateDynamicReport",name)
+			}
+		}
+	}
+	if '$IsObject(oReportType) {
+		quit $$$ERROR(5001,"ProcessDynamicReport::Type """_type_""" is not supported")
+	}	
+	
+	set report=..%New()
+	set report.ReportName="Dynamic::"_name_"."_type
+	
+	// Eg: MEEP / ACME
+	set nsOrganisation=$G(^Ens.LookupTable("ompare.Namespace","Organisation"))
+	// Eg: PlanA /  PlanB
+	set nsSystem=$G(^Ens.LookupTable("ompare.Namespace","System"))
+	// Eg: BASE / TEST / UAT / LIVE
+	set nsEnvironment=$G(^Ens.LookupTable("ompare.Namespace","Environment"))
+	
+	set report.FilterNSSystem=nsSystem
+	if nsSystem="" {
+		set report=$$$NULLOREF
+		quit $$$ERROR(5001,"ProcessDynamicReport::ompare.Namespace lookup not configured for System")
+	}
+	if nsEnvironment="" {
+		set report=$$$NULLOREF
+		quit $$$ERROR(5001,"ProcessDynamicReport::ompare.Namespace lookup not configured for Environment")
+	}
+	set fromNamespace=pNamespace
+	// Just need to find the from environment with this namespace
+	set env=""
+	for {
+		set env=$Order(^ompare("Data",env))
+		quit:env=""
+		
+		continue:$Extract(env,*)?1N
+		continue:env'["BASE"
+		
+		// Check if for "BASE" environment the SourceCompare extract name contains "BASE" eg: "BASELABDB" or "BASEINTEG"
+		if $ZCONVERT(env,"L")[$ZCONVERT(nsEnvironment,"L") {
+			if $P($G(^ompare("Data",env,pNamespace)),"^",7)=nsOrganisation {
+				set report.FromEnvironment=env
+				set report.EnvironmentsMD(env,pNamespace)=""
+				quit
+			} else {
+				// unable to identify identical namespace to loop all namespaces to check ccr System
+				set namespace=""
+				for {
+					set namespace=$Order(^ompare("Data",env,namespace))
+					quit:namespace=""
+					set system=$G(^ompare("Data",env,namespace))
+					continue:$P(system,"^",7)'=nsOrganisation  // ?? Compares only similar organisation systems
+					if $P(system,"^",8)=report.FilterSystem {
+						set report.FromEnvironment=env
+						set report.EnvironmentsMD(env,pNamespace)=""	
+					}
+					quit	
+				}	
+			}
+		}
+	}
+	if report.FromEnvironment="" {
+		set report=$$$NULLOREF
+		quit $$$ERROR(5001,"ProcessDynamicReport::Cannot identify FromEnvironment from existing named Compare Data")
+	}
+	// Now populate the ToEnvironment
+	// "65746,70583^%Studio.SourceControl.ISC^^2^ORG.PLANA.prod.BASE^ORG^PROD1PLANA^BASE^INTEG-MARS^*^TEST"
+	set env=""
+	for {
+		set env=$Order(^ompare("Data",env))
+		quit:env=""
+		
+		continue:env=report.FromEnvironment
+		continue:$Extract(env,*)?1N
+		
+		// Check if for "BASE" environment the extract name contains "BASE" eg: "BASEMARS" or "BASELUNAR"
+		if $P($G(^ompare("Data",env,pNamespace)),"^",7)=Organisation {
+			set report.EnvironmentsMD(env,pNamespace)=""
+		} else {
+			// unable to identify by same namespace, so loop all namespaces to check by ccr System
+			set namespace=""
+			for {
+				set namespace=$Order(^ompare("Data",env,namespace))
+				quit:namespace=""
+				
+				set system=$G(^ompare("Data",env,namespace))
+				continue:$P(system,"^",7)'=ccrOrganisation
+				if $P(system,"^",8)=report.FilterCCRSystem {
+					set report.EnvironmentsMD(env,pNamespace)=""	
+				}	
+			}	
+		}
+	}
+	
+	set report.HistoricView=0
+	set report.DisplayDifferenceDetail=1
+	
+	do ##class(ompare.Report.Environment).FromMD($THIS)
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="ProcessReport">
+<FormalSpec>logging=0</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#dim reportType as ompare.ReportType.Base
+	if ..ReportName="" {
+		Quit $$$ERROR(5001,"Report Name is not set up")	
+	}
+	
+	set tSC=$$$OK
+	// Clean start
+	kill ^||Test,^||ReportData
+	
+	// Extensible pull together composite report params
+	set key=""
+	for {
+		set reportType=..ReportTypes.GetNext(.key)
+		quit:key=""
+		continue:'$IsObject(reportType)
+		do reportType.PopulateReportParams(.config,.summary,.detail,.exclude,.include)	
+	}
+	
+	// Get the from environment
+	Kill incNamespaces
+	// No compare starting point
+	if ..FromEnvironment="" {
+		Quit $$$ERROR(5001,"No Environment compare starting point")
+	}
+	
+	// Reload simple aray
+	do ##class(ompare.Report.Environment).ToMD($THIS)
+	
+	// No compare starting point
+	if $D(..EnvironmentsMD(..FromEnvironment))=0 {
+		Quit $$$ERROR(5001,"No Namespaces selected for FromEnvironment in Report")	
+	}
+	
+	set namespace=""
+	for {
+		set namespace=$Order(..EnvironmentsMD(..FromEnvironment,namespace))
+		quit:namespace=""
+		
+		if $Data(^ompare("Data",..FromEnvironment,namespace))
+		{
+			merge ^||Test("From")=^ompare("Data",..FromEnvironment,namespace)  // Limited in overwrites last update date and time
+			set nsDate=$P($G(^ompare("Data",..FromEnvironment)),"^")
+			set nsTime=$P($G(^ompare("Data",..FromEnvironment)),"^",2)
+			set ^||Test("From")=nsDate_"^"_nsTime_"^"_..FromEnvironment_"^"_namespace   // Limited concatenate from multiple namespaces
+			
+			// Filter Mapped or uncontrolled code as required
+			Do ..FilterConfig("To",.config)
+		}
+	}
+	if '$Data(^||Test("From")) {
+		Quit $$$ERROR("Test From data is empty. Nothing to compare from")
+	}
+	
+	Kill incEnvironments
+	set incEnvironments=0
+	
+	if ..HistoricView {
+		// Show differences for a single environment only
+		
+		set toEnv=..FromEnvironment
+		
+		set previousDate=""
+		for {
+			set previousDate=$Order(^ompare("History",previousDate))
+			quit:previousDate=""
+			continue:$Data(^ompare("History",previousDate,toEnv))=0
+			
+			// Exlude data from previous itteration
+			Kill ^||Test("To")
+			
+			set namespace=""
+			for {
+				set namespace=$Order(..EnvironmentsMD(toEnv,namespace))
+				quit:namespace=""
+				
+				// copy data
+				if $Data(^ompare("History",previousDate,toEnv,namespace))
+				{
+					merge ^||Test("To")=^ompare("History",previousDate,toEnv,namespace)  // Limited in overwrites last update date and time
+					set nsDate=$P($G(^ompare("History",previousDate,toEnv)),"^")
+					set nsTime=$P($G(^ompare("History",previousDate,toEnv)),"^",2)
+					set ^||Test("To")=nsDate_"^"_nsTime_"^"_toEnv_" (D-"_($H-previousDate)_")^"_namespace   // Limited concatenate from multiple namespaces
+				
+					// Filter Mapped or uncontrolled code as required
+					Do ..FilterConfig("To",.config)
+				}
+				
+				// Data may exist on a date but not for the namespaces you are interested in
+				if $Data(^||Test("To"))
+				{
+					set tSC=..Compare(.summary,.detail,.exclude,.include,logging)
+				}
+				
+			}
+		}
+	
+	} else {
+		// Show differences accross environments
+		set toEnv=""
+		for {
+			set toEnv=$Order(..EnvironmentsMD(toEnv))
+			quit:toEnv=""
+			W:logging !,"B4toEnv:",toEnv
+			continue:toEnv=..FromEnvironment
+			
+			W:logging !,"toEnv:",toEnv
+		
+			Kill ^||Test("To")
+			
+			set namespace=""
+			for {
+				set namespace=$Order(..EnvironmentsMD(toEnv,namespace))
+				quit:namespace=""
+		
+				if $Data(^ompare("Data",toEnv,namespace))
+				{
+					merge ^||Test("To")=^ompare("Data",toEnv,namespace)  // Limited in overwrites last update date and time
+					set nsDate=$P($G(^ompare("Data",toEnv)),"^")
+					set nsTime=$P($G(^ompare("Data",toEnv)),"^",2)
+					set ^||Test("To")=nsDate_"^"_nsTime_"^"_toEnv_"^"_namespace   // Limited concatenate from multiple namespaces
+					Do ..FilterConfig("To",.config)
+				}
+			}
+		
+			// If "To" data exists then generate report data
+			if $Data(^||Test("To"))
+			{
+				W:logging !,"Calling ..Compare for environment "_toEnv
+				if logging {
+					W !,"summary"
+					zw summary
+					W !,"detail"
+					zw detail
+					W !,"exclude"
+					zw exclude
+					W !,"include"
+					zw include	
+				}
+				set tSC=..Compare(.summary,.detail,.exclude,.include,logging)
+				if $$$ISERR(tSC),logging {
+					W !,"Error in invoke ""Compare"""
+					D $SYSTEM.Status.DisplayError(tSC)
+				}		
+			} else {
+				W:logging """To"" data missing"" for environment "_toEnv	
+			}
+		}
+	}
+	Quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="FilterConfig">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[direction="From",&config]]></FormalSpec>
+<Implementation><![CDATA[
+	Quit
+	// End CONFIG processing
+]]></Implementation>
+</Method>
+
+<Method name="GetDateTimeOfData">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>env</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	Quit:env="" ""
+	set date=+$P($G(^ompare("Data",env)),"^")
+	Quit:date=0 ""
+	set time=+$P($G(^ompare("Data",env)),"^",2)
+	Quit:time=0 ""
+	Quit $ZDT(date_","_time,3)
+]]></Implementation>
+</Method>
+
+<Method name="IsEmptyReport">
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	// Does MD need initialising?
+	
+	//If not historic then there should be at least two namespaces selected
+	// One from the FROM environment
+	// AND one in a non-from environment
+	Quit:..FromEnvironment="" 0
+	// Need to select at least one "From" environment namespace to compare things to
+	Quit:($Data(..EnvironmentsMD(..FromEnvironment))<10) 0
+	
+	If '..HistoricView {
+		// Need to select at least one "To" environment namesapce to compare things
+		set env=""
+		for {
+			set env=$Order(..Environments(env))
+			quit:env=""
+			quit:env'=..FromEnvironment
+		}
+		Quit:env="" 0
+		Quit:($Data(..Environments(env))<10) 0
+	}
+	
+	set key="",isEmpty=1
+	for {
+		quit:'isEmpty
+		set reportType=..ReportTypes.GetNext(.key)
+		quit:key=""
+		continue:'$IsObject(reportType)
+		set isEmpty=reportType.IsEmptyReport()
+	}
+	quit isEmpty
+]]></Implementation>
+</Method>
+
+<Method name="IsEmptyReportType">
+<FormalSpec>type:%Integer</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	set key="",isEmpty=1
+	for {
+		quit:'isEmpty
+		set reportType=..ReportTypes.GetNext(.key)
+		quit:key=""
+		continue:'$IsObject(reportType)
+		set isEmpty=reportType.IsEmptyReportType(type)
+	}
+	quit isEmpty
+]]></Implementation>
+</Method>
+
+<Method name="DiffSignatureByNVP">
+<Description><![CDATA[
+Data is held as Name-Value-Pair with an expected delimiter<br/>
+Assumes order of lines is unimportant<br/>
+Generates counts for lines that are Missing, Extra, Different or Same<br/>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fromSig,toSig,keyDelim=":",*same=0,*missing=0,*different=0,*extra=0</FormalSpec>
+<Implementation><![CDATA[
+	// Initialise
+	Kill ^||fromDataSrc,^||toDataSrc
+	// Unpack "From"-Target data
+	set line=""
+	for {
+		set data=""
+		set line=$O(^ompare("DataSrc",fromSig,line),-1,data)
+		quit:line=""
+		set key=$P(data,keyDelim,1)
+		continue:key=""
+		set ^||fromDataSrc(key)=$P(data,keyDelim,2)
+	}
+	// Unpack "To"-Target data
+	for {
+		set data=""
+		set line=$O(^ompare("DataSrc",toSig,line),-1,data)
+		quit:line=""
+		set key=$P(data,keyDelim,1)
+		continue:key=""
+		// Can check "Extra" entries at the same time
+		if '$Data(^||fromDataSrc(key)) set extra=extra+1
+		set ^||toDataSrc(key)=$P(data,keyDelim,2)
+	}	
+	if $Data(^||toDataSrc)=0 K ^||fromDataSrc quit
+	if $Data(^||fromDataSrc)=0 K ^||toDataSrc quit
+	
+	// Looking for missing
+	set key=""
+	for {
+		set data=""
+		set key=$O(^||fromDataSrc(key),+1,data)
+		quit:key=""
+		if '$Data(^||toDataSrc(key)) set missing=missing+1 continue
+		if $G(^||toDataSrc(key))'=data set different=different+1 continue
+		set same=same+1
+	}
+	// Tidy up
+	Kill ^||fromDataSrc,^||toDataSrc
+]]></Implementation>
+</Method>
+
+<Method name="ListReportByCategory">
+<Description>
+Creates an array of ReportCategories and their reports</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&aryListByCategory,&aryListByReport]]></FormalSpec>
+<Implementation><![CDATA[
+	&SQL(DECLARE ReportByCategory CURSOR for
+		SELECT ReportName, ListCategory
+		INTO :report,:category
+		from ompare_Report.Definition)
+	&SQL(OPEN ReportByCategory)
+	for {
+		&SQL(FETCH ReportByCategory)
+		Quit:+SQLCODE'=0
+		continue:report=""
+		set:category="" category=" "
+		set aryListByCategory(category,report)=""
+		set aryListByReport(report,category)=""
+	}
+	&SQL(CLOSE ReportByCategory)
+]]></Implementation>
+</Method>
+
+<Method name="ListAvailableOrgsSystem">
+<Description>
+Populate an array with the list of current
+Systems as found in loaded data</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&arySystems,&aryOrganisations,fromSystem="",logging=0]]></FormalSpec>
+<Implementation><![CDATA[
+	// Piece 8 of ^ompare("Data","BASE","INTEG-MARS")
+	set system=""
+	for {
+		set system=$O(^ompare("Data",system))
+		quit:system=""
+		
+		W:logging !,"Checking system=",system
+		
+		set namespace=""
+		for {
+			set namespace=$O(^ompare("Data",system,namespace),+1,data)
+			quit:namespace=""
+			
+			W:logging !,"system=",system," namespace=",namespace
+			W:logging !,data
+			set Organisation=$P($G(data),"^",7)
+			set System=$P($G(data),"^",8)
+			
+			if logging {
+				if Organisation="" {
+					W !,"No Organisation found for system=",system," namespace=",namespace
+				} else {
+					W !,"Organisation ",Organisation," for system=",system," namespace=",namespace			
+				}
+				if System="" {
+					W !,"No System found for system=",system," namespace=",namespace
+				} else {
+					W !,"System ",System," for system=",system," namespace=",namespace
+				}
+			}
+			if Organisation'="" {
+				if fromSystem=system {
+					set aryOrganisations(Organisation)=namespace
+				} elseif '$Data(arySystems(Organisation))
+				{
+					// Preserve the associated namespace of the from environment
+					set aryOrganisations(Organisation)=""
+				}
+			}
+			if System'="" {
+				if fromSystem=system {
+					set arySystems(System)=namespace
+				} elseif '$Data(arySystems(System))
+				{
+					// Preserve the associated namespace of the from environment
+					set arySystems(System)=""
+				}
+			}
+		}	
+	}
+]]></Implementation>
+</Method>
+
+<Method name="MatchSystem">
+<Description>
+Returns whether the namespace in the given environment matches the given System Identifier
+ie: Is this code in the same Product development stream?</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>environment="",namespace="",System=""</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	quit:environment="" 0
+	quit:namespace="" 0
+	quit:System="" 0
+	set data=$G(^ompare("Data",environment,namespace))
+	quit:data="" 0
+	quit System=$P($G(data),"^",8)
+]]></Implementation>
+</Method>
+
+<Method name="MatchOrganisation">
+<Description>
+Returns whether the namespace in the given environment matches the given Organisation Identifier
+ie: Is this code in the same organisation development stream?</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>environment="",namespace="",Organisation=""</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	quit:environment="" 0
+	quit:namespace="" 0
+	quit:Organisation="" 0
+	set data=$G(^ompare("Data",environment,namespace))
+	quit:data="" 0
+	quit Organisation=$P($G(data),"^",7)
+]]></Implementation>
+</Method>
+
+<Method name="GetProfileData">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>env="",ns="",type="",name</FormalSpec>
+<Implementation><![CDATA[
+	quit:env="" ""
+	quit:ns="" ""
+	quit:type="" ""
+	quit:name="" ""
+	quit $Get(^ompare("Data",env,ns,type,name))
+]]></Implementation>
+</Method>
+
+<Method name="Compare">
+<Description>
+Generic comparison method
+Driven by the process private Test global
+Generated output to ^||ReportData
+^||ReportData(type,name,"s",toEnv,toNs)=result
+^||ReportData(type,name,"d",subtype,subname,toEnv,toNs)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&summary,&detail=0,&exclude,&include,logging=0]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	// same = 0, missing = 1, different = 1, extra = 1,
+	//ClassMethod Compare(type = "C", same = 0, missing = 1, different = 1, extra = 1,detail=0) As %Status
+	// TODO: How to manage the include pattern for classes and routines in a generic way
+	
+	// Allow merge off normal store
+	set fromDateLastPass=$P($G(^||Test("From")),"^",1)
+	set fromTimeLastPass=$P($G(^||Test("From")),"^",2)
+	// flagged with env and ns
+	set fromEnv=$P(^||Test("From"),"^",3)
+	if fromEnv="" {
+		Quit $$$ERROR(5001,"From Environment name missing")	
+	}
+	set fromNs=$P(^||Test("From"),"^",4)
+	if fromNs="" {
+		Quit $$$ERROR(5001,"From Namespace name missing")	
+	}
+	
+	// Allow merge off normal store
+	set toDateLastPass=$P($G(^||Test("To")),"^",1)
+	set toTimeLastPass=$P($G(^||Test("To")),"^",2)
+	// flagged with env and ns
+	set toEnv=$P(^||Test("To"),"^",3)
+	if toEnv="" {
+		Quit $$$ERROR(5001,"To Environment name missing")	
+	}
+	set toNs=$P(^||Test("To"),"^",4)
+	if toNs="" {
+		Quit $$$ERROR(5001,"To Namespace name missing")	
+	}
+	
+	// Index of environments that are being reported on
+	set ^||ReportData("Meta","From")=fromEnv_"^"_fromDateLastPass_"^"_fromNs
+	set ^||ReportData("Meta","To",toEnv)=toDateLastPass_"^"_toNs
+	
+	set type=""
+	for {
+		set type=$Order(summary(type))
+		Quit:type=""
+		
+		kill pExclude,pInclude
+		merge pExclude=exclude(type)
+		merge pInclude=include(type)
+		
+		set summarySame=$Data(summary(type,..#RPTSame))=1
+		set summaryMissing=$Data(summary(type,..#RPTMissing))=1
+		set summaryDifferent=$Data(summary(type,..#RPTDifferent))=1
+		set summaryExtra=$Data(summary(type,..#RPTExtra))=1
+	
+		if logging {
+			W !,"type=",type
+			W !,"  summarySame=",summarySame
+			W !,"  summaryMissing=",summaryMissing
+			W !,"  summaryDifferent=",summaryDifferent
+			W !,"  summaryExtra=",summaryExtra
+		}
+		
+		W:logging !,"Here 123"
+		// Itterate over each type in From and verify whether missing in To
+		set name=""
+		for {
+			set name=$Order(^||Test("From",type,name))
+			quit:name=""
+			
+			
+			
+			// Filter out classname / routine name that matches general exclude rule
+			// without an explicit include rule
+			W:logging !,"B4TypeIncluded::"_name
+			continue:('..IsTypeIncluded(name,.pExclude,.pInclude))
+			W:logging !,"AFTypeIncluded ",name	
+			//set ^||ReportBase("C",classname,fromEnv,fromNs)=..#RPTSame  // always the case for from environment compared with self
+			W:logging !,"$Data(^||Test(""To"",",type,",",name,"))=",$Data(^||Test("To",type,name))
+			if $Data(^||Test("To",type,name))=0 {
+				if logging {
+					W !,"From"
+					W !,"  	type=",type
+					W !,"   name=",name
+				}
+				W:logging !,"  #RPTMissing"
+				// Should add the missing node
+				set:summaryMissing ^||ReportData(type,name,"s",toEnv,toNs)=..#RPTMissing
+				continue:$Data(detail)=0
+			} elseif $G(^||Test("From",type,name))=$G(^||Test("To",type,name)) {
+				W:logging !,"  #RPTSame and summarySame=",summarySame," and $data(detail)=",$data(detail)
+				// Should add the same node
+				//set:(summarySame&&($data(detail)=0)) ^||ReportData(type,name,"s",toEnv,toNs)=..#RPTSame
+				set:summarySame ^||ReportData(type,name,"s",toEnv,toNs)=..#RPTSame
+				//continue:$Data(detail)=0  //This doesn't help if wanting the "Same" link details
+				continue  //This doesn't help if wanting the "Same" link details
+			} else {
+				if logging {
+					W !,"From"
+					W !,"  	type=",type
+					W !,"   name=",name
+				}
+				if logging {
+					W:summaryDifferent !,"  #RPTDifferent"
+					//W:summarySame !,"  #RPTDifferent"
+				}
+				//W:logging !,"  #RPTDifferent"
+				set:summaryDifferent ^||ReportData(type,name,"s",toEnv,toNs)=..#RPTDifferent
+				//set:summarySame ^||ReportData(type,name,"s",toEnv,toNs)=..#RPTSame
+				// TODO: Elaborate differences here??
+				if $Data(detail)>0 {
+					set subtype=""
+					for {
+						set subtype=$Order(^||Test("From",type,name,subtype))
+						Quit:subtype=""
+						
+						// skip if no details requested
+						continue:$Data(detail(subtype))=0
+						
+						kill pSubExclude,pSubInclude
+						merge pSubExclude=exclude(subtype)
+						merge pSubInclude=include(subtype)
+						
+						set detailSame=$Data(detail(subtype,..#RPTSame))=1
+						set detailMissing=$Data(detail(subtype,..#RPTMissing))=1
+						set detailDifferent=$Data(detail(subtype,..#RPTDifferent))=1
+						
+						set subname=""
+						for {
+							set subname=$Order(^||Test("From",type,name,subtype,subname))
+							Quit:subname=""	
+							
+							// Filter out classname / routine name that matches general exclude rule
+							// without an explicit include rule
+							continue:('..IsTypeIncluded(subname,.pSubExclude,.pSubInclude))
+					
+							// Missing property, xdata, method or line label
+							if $Data(^||Test("To",type,name,subtype,subname))=0 {
+								set:detailMissing ^||ReportData(type,name,"d",subtype,subname,toEnv,toNs)=..#RPTMissing
+								continue
+							// Same property, xdata, method or line label
+							} elseif $G(^||Test("From",type,name,subtype,subname))=$G(^||Test("To",type,name,subtype,subname)) {
+								set:detailSame ^||ReportData(type,name,"d",subtype,subname,toEnv,toNs)=..#RPTSame
+								continue
+							// Same property, xdata, method or line label
+							} else {
+								set:detailDifferent ^||ReportData(type,name,"d",subtype,subname,toEnv,toNs)=..#RPTDifferent
+								continue
+							// ---------
+							}
+						}
+					}
+
+					set subtype=""
+					for {
+						set subtype=$Order(^||Test("To",type,name,subtype))
+						Quit:subtype=""
+						// skip if no "extra" details requested
+						
+						continue:$Data(detail(subtype,..#RPTExtra))=0
+						
+						kill pSubExclude,pSubInclude
+						merge pSubExclude=exclude(subtype)
+						merge pSubInclude=include(subtype)
+						
+						set subname=""
+						for {
+							set subname=$Order(^||Test("To",type,name,subtype,subname))
+							Quit:subname=""	
+							
+							// Filter out Method / lable name that matches general exclude rule
+							// without an explicit include rule
+							continue:('..IsTypeIncluded(subname,.pSubExclude,.pSubInclude))
+						
+							// Additonal property, xdata, method or line label
+							if $Data(^||Test("From",type,name,subtype,subname))=0 {
+								set ^||ReportData(type,name,"d",subtype,subname,toEnv,toNs)=..#RPTExtra
+								continue
+							}
+						}
+					}
+				}
+				continue
+			}
+		}
+		if summaryExtra {
+			set name=""
+			for {
+				set name=$Order(^||Test("To",type,name))
+				quit:name=""
+				
+				continue:('..IsTypeIncluded(name,.pExclude,.pInclude))
+				
+				if $Data(^||Test("From",type,name))=0 {
+					set ^||ReportData(type,name,"s",toEnv,toNs)=..#RPTExtra
+					continue
+				}
+			}
+		}
+	}
+	
+	// Review reports to remove detail items not relavent to report
+	// Add additional ",[Type]" loop values as required
+	for type="C" {
+		continue:'$D(^||ReportData(type))
+		set name=""
+		for {
+			set name=$O(^||ReportData(type,name))
+			quit:name=""
+			set hasExtra=0
+			set hasMissing=0
+			set hasSame=0
+			set hasDifferent=0
+			set toEnv=""
+			for {
+				set toEnv=$Order(^||ReportData(type,name,"s",toEnv))
+				quit:toEnv=""
+				
+				set toNs=""
+				for {
+					set toNs=$Order(^||ReportData(type,name,"s",toEnv,toNs),+1,mode)
+					quit:toNs=""
+					if mode=..#RPTExtra {
+						set hasExtra=hasExtra+1	
+					} elseif mode=..#RPTMissing {
+						set hasMissing=hasMissing+1
+					} elseif mode=..#RPTSame {
+						set hasSame=hasSame+1
+					} elseif mode=..#RPTDifferent {
+						// are we actually interested in this one?
+						if '$D(^||ReportData(type,name,"d")) {
+							// effectively this will be the same
+							// beacuse the differences that are available do not
+							// meet the criteria for the interest of this report	
+							set ^||ReportData(type,name,"s",toEnv,toNs)=..#RPTSame
+							set hasSame=hasSame+1
+						} else {
+							set hasDifferent=hasDifferent+1
+						}
+					}
+				}
+			}
+			set summarySame=$Data(summary(type,..#RPTSame))=1
+			set summaryMissing=$Data(summary(type,..#RPTMissing))=1
+			set summaryDifferent=$Data(summary(type,..#RPTDifferent))=1
+			set summaryExtra=$Data(summary(type,..#RPTExtra))=1
+			
+			if (summarySame&&hasSame) {
+				// keep it
+				W:logging !,"Keep Same: Type=",type,":Name=",name
+			} elseif (summaryMissing&&hasMissing) {
+				// keep it
+				W:logging !,"Keep Missing: Type=",type,":Name=",name
+			} elseif (summaryExtra&&hasExtra) {
+				// keep it
+				W:logging !,"Keep Extra: Type=",type,":Name=",name
+			} elseif (summaryDifferent&&hasDifferent) {
+				// keep it	
+				W:logging !,"Keep Different: Type=",type,":Name=",name
+			} else {
+				if '$D(^||ReportData(type,name,"d")) {
+					// We are not interested in this one
+					kill ^||ReportData(type,name)
+					W:logging !,"DEL: Type=",type,":Name=",name	
+				} else {
+					W:logging !,"Keep Other: Type=",type,":Name=",name	
+				}	
+			}
+		}
+	}
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="IsTypeIncluded">
+<Description>
+Verify whether the type (Class / Routine) should be included for reporting
+Based on Report configuration for generally excluding and then explicitly including type names.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[test:%String,&exclude,&include]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	if $Data(exclude)>0,..IsMatch(test,.exclude)
+	{
+		if $Data(include)>0,..IsMatch(test,.include)
+		{
+			quit 1	// If exluded but is subsequent override for a explicit include
+		} else {
+			quit 0  // Excluded type name
+		}
+		quit 0  // Excluded type with no override
+	} else {
+		quit 1  // If not excluded, then include the type name
+	}
+	quit 1  // Default is include
+]]></Implementation>
+</Method>
+
+<Method name="IsMatch">
+<Description>
+Method returns value 1 to indicate the test value has been matched</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[test,&patterns]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	// Phase 1 - Simple match with single WildCard "*" supported
+	//do ##class(LabTechUK.SourceUtil.Report.Template).	
+	
+	set result=0
+	set pattern=""
+	for {
+		quit:result
+		set pattern=$Order(patterns(pattern))
+		quit:pattern=""
+		
+		if $L(pattern,"*")=1 {
+			// Exact Match
+			set result=(test=pattern) continue
+			quit
+		} elseif $L(pattern,"*")=2 {	
+			if pattern="*" {
+				// Match Any
+				set result=1
+				quit	
+			}
+			set token1=$P(pattern,"*",1)
+			set token2=$P(pattern,"*",2)
+			if $E(pattern,*)="*" {
+				// StartsWith
+				set result=$E(test,1,$L(token1))=token1
+			} elseif $E(pattern,1)="*"{
+				// EndsWith
+				set result=$E(test,*-($L(token2)-1),*)=token2
+			} else {
+				// StartsWith X and Endswith Y
+				if $E(test,1,$L(token1))=token1,$E(test,*-($L(token2)-1),*)=token2 {
+					set result=1
+					quit	
+				}
+			}
+		}
+	}
+	quit result
+]]></Implementation>
+</Method>
+
+<Method name="PopulateFromHttpRequest">
+<Description>
+Replaces existing or creates new</Description>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC=$$$OK
+	do ..Environments.Clear()
+	kill ..EnvironmentsMD
+	set rptnsi="rptns"
+	for {
+		set rptnsi=$O(%request.Data(rptnsi))
+		quit:$E(rptnsi,1,5)'="rptns"
+
+		set envns=$E(rptnsi,6,*)
+		set env=$P(envns,".",1)
+		continue:env=""
+		set ns=$P(envns,".",2)
+		continue:ns=""
+		set rptns(env,ns)=1
+		set ..EnvironmentsMD(env,ns)=1
+	}
+ 	do ##class(ompare.Report.Environment).FromMD($THIS)
+ 	
+ 	set ..ConfigurationDescription=$G(%request.Data("ConfigurationDescription",1))
+	set ..FromEnvironment=$G(%request.Data("FromEnvironment",1))
+	set ..HistoricView=$G(%request.Data("HistoricView",1),0)
+	set ..DisplayDifferenceDetail=$G(%request.Data("DisplayDifferenceDetail",1),0)
+	set ..DisplayComments=$G(%request.Data("DisplayComments",1),0)
+	// Constrain the Worksheet TabName alias to 31 characters. MS Product Constraint
+	set ..WorksheetTabName=$E($G(%request.Data("WorksheetTabName",1),0),1,31)
+		
+	set ..ListCategory=$G(%request.Data("ListCategory",1),"")
+	set ..FilterSystem=$G(%request.Data("FilterSystem",1),"")
+	set ..FilterOrganisation=$G(%request.Data("FilterOrganisation",1),"")
+	
+	// Discard existing report types
+	// repopulate with new
+	
+	// Start Region - Extensible Repopulate ReportTypes
+	// TODO - Review order added for reporting?? 
+	set key=""
+	for {
+		set next=..ReportTypes.GetNext(.key)
+		quit:key=""
+		continue:'$IsObject(next)
+		// Delete the storage
+		do next.%DeleteId(next.%Id())
+	}
+	do ..ReportTypes.Clear()
+	
+	set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
+	if 'rs.Execute("ompare.ReportType.Base")
+	{
+		quit $$$ERROR(5001,"No ompare.ReportType.Base subclass found")
+	}
+	kill sortColl
+	set oReportType=$$$NULLOREF
+	for {
+		quit:'rs.Next()
+		set reportType=rs.Data("Name")
+		continue:'##class(%Dictionary.CompiledClass).%ExistsId(reportType)
+		
+		set oReportType=$CLASSMETHOD(reportType,"%New")
+		// If this is a NEW report then accept the defaults
+		// of ReportTypes implementation
+		// Do not overwrite them all with first empty form submit.
+		//do:..%Id()>0 oReportType.PopulateFromHttpRequest()
+		do oReportType.PopulateFromHttpRequest()
+		set sortColl($PARAMETER(oReportType.%ClassName(1),"ReportOrder"),oReportType.%ClassName(1))=oReportType
+	}
+	set k1=""
+	for {
+		set k1=$O(sortColl(k1))
+		quit:k1=""
+		set k2=""
+		for {
+			set k2=$O(sortColl(k1,k2),1,oReportType)
+			quit:k2=""
+			continue:'$IsObject(oReportType)
+			do ..ReportTypes.Insert(oReportType)
+		}
+	}
+	
+	// End Region - Extensible Repopulate ReportTypes
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="DrawEditConfigForm">
+<Implementation><![CDATA[
+	// If newly loaded
+	do ##class(ompare.Report.Environment).ToMD($THIS)
+	
+	W !,"<form id=""frmEdit"" name=""frmEdit"">"
+	
+	W !,"Report Name:<input name=""report"" type=""text"" value=""",$ZCONVERT(..ReportName,"O","HTML"),"""/>"
+	W !,"<input type=""submit"" value=""Save""/>"
+	W "<br/>"
+	W !,"Config Description:<textarea rows=5 cols=80 name=""ConfigurationDescription"">",$ZCONVERT(..ConfigurationDescription,"O","HTML"),"</textarea>"
+	W "<br/>"
+	W !,"From Environment:<input name=""FromEnvironment"" type=""text"" value=""",$ZCONVERT(..FromEnvironment,"O","HTML"),"""/><br/>"
+	// Consider Filter on Organisation
+	
+	// Populate Available Systems
+	//do ..ListAvailableOrgsSystem(.Systems,.Orgs,..FromEnvironment)
+	do ..ListAvailableOrgsSystem(.Systems,.Orgs,"")
+	
+	/* W !,"<h3>Orgs</h3>"
+	W !,"<pre>"
+	zw Orgs
+	W !,"</pre>"
+	
+	W !,"<h3>Systems</h3>"
+	W !,"<pre>"
+	zw Systems
+	W !,"</pre>" */
+	
+	W !,"Filter on Report Organisation: <select name=""FilterOrganisation"">"
+	W !,"<option value=""""",$S(..FilterOrganisation="":" selected ",1:""),">[ No Filter ]</option>"
+	set option=""
+	for {
+		set option=$O(Orgs(option))
+		quit:option=""
+		W !,"<option "
+		if option=..FilterOrganisation W "selected "
+		W "value=""",$ZCONVERT(option,"O","HTML"),""">",$ZCONVERT(option_$Select(Orgs(option)'="":" ["_Orgs(option)_"]",1:""),"O","HTML")
+		W "</option>"
+	}
+	W !,"</select><br/>"
+	
+	W !,"Filter on Report System: <select name=""FilterSystem"">"
+	W !,"<option value=""""",$S(..FilterSystem="":" selected ",1:""),">[ No Filter ]</option>"
+	set option=""
+	for {
+		set option=$O(Systems(option))
+		quit:option=""
+		W !,"<option "
+		if option=..FilterSystem W "selected "
+		W "value=""",$ZCONVERT(option,"O","HTML"),""">",$ZCONVERT(option_$Select(Systems(option)'="":" ["_Systems(option)_"]",1:""),"O","HTML")
+		W "</option>"
+	}
+	W !,"</select><br/>"
+	//---------- END 
+	
+	
+	W !,"HistoricView:<input name=""HistoricView"" type=""checkbox"" value=""1""",$Select(..HistoricView:" checked",1:""),"/><br/>"
+	
+	W !,"Display Difference Detail:<input name=""DisplayDifferenceDetail"" type=""checkbox"" value=""1""",$Select(..DisplayDifferenceDetail:" checked",1:""),"/><br/>"
+	
+	W !,"Display Comments:<input name=""DisplayComments"" type=""checkbox"" value=""1""",$Select(..DisplayComments:" checked",1:""),"/><br/>"
+	
+	W !,"List Category:<input name=""ListCategory"" type=""text"" type=""text"" value=""",$ZCONVERT(..ListCategory,"O","HTML"),"""/><br/>"
+	
+	W !,"Excel WorkSheet Name:<input name=""WorksheetTabName"" type=""text"" value=""",$ZCONVERT(..WorksheetTabName,"O","HTML"),"""/><br/>"
+	
+	W !,"<h3></h3>"
+	
+	set env=""
+	for {
+		set env=$Order(^ompare("Data",env))
+		//set env=$O(definition.Environments(env))
+		quit:env=""
+		
+		// Filter here to ignore organisations where there is no match for Organisation
+		if ..FilterOrganisation'="",..FromEnvironment'="" {
+			set found1Organisation=0
+			set ns=""
+			for {
+				set ns=$Order(^ompare("Data",env,ns))
+				quit:ns=""
+				set found1Organisation=..MatchOrganisation(env,ns,..FilterOrganisation)
+				// stop at the first item
+				quit:found1Organisation
+			}
+			// Skip environment frameset if there were no matches
+			continue:'found1Organisation
+		}
+		
+		// Filter here to ignore environments where there is no match for System
+		if ..FilterSystem'="",..FromEnvironment'="" {
+			set found1System=0
+			set ns=""
+			for {
+				set ns=$Order(^ompare("Data",env,ns))
+				quit:ns=""
+				set found1System=..MatchSystem(env,ns,..FilterSystem)
+				// stop at the first item
+				quit:found1System
+			}
+			// Skip environment frameset if there were no matches
+			continue:'found1System
+		}
+		
+		
+		W !,"<fieldset><legend>Environment ",$ZCONVERT(env,"O","HTML"),"</legend>"
+		W !,"<table><tr style='border-right:1'>"
+		set ns=""
+		set checkcount=0
+		for {
+			set ns=$Order(^ompare("Data",env,ns))
+			//set env=$O(definition.Environments(env,ns))
+			quit:ns=""
+			
+			if ..FilterOrganisation,..FromEnvironment'="" {
+				continue:'..MatchOrganisation(env,ns,..FilterOrganisation)
+			}
+			// If a namespace filter is enabled.
+			// Enforce filtering on avialble namespaces to choose from
+			if ..FilterSystem'="",..FromEnvironment'="" {
+				continue:'..MatchSystem(env,ns,..FilterSystem)	
+			}
+
+			
+			set checkcount=checkcount+1
+			W !,"<td>"
+			W !,$ZCONVERT(ns,"O","HTML"),":<input name=""rptns"_env_"."_ns_""" type=""checkbox"" value=""1""",$Select($Get(..EnvironmentsMD(env,ns),0):" checked",1:""),"/>&nbsp;&nbsp;&nbsp;"
+			W !,"</td>"
+			
+			if checkcount=5 {
+				set checkcount=0	
+				W "</tr><tr>"
+			}
+		}	
+		W !,"</tr></table>"	
+		W !,"</fieldset>"
+	}
+	
+	
+	// Start Extensible report sections
+	
+	set key=""
+	for {
+		#dim reportType as ompare.ReportType.Base
+		set reportType=..ReportTypes.GetNext(.key)
+		quit:key=""
+		continue:'$IsObject(reportType)
+		do reportType.DrawEditConfigForm()
+	}
+	
+	// End Extensible report sections
+	
+	W !,"<input type=""hidden"" name=""DoSave"" value=""1""/>"
+	W !,"<input type=""hidden"" name=""Action"" value=""Edit""/>"
+	W !,"<input type=""submit"" value=""Save""/>"
+	W !,"</form>"
+]]></Implementation>
+</Method>
+
+<Method name="DrawViewReport">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>report</FormalSpec>
+<Implementation><![CDATA[
+	set definition=##class(ompare.Report.Definition).%OpenId(report)
+	// Support for dynamic report for a single source file
+	if '$IsObject(definition),$IsObject(%request) {
+		set type=$Get(%request.Data("type",1))
+		set sourcename=$Get(%request.Data("sourcename",1))
+		set sources=$Get(%request.Data("Sources",1),"Not Found")
+		set namespace=$Get(%request.Data("Namespace",1),$Namespace)
+		if sources'="",namespace'="",type'="",sourcename'="" {
+			set tSC=..CreateDynamicReport(sources,namespace,type,sourcename,.definition)
+			if $$$ISERR(tSC)
+			Do $SYSTEM.Status.DisplayError(tSC)
+		}
+	}
+	if '$IsObject(definition) {
+		W !,"Report ",report," not found"
+		Quit
+	}
+	set elapstart=$P($ZTS,",",2)
+	set tSC=definition.ProcessReport()
+	set elapend=$P($ZTS,",",2)
+	if $$$ISERR(tSC)
+	{
+		W !,"<p>"
+		W $ZCONVERT($SYSTEM.Status.GetOneErrorText(tSC),"O","HTML")
+		W "</p>"
+		Quit	
+	}
+	
+	/// Start extendable achor links
+	W !,"<div>In-page quick links:"
+	set key=""
+	for {
+		set reportType=definition.ReportTypes.GetNext(.key)
+		quit:key=""
+		continue:'$IsObject(reportType)
+		do reportType.DrawReportAchor()
+	}
+	W !,"</div>"
+	///End extend achor
+	
+	W "<table style=""width:100%""><tr><td>"
+	W !,"<h3>"
+	if definition.ReportName'="_Dynamic" {
+		W "View&nbsp;Report&nbsp;name: ",$ZCONVERT(definition.ReportName,"O","HTML")
+	} else {
+		W "Type=",$ZCVT(type,"U")," Name=",$ZCVT(sourcename,"O","HTML")
+	}
+	W:definition.FilterOrganisation'="" !,"&nbsp;[",$ZCONVERT(definition.FilterOrganisation,"O","HTML"),"]&nbsp;"
+	W:definition.FilterSystem'="" !,"&nbsp;[",$ZCONVERT(definition.FilterSystem,"O","HTML"),"]&nbsp;"
+	W:definition.ReportName'="_Dynamic" !,"&nbsp;&nbsp;&nbsp;<button onclick=""doAction('Edit','",$ZCONVERT(definition.ReportName,"O","JS"),"')"">Edit Report Definition</button>"
+	W "</h3></td>"
+	W !,"<td>(Process Time:",$FN(elapend-elapstart,"",2)," seconds)</td>"
+	W "<td align=""right"">"
+	W "</td></tr></table>"
+	W !,"<hr/>"
+	set fromEnvironment=$P($G(^||ReportData("Meta","From"),definition.FromEnvironment),"^")
+
+   // Start extendable Report HTML
+	W !,"<div>"
+	set key=""
+	for {
+		set reportType=definition.ReportTypes.GetNext(.key)
+		quit:key=""
+		continue:'$IsObject(reportType)
+		do reportType.DrawReport(definition)
+	}
+	W !,"</div>"
+	///End extendable Report HTML
+   
+   
+   // End Report Types
+   W !,"</table>"
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DataLocation>^ompare.Report.DefinitionD</DataLocation>
+<DefaultData>DefinitionDefaultData</DefaultData>
+<IdLocation>^ompare.Report.DefinitionD</IdLocation>
+<IndexLocation>^ompare.Report.DefinitionI</IndexLocation>
+<StreamLocation>^ompare.Report.DefinitionS</StreamLocation>
+<Data name="DefinitionDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>FromEnvironment</Value>
+</Value>
+<Value name="3">
+<Value>HistoricView</Value>
+</Value>
+<Value name="4">
+<Value>DisplayDifferenceDetail</Value>
+</Value>
+<Value name="5">
+<Value>DisplayComments</Value>
+</Value>
+<Value name="6">
+<Value>WorksheetTabName</Value>
+</Value>
+<Value name="7">
+<Value>ListCategory</Value>
+</Value>
+<Value name="8">
+<Value>FilterOrganisation</Value>
+</Value>
+<Value name="9">
+<Value>FilterSystem</Value>
+</Value>
+<Value name="10">
+<Value>FilterEnvironment</Value>
+</Value>
+<Value name="11">
+<Value>ConfigurationDescription</Value>
+</Value>
+<Value name="12">
+<Value>ReportTypes</Value>
+</Value>
+<Value name="13">
+<Value>Environments</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

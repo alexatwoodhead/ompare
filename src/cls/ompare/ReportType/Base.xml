@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26">
+<Class name="ompare.ReportType.Base">
+<Description><![CDATA[
+<pre>
+Copyright (c) Alex Woodhead 2020
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+License MIT
+Source: https://github.com/alexatwoodhead/ompare
+Version: 1.0
+</pre>
+Serverside component for reporting
+Does NOT need to be deploying to target servers for profiling source signatures and 
+optional capturing source detail
+Extensible configuration and processing for ReportTypes eg: Class, Lookup, Mapping, Routine, SQL]]></Description>
+<Super>%Persistent</Super>
+<TimeCreated>65745,33325.644919</TimeCreated>
+
+<Parameter name="RPTSame">
+<Default>1</Default>
+</Parameter>
+
+<Parameter name="RPTDifferent">
+<Default>2</Default>
+</Parameter>
+
+<Parameter name="RPTMissing">
+<Default>3</Default>
+</Parameter>
+
+<Parameter name="RPTExtra">
+<Default>4</Default>
+</Parameter>
+
+<Parameter name="RPTMapped">
+<Default>5</Default>
+</Parameter>
+
+<Parameter name="RPTSourceControlled">
+<Default>6</Default>
+</Parameter>
+
+<Parameter name="RPTSubTypeConfig">
+<Description>
+Generic Sub Type</Description>
+<Default>CFG</Default>
+</Parameter>
+
+<Parameter name="RPTItemConfigMapped">
+<Description>
+Generic Item</Description>
+<Default>IsMapped</Default>
+</Parameter>
+
+<Parameter name="RPTItemConfigSourceControlled">
+<Description>
+Generic Item</Description>
+<Default>IsSourceControlled</Default>
+</Parameter>
+
+<Parameter name="DocumentType">
+<Description>
+Ensure this Code doesn't collide with other sub-class implementations of Base
+Eg: "cls" abbreviation for class</Description>
+<Type>%String</Type>
+</Parameter>
+
+<Parameter name="PageSourceView">
+<Default>ompare.Report.SourceView.cls?</Default>
+</Parameter>
+
+<Parameter name="PageAnchor">
+<Default>Configure parameter PageAnchorName</Default>
+</Parameter>
+
+<Parameter name="ReportOrder">
+<Description>
+Mechanism to rearrage sort order</Description>
+<Default>99</Default>
+</Parameter>
+
+<Parameter name="eol">
+<Default><![CDATA[&#10;]]></Default>
+</Parameter>
+
+<Method name="CreateDynamicReport">
+<Description>
+Called from ompare.Report.Defintion on subclass on ompare.ReportType.Base
+Override in subclass</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>name:%String</FormalSpec>
+<ReturnType>ompare.ReportType.Base</ReturnType>
+<Implementation><![CDATA[	Quit ..%New()
+]]></Implementation>
+</Method>
+
+<Method name="IsDynamicReportType">
+<Description>
+Override to return true if the document type is managed by subclass</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>document:%String</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[	Quit 0
+]]></Implementation>
+</Method>
+
+<Method name="PopulateReportParams">
+<Description>
+Called from ompare.Report.Defintion on subclass on ompare.ReportType.Base
+Override in subclass</Description>
+<FormalSpec><![CDATA[&summary,&detail,&exclude,&include]]></FormalSpec>
+</Method>
+
+<Method name="PopulateFromHttpRequest">
+</Method>
+
+<Method name="DrawEditConfigForm">
+</Method>
+
+<Method name="DrawReport">
+<FormalSpec>definition:ompare.Report.Definition,isFirstDisplayed:%Boolean=0</FormalSpec>
+</Method>
+
+<Method name="DrawReportAchor">
+<Implementation><![CDATA[	W !,"<a href=""#show",..#PageAnchor,""">",..#PageAnchor,"</a>&nbsp;| "
+]]></Implementation>
+</Method>
+
+<Method name="IsEmptyReport">
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[	Q 1
+]]></Implementation>
+</Method>
+
+<Method name="IsEmptyReportType">
+<FormalSpec>type:%String</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[	Q 1
+]]></Implementation>
+</Method>
+
+<Method name="IsDocumentType">
+<FormalSpec>type:%String</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[	quit type=..#DocumentType
+]]></Implementation>
+</Method>
+
+<Method name="GetDateTimeOfData">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>env</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	Quit:env="" ""
+	set date=+$P($G(^ompare("Data",env)),"^")
+	Quit:date=0 ""
+	set time=+$P($G(^ompare("Data",env)),"^",2)
+	Quit:time=0 ""
+	Quit $ZDT(date_","_time,3)
+]]></Implementation>
+</Method>
+
+<Method name="ASHTML">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>val</FormalSpec>
+<Implementation><![CDATA[$ZCONVERT(val,"O","HTML")
+]]></Implementation>
+</Method>
+
+<Method name="RTPEnumToText">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>val</FormalSpec>
+<Implementation><![CDATA[$Case(val,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - ")
+]]></Implementation>
+</Method>
+
+<Method name="ReportDetailAltText">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>type="",name="",env="",eol=$C(10)</FormalSpec>
+<Implementation><![CDATA[
+	// ^||ReportData(type,name,"d",subtype,subname,toEnv,toNs)
+	set return=""
+	set out=""
+	quit:type="" "type is empty"
+	quit:name="" "name is empty"
+	quit:env="" "env is empty"
+	
+	set sec=0
+	set subname=""
+	set subtype=""
+	for {
+		set subtype=$O(^||ReportData(type,name,"d",subtype))
+		quit:subtype=""
+		
+		for {
+			set subname=$Order(^||ReportData(type,name,"d",subtype,subname))
+			quit:subname=""
+		
+			set ns=$Order(^||ReportData(type,name,"d",subtype,subname,env,""),+1,result)
+			continue:ns=""
+		
+			set next=$I(out(subtype))
+			set out(subtype,next,"name")=subname
+			set out(subtype,next,"result")=result
+		}
+	}
+	quit ..DrawDetailAltText(.out, return, eol)
+]]></Implementation>
+</Method>
+
+<Method name="DrawDetailAltText">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&out,return:%String,eol]]></FormalSpec>
+<Implementation><![CDATA[	quit ""
+]]></Implementation>
+</Method>
+
+<Method name="ReportDetailAltTextWithLink">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[type="",name="",env="",eol="<br/>",&lnk,result="",displayComments:%Boolean=0]]></FormalSpec>
+<Implementation><![CDATA[
+	set return=""
+	set out=""
+	quit:type="" "type is empty"
+	quit:name="" "name is empty"
+	quit:env="" "env is empty"
+	
+	set sec=0
+	set subname=""
+	if $Data(^||ReportData(type,name,"d"))=0
+	{
+		W "(",..AddSourceLink(..RTPEnumToText(..#RPTDifferent),.lnk,result),")"
+		Quit ""
+	}
+	set subtype=""
+	for {
+		set subtype=$O(^||ReportData(type,name,"d",subtype))
+		quit:subtype=""
+		
+		for {
+			set subname=$Order(^||ReportData(type,name,"d",subtype,subname))
+			quit:subname=""
+		
+			set ns=$Order(^||ReportData(type,name,"d",subtype,subname,env,""),+1,result)
+			continue:ns=""
+		
+			set next=$I(out(subtype))
+			set out(subtype,next,"name")=subname
+			set out(subtype,next,"result")=result
+		}
+	}
+	// Pass on to ReportType specific implementation
+	do ..DrawDetailAltTextWithLink(.out, return,.lnk,eol,displayComments)
+	quit ""
+]]></Implementation>
+</Method>
+
+<Method name="DisplayComment">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&lnk]]></FormalSpec>
+<Implementation><![CDATA[
+	set sfEnv=$G(lnk("sfEnv"))
+	set sfNS=$G(lnk("sfNS"))
+	set sfST=$G(lnk("sfST"))
+	set sfSTN=$G(lnk("sfSTN"))
+	set sfT=$G(lnk("sfT"))
+	set sfTN=$G(lnk("sfTN"))
+	set stEnv=$G(lnk("stEnv"))
+	set stNS=$G(lnk("stNS"))
+	set stST=$G(lnk("stST"))
+	set stSTN=$G(lnk("stSTN"))
+	set stT=$G(lnk("stT"))
+	set stTN=$G(lnk("stTN"))
+	set T=$S($L(sfT):sfT,1:stT)
+ 	set TN=$S($L(sfTN):sfTN,1:stTN)
+ 	set ST=$S($L(sfST):sfST,1:stST)
+ 	set STN=$S($L(sfSTN):sfSTN,1:stSTN)
+ 	if $L(sfEnv),$L(sfNS),$L(stEnv),$L(stNS),$L(T),$L(TN),$L(ST),$L(STN) {
+	 	set comment=$G(^ompare("DIFFCOMMENT",sfEnv,sfNS,stEnv,stNS,T,TN,ST,STN))
+		W:$L(comment) "<div style='background-color:#FFFFAA'>",$ZCVT(comment,"O","HTML"),"</div>"
+ 	}
+]]></Implementation>
+</Method>
+
+<Method name="DrawDetailAltTextWithLink">
+<Description>
+Override in ReportType</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&out,return:%String,&lnk,eol,displayComments]]></FormalSpec>
+</Method>
+
+<Method name="AddSourceLink">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[label="",&lnk,result]]></FormalSpec>
+<Implementation><![CDATA[
+	W "<a href="""_..#PageSourceView
+	s k=""
+	s start=1
+	for {
+		set k=$O(lnk(k))
+		q:k=""
+		if $E(k,1,2)="sf",result'=..#RPTDifferent,result'=..#RPTMissing,result'=..#RPTSame continue
+		w:'start "&"
+		W k,"=",$ZCONVERT($G(lnk(k)),"O","URL")
+		s start=0
+	}
+	W """ target=""_blank"">",label,"</a>"
+	Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="DrawExcelReportSection">
+<Description>
+Add new sections to generated Excel Report projection
+Subclass in ompare.ReportType.[ViewName]</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0</FormalSpec>
+<Implementation><![CDATA[	// TO DO
+]]></Implementation>
+</Method>
+
+<Method name="XMLO">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>val</FormalSpec>
+<Implementation><![CDATA[$ZCVT(val,"O","XML")
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DataLocation>^ompare.ReportType.BaseD</DataLocation>
+<DefaultData>BaseDefaultData</DefaultData>
+<IdLocation>^ompare.ReportType.BaseD</IdLocation>
+<IndexLocation>^ompare.ReportType.BaseI</IndexLocation>
+<StreamLocation>^ompare.ReportType.BaseS</StreamLocation>
+<Data name="BaseDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
