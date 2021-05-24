@@ -17,8 +17,8 @@ What makes ompare different from other code comparison utilities:
 7) Extensible - Please suggest or add custom new comparitors and reuse the existing reporting framework
 8) Reporting as interactive HTML application and also Excel for sharing ofline difference summaries with customers.
 9) Excel Workbook - Aggregate multiple reports as summary level worsheets into a downloadable Excel Workbook. 
-10) Privacy - It is an option to profile only signatures of code and config instead of actual implementation of settings if code is commercially sensitive.
-- Where signature only the drill-down to source is not available in HTML reporting but other functionality can work.
+10) Privacy - It is an option to profile only signatures of code and config instead of actual implementation, in case code is commercially sensitive.
+- When "signature only", the drill-down to source link is not available in HTML reporting but other functionality can work.
 11) Exclude system or platform code from being profiled to focus only on your prodcut or customizations.
 12) Profile code once and configure multilpe reports that slice or focus on specific areas of differences.
 13) Profile 2, 10 or even 50 different namespaces accross an instance with a single task.
