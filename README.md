@@ -59,7 +59,7 @@ set tSC1=tBASE.OnTask()
 
  Setting | Meaning
  --------|--------
- Environment | Logical Reporting context. The context to compare *System A* with *System B*, *C* and *D*. This can simply be for exammple "BASE", "TEST", UAT", "PROD" for only code differences. However for Mirroring comarison of nodes for namespaces and schedule tasks you might have a task with distict "node name" for example PROD_1A, PROD_1B, PROD_2A, PROD_2B.
+ Environment | Logical Reporting context. The context to compare *System A* with *System B*, *C* and *D*. This can simply be for exammple "BASE", "TEST", UAT", "PROD" for only code differences. However for Mirroring comparison of nodes for namespaces and schedule tasks you might have a task with distinct "node name" for example PROD_1A, PROD_1B, PROD_2A, PROD_2B.
  Namespaces | Flexible expression of namespaces on instance to profile. Supports wildcard suffix and also "-" prefix to negate inclusion from ealier rule.
  RunSourceHandlers | Yes when profiling an instance. No for reproting import or in code backup mode.
  ExportToFile | Generates a flat file with name format:
