@@ -115,8 +115,9 @@ set tSC1=tRPT.OnTask()
  Navigate to page http://[reportServer]:[webport]/csp/user/ompare.Report.Main.cls
   
  New settings for a report:<br>
+ 
  Setting | Meaning
- -------------------------------
+ --------|-----------------------
  Report Name | A unique name for this report view
  From Environment | This is the one environment that you which to compare all other environments against
  Display Different Detail | Whether you want just a high level summary or a to support drill down of code and config differences
