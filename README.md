@@ -111,6 +111,7 @@ set tSC1=tRPT.OnTask()
   
  New settings for a report:<br>
  Setting | Meaning
+ -------------------------------
  Report Name | A unique name for this report view
  From Environment | This is the one environment that you which to compare all other environments against
  Display Different Detail | Whether you want just a high level summary or a to support drill down of code and config differences
@@ -119,10 +120,11 @@ set tSC1=tRPT.OnTask()
 
 Select a source namespace in the "From Environment" and then namespaces from other environments to compare.
 
-![Create New Report](./docs/imag/AddNewReport_1.png)
+![Create New Report](docs/img/AddNewReport_1.png)
 
 ## Classes, routines or compare just everything
-After saving first time there will be a slew of options for what subset of reporting you actually require
+After saving first time there will be a slew of options for what subset of reporting you actually require.
+There is a Save button at both the *top* and the *bottom* of the page.
 This makes it possible to select only what you need. For example a report that only looks at just class differences.
 This is useful down the line, for example if you want to generate an Excel report summary with Class Differences in one tab and then Routine differences in a second seperate Tab.
 You can choose to report on all aspect of classes or perhaps only on Properties and Method signatures (Useful for deployed code or third party libraries).
@@ -130,16 +132,39 @@ You can choose to report on all aspect of classes or perhaps only on Properties 
 Within this there are options to look at *extra*, *missing*, *differences* or *same* in each category and sub-category.
 Generally selecting *differences*, *extra* plus *missing* checkboxes is a good starting configuration.<br>
 ## Exclude, Include
-In some sections you will see textareas for *exclude* and *include*. These filter by name the resource you need. For example if you had a projet or application area with specific classes and routine names, you can configure the report to only include these specific items for comparison. You may find that profiling has imported a load of platform or intergation classes on one of the target instances. Using Exclude is where you can easily filter out that noise instead of having to reun a profile in a slight different configuration.
+In some sections you will see textareas for *exclude* and *include*. These filter by name the resource you need. For example if you had a project or application area with specific classes and routine names, you can configure the report to only include these specific items for comparison. Wild card suffix supported. You may find that profiling has imported a load of platform or intergation classes on one of the target instances. Using Exclude is where you can easily filter out all that noise instead of having to reun a profile in a slight different configuration.<br>
 This form is extensible by adding new profile and report types.
 
-![Create New Report](./docs/imag/AddNewReport_2.png)
+![Create New Report 2](docs/img/AddNewReport_2.png)
 
 # HTML Report View
 
 The HTML report view gives a side by side difference of characteristics selected in the report definition for each target environment.
+Simply select *View* in list of Reports or select *View* within Report Edit mode.
+There are in-page links to quikcly jump to a given section for long reports. Also At the start of each section is an in-page link back to the top of the report, to speed up navigation.
+Each section has an Item counter, useful for discussion of differences in a team call.
+The "From Environment" column is useful in the case of class dependencies where we display the names of sub-classes that may be affected / impacted.
+Subsequent columns are for each logical target environment where differences exist.
+Extra means a resource is additional in a *target environment* (TEST) than compared with *From Environment* (BASE).
+Missing means a resource is missing in a *target environment* (TEST) than compared with *From Environment* (BASE).
+For classes sub-types have their own descreet section. This is followed by a bulleted list of sub-type name. For example names of properties or Methods with actual difference.
 
 
+![Create New Report 3](docs/img/AddNewReport_3.png)
+
+In brackets in there is a hyperlink (Different, Extra, Missing), this will launch drill down source code difference view
+This uses functionality from the CodeMirror project to highlight code differences and also collapse sections of code that are the same to understand differences in large methods or routine LineLabels.
+
+Examples of drill down code diff
+
+Method signature:<br>
+![Method signature difference](docs/img/AddNewReport_4.png)
+
+Method implementation:<br>
+![Method implementation difference](docs/img/AddNewReport_4.png)
+
+Global Mapping of Namespace difference<br>
+![Global mapping difference](docs/img/AddNewReport_5.png)
 
 # Excel Report
 
