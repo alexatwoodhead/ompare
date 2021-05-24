@@ -76,7 +76,7 @@ set tSC1=tBASE.OnTask()
 Includes all code elements.
 
 Copy the export files from target instances to the report server.
-Then load signatures and code profiled into the report instance from reporting.
+Then load signatures and code profiled into the report instance.
 
 Example from IRIS Session
 
