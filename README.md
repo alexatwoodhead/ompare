@@ -140,7 +140,7 @@ Generally selecting *differences*, *extra* plus *missing* checkboxes is a good s
 ## Exclude, Include
 
 In some report configuration sections you will see textareas for "exclude" and "include". These filter by name of the resource you need. For example if you had a project or application area with specific classes and routine names, you can configure the report to only include these specific items for comparison. Wild card suffix supported. You may find that profiling has imported a load of platform or intergation classes on one of the target instances. Using Exclude is where you can easily filter out all that noise instead of having to reun a profile in a slight different configuration.<br>
-Exclude and Include are complementary. For example: The coarse Exclude pattern "Tool.*" with include pattern "Tool.ProjectA.*"
+Exclude and Include are complementary. For example: The coarse Exclude pattern "Tool.\*" with include pattern "Tool.ProjectA.\*"
 
 This would give:
  Classname | Result
