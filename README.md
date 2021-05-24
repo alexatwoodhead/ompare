@@ -137,7 +137,21 @@ You can choose to report on all aspect of classes or perhaps only on Properties 
 Within this there are options to look at *extra*, *missing*, *differences* or *same* in each category and sub-category.
 Generally selecting *differences*, *extra* plus *missing* checkboxes is a good starting configuration.<br>
 ## Exclude, Include
-In some sections you will see textareas for *exclude* and *include*. These filter by name the resource you need. For example if you had a project or application area with specific classes and routine names, you can configure the report to only include these specific items for comparison. Wild card suffix supported. You may find that profiling has imported a load of platform or intergation classes on one of the target instances. Using Exclude is where you can easily filter out all that noise instead of having to reun a profile in a slight different configuration.<br>
+
+In some sections report configuration sections you will see textareas for "exclude" and "include". These filter by name of the resource you need. For example if you had a project or application area with specific classes and routine names, you can configure the report to only include these specific items for comparison. Wild card suffix supported. You may find that profiling has imported a load of platform or intergation classes on one of the target instances. Using Exclude is where you can easily filter out all that noise instead of having to reun a profile in a slight different configuration.<br>
+Exclude and Include are complementary. For example: The coarse Exclude pattern "Tool.*" with include pattern "Tool.ProjectA.*"
+
+This would give:
+ Classname | Result
+ ----------|--------
+ Tool.UnitTest.T1 | Excluded
+ Tool.UnitTest.T2 | Excluded
+ Tool.ProjectA.Base | Included
+ Tool.ProjectA.ImplA | Included
+ Tool.ProjectA.ImplB | Included
+ Tool.ProjectB.SmartFormA | Excluded
+ Tool.ProjectB.SmartFormB | Excluded
+
 This form is extensible by adding new profile and report types.
 
 ![Create New Report 2](docs/img/AddNewReport_2.png)
