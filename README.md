@@ -61,9 +61,9 @@ set tSC1=tBASE.OnTask()
  --------|--------
  Environment | Logical Reporting context. The context to compare *System A* with *System B*, *C* and *D*. This can simply be for example "BASE", "TEST", UAT", "PROD" for only code differences. However for Mirroring comparison of nodes for namespaces and schedule tasks you might have a task with distinct "node name" for example PROD_1A, PROD_1B, PROD_2A, PROD_2B.
  Namespaces | Flexible expression of namespaces on instance to profile. Supports wildcard suffix and also "-" prefix to negate inclusion from ealier rule.
- RunSourceHandlers | Yes when profiling an instance. No for reproting import or in code backup mode.
+ RunSourceHandlers | Yes when profiling an instance. No for reporting import or in code backup mode.
  ExportToFile | Generates a flat file with name format:
- ExportDirectory | Directory to output Signatureand Source extracts to. Must be a directory that is writable by the service account of a scheduled task
+ ExportDirectory | Directory to output Signature and Source extracts to. Must be a directory that is writable by the service account of a scheduled task
  ExportCompression | Compression has been useful where the profile and the reporting server have been the same version in the past.
  DiscardProfileData | Profile Data ^ompare("Data") and ^ompare("DataSrc") is generated in the namespace the tool is installed. Can be discarded for servers only being profiled.
  RetainExportDays | Number of days to retain profile exports / imports for
