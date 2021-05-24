@@ -191,7 +191,7 @@ When the detail of code difference is viewed there is an option to add a comment
 
 ![Add Report Detail Comment](docs/img/AddNewReport_7.png)
 
-Whenn the HTML report summary view is refreshed this comment is displayed against that specific code item.
+When the HTML report summary view is refreshed this comment is displayed against that specific code item.
 
 ![View Report Comment](docs/img/AddNewReport_8.png)
 
