@@ -215,7 +215,7 @@ Click the link and select save. Open the Excel document to review. Resave as bin
 
 ![New Excel Download](docs/img/AddNewExcel_3.png)
 
-A workbook as a coversheet (first tab) based on Excel Report settings given.
+A workbook has a coversheet (first tab) based on Excel Report settings given.
 
 ![New Excel Coversheet](docs/img/AddNewExcel_4.png)
 
