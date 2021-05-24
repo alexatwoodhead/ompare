@@ -185,6 +185,17 @@ Method implementation:<br>
 Global Mapping of Namespace difference<br>
 ![Global mapping difference](docs/img/AddNewReport_6.png)
 
+## Comment collaberation
+Activated to be visible in reports by the option "Show Comments" in report defintions.
+When the detail of code difference is viewed there is an option to add a comment.
+
+![Add Report Detail Comment](docs/img/AddNewReport_7.png)
+
+Whenn the HTML report summary view is refreshed this comment is displayed against that specific code item.
+
+![View Report Comment](docs/img/AddNewReport_8.png)
+
+
 # Excel Report
 
 To create a new Summary Excel sharable Report select *New Excel Workbook*.
