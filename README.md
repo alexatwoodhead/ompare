@@ -1,5 +1,6 @@
 # ompare
-Extensible compare across two and more disconnected IRIS / Cache environments
+Extensible compare across two and more disconnected IRIS / Cache environments.
+This code has had a lot of useful exercise in production environments and has been re-packaged to share freely in the hope it will be useful to wider Cache / IRIS user community. 
 
 What makes ompare different from other code comparison utilities:
 1) Can compare configuration and data as well as code
@@ -21,6 +22,7 @@ What makes ompare different from other code comparison utilities:
 11) Exclude system or platform code from being profiled to focus only on your prodcut or customizations.
 12) Profile code once and configure multilpe reports that slice or focus on specific areas of differences.
 13) Profile 2, 10 or even 50 different namespaces accross an instance with a single task.
+14) Recently used for porting between code Cache 2010.2 and IRIS 2019.3. The Class Source Handler has been reimplemented to *replace with* IRIS naming conventions and defaults, to focus on real code differences while excluding platform version default differences.
 
 # Client install
 Excludes any reporting elements of code that are not required for profiling systems
@@ -144,11 +146,10 @@ Simply select *View* in list of Reports or select *View* within Report Edit mode
 There are in-page links to quikcly jump to a given section for long reports. Also At the start of each section is an in-page link back to the top of the report, to speed up navigation.
 Each section has an Item counter, useful for discussion of differences in a team call.
 The "From Environment" column is useful in the case of class dependencies where we display the names of sub-classes that may be affected / impacted.
-Subsequent columns are for each logical target environment where differences exist.
-Extra means a resource is additional in a *target environment* (TEST) than compared with *From Environment* (BASE).
-Missing means a resource is missing in a *target environment* (TEST) than compared with *From Environment* (BASE).
-For classes sub-types have their own descreet section. This is followed by a bulleted list of sub-type name. For example names of properties or Methods with actual difference.
-
+Subsequent columns are for each logical target environment where differences exist. Reminder you can have 2 or 20 target environments to compare against, and the reporting will still be expected to be quick.
+*Extra* class means a whole resource is additional in a *target environment* (TEST) than compared with *From Environment* (BASE).
+*Missing* class means a whole resource is missing in a *target environment* (TEST) than compared with *From Environment* (BASE).
+For sub-types have their own descreet section. This is followed by a bulleted list of sub-type name. For example names of properties or Method Signature or Method Implementation with actual difference.
 
 ![Create New Report 3](docs/img/AddNewReport_3.png)
 
@@ -161,12 +162,46 @@ Method signature:<br>
 ![Method signature difference](docs/img/AddNewReport_4.png)
 
 Method implementation:<br>
-![Method implementation difference](docs/img/AddNewReport_4.png)
+![Method implementation difference](docs/img/AddNewReport_5.png)
 
 Global Mapping of Namespace difference<br>
-![Global mapping difference](docs/img/AddNewReport_5.png)
+![Global mapping difference](docs/img/AddNewReport_6.png)
 
 # Excel Report
+
+To create a new Summary Excel sharable Report select *New Excel Workbook*.
+Fill out the text items.
+New Report Tabs are added by selecting from the worksheets select list.
+To delete existing Report Tabs click the *X* in the Report column. (NB: This doesn't destroy the original source report).
+
+![New Excel Report](docs/img/AddNewExcel_1.png)
+
+When there are multiple tabs already added their order can be rearranged by toggling the up-n-down buttons on the left.
+A lot more conventient that forcing adding in correct order.
+
+![New Excel Download](docs/img/AddNewExcel_2.png)
+
+The Excel Report is downloaded from the *List Excel Workbooks* view.
+Click the link and select save. Open the Excel document to review. Resave as binary Excel if required.
+
+![New Excel Download](docs/img/AddNewExcel_3.png)
+
+A workbook as a coversheet (first tab) based on Excel Report settings given.
+
+![New Excel Coversheet](docs/img/AddNewExcel_4.png)
+
+Examples of Report Tab. Demonstrates:
+- Rows are pre-expanded to to view contents easily.
+- There are no links to differences, only a summary with counts of differences encountered
+
+![New Excel Summary Tab Various](docs/img/AddNewExcel_5.png)
+
+![New Excel Summary Tab Classes](docs/img/AddNewExcel_5.png)
+
+
+
+
+
 
 
 
