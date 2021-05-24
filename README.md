@@ -194,7 +194,7 @@ To delete existing Report Tabs click the *X* in the Report column. (NB: This doe
 ![New Excel Report](docs/img/AddNewExcel_1.png)
 
 When there are multiple tabs already added their order can be rearranged by toggling the up-n-down buttons on the left.
-A lot more conventient that forcing adding in correct order.
+A lot more conventient than forcing to be added in correct order.
 
 ![New Excel Download](docs/img/AddNewExcel_2.png)
 
