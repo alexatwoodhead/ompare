@@ -102,7 +102,7 @@ set tSC1=tRPT.OnTask()
  Environment | Always require this setting
  Namespaces | Always require this setting
  RunSourceHandlers | No. Not profiling so can be disabled for import
- ExportToFile | No. Not profiling or backing up to no need to generate an export file
+ ExportToFile | No. Not profiling or backing up so no need to generate an export file
  ImportDirectory | Directory to read multiple new signature and source files from
  ImportFromFile | Yes importing code signatures and optionally code for reporting
  DeleteImportedFiles | Once processed can delete obsolte files
