@@ -146,7 +146,7 @@ This form is extensible by adding new profile and report types.
 
 The HTML report view gives a side by side difference of characteristics selected in the report definition for each target environment.
 Simply select *View* in list of Reports or select *View* within Report Edit mode.
-There are in-page links to quikcly jump to a given section for long reports. Also At the start of each section is an in-page link back to the top of the report, to speed up navigation.
+There are in-page links to quickly jump to a given section for long reports. Also At the start of each section is an in-page link back to the top of the report, to speed up navigation.
 Each section has an Item counter, useful for discussion of differences in a team call.
 The "From Environment" column is useful in the case of class dependencies where we display the names of sub-classes that may be affected / impacted.
 Subsequent columns are for each logical target environment where differences exist. Reminder you can have 2 or 20 target environments to compare against, and the reporting will still be expected to be quick.
