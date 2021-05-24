@@ -75,6 +75,9 @@ set tSC1=tBASE.OnTask()
 # Server install
 Includes all code elements.
 
+Copy the export files from target instances to the report server.
+Then load signatures and code profiled into the report instance from reporting.
+
 Example from IRIS Session
 
 ```objectScript
@@ -108,8 +111,8 @@ set tSC1=tRPT.OnTask()
  
  # Reporting
  
- After importing code signatures and code views from another system you can configure one or reposrts to compare and examine differences wit flexible options. 
- Navigate to page http://[reportServer]:[webport]/csp/user/ompare.Report.Main.cls/csp/user/ompare.Report.Main
+ After importing code signatures and code views from another system you can configure one or reports to compare and examine differences with flexible options. 
+ Navigate to page http://[reportServer]:[webport]/csp/user/ompare.Report.Main.cls
   
  New settings for a report:<br>
  Setting | Meaning
