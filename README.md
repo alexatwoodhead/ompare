@@ -191,7 +191,7 @@ When the detail of code difference is viewed there is an option to add a comment
 
 ![Add Report Detail Comment](docs/img/AddNewReport_7.png)
 
-Whenn the HTML report summary view is refreshed this comment is displayed against that specific code item.
+When the HTML report summary view is refreshed this comment is displayed against that specific code item.
 
 ![View Report Comment](docs/img/AddNewReport_8.png)
 
@@ -215,7 +215,7 @@ Click the link and select save. Open the Excel document to review. Resave as bin
 
 ![New Excel Download](docs/img/AddNewExcel_3.png)
 
-A workbook as a coversheet (first tab) based on Excel Report settings given.
+A workbook has a coversheet (first tab) based on Excel Report settings given.
 
 ![New Excel Coversheet](docs/img/AddNewExcel_4.png)
 
