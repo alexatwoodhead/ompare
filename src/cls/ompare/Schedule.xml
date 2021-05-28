@@ -222,7 +222,7 @@ Device to send debugging information to</Description>
 <Private>1</Private>
 </Property>
 
-<Property name="PerNamespaceSourceHandlers">
+<Property name="%PerNamespaceSourceHandlers">
 <Description>
 Enforced list SourceHandlers to run in each namespace
 If set this list is used instead of searching for subclasses of SourceHandler Base
@@ -231,7 +231,7 @@ Useful for Mirrored environments when run on Backup Mirror</Description>
 <MultiDimensional>1</MultiDimensional>
 </Property>
 
-<Property name="SystemSourceHandlers">
+<Property name="%SystemSourceHandlers">
 <Description>
 Enforced list SourceHandlers to run once
 If set this list is used instead of searching for subclasses of SourceHandler Base
@@ -438,7 +438,7 @@ Identifies Signatures file in the Import Directory for import.
 		
 	if ..RunSourceHandlers {
 	
-		if $O(..PerNamespaceSourceHandlers(""))="",$O(..SystemSourceHandlers(""))="" {
+		if $O(..%PerNamespaceSourceHandlers(""))="",$O(..%SystemSourceHandlers(""))="" {
 			// Discover deployed Source handlers
 			set rs=##class(%ResultSet).%New()
 			set rs.ClassName="%Dictionary.ClassDefinition"
@@ -468,7 +468,7 @@ Identifies Signatures file in the Import Directory for import.
 		} else {
 			set sourceHandler=""
 			for {
-				set sourceHandler=$O(..PerNamespaceSourceHandlers(sourceHandler))
+				set sourceHandler=$O(..%PerNamespaceSourceHandlers(sourceHandler))
 				quit:sourceHandler=""
 				if ##class(%Dictionary.CompiledClass).%ExistsId(sourceHandler) {
 					set perNamespaceSourceHandlers(sourceHandler)=""
@@ -478,7 +478,7 @@ Identifies Signatures file in the Import Directory for import.
 			}
 			set sourceHandler=""
 			for {
-				set sourceHandler=$O(..SystemSourceHandlers(sourceHandler))
+				set sourceHandler=$O(..%SystemSourceHandlers(sourceHandler))
 				quit:sourceHandler=""
 				if ##class(%Dictionary.CompiledClass).%ExistsId(sourceHandler) {
 					set systemSourceHandlers(sourceHandler)=""
