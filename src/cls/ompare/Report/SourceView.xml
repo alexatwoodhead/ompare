@@ -108,9 +108,26 @@ generate the content of a csp page.]]></Description>
  	set stST=$G(%request.Data("stST",1))
  	set stSTN=$G(%request.Data("stSTN",1))
 	
-	set type=$CASE($Select(sfT'="":sfT,1:stT),"C":"Class","R":"Routine","LUT":"Lookup","SQL":"SQL Table",:"")
+	/// Make human readable display names extensible for subclasses of ompare.ReportType.Base
+	// set type=$CASE($Select(sfT'="":sfT,1:stT),"C":"Class","R":"Routine","LUT":"Lookup","SQL":"SQL Table","HL7":"HL7 Schema",:"")
+	set typeCode=$Select(sfT'="":sfT,1:stT)
+	&SQL(SELECT $PIECE(p."Name",'RPTType',2) into :type
+		FROM %Dictionary.CompiledParameter p,%Dictionary.CompiledClass c
+		WHERE p."Name" %STARTSWITH 'RPTType'
+		AND p.parent=c.%ID
+		AND c.Super='ompare.ReportType.Base'
+		AND p._Default=:typeCode)
+	set:'SQLCODE=0 type=""
 	set typename=$S(sfTN'="":sfTN,1:stTN)
-	set subtype=$CASE($Select(sfST'="":sfST,1:stST),"M":"Method","MS":"Method Signature","PR":"Parameter","P":"Property","S":"Summary","L":"Line Label","X":"XData",:"")
+	//set subtype=$CASE($Select(sfST'="":sfST,1:stST),"M":"Method","MS":"Method Signature","PR":"Parameter","P":"Property","S":"Summary","L":"Line Label","X":"XData",:"")
+	set subtypeCode=$Select(sfST'="":sfST,1:stST)
+	&SQL(SELECT $PIECE(p."Name",'RPTSubType',2) into :subtype
+		FROM %Dictionary.CompiledParameter p,%Dictionary.CompiledClass c
+		WHERE p."Name" %STARTSWITH 'RPTSubType'
+		AND p.parent=c.%ID
+		AND c.Super='ompare.ReportType.Base'
+		AND p._Default=:subtypeCode)
+	set:'SQLCODE=0 subtype=""
 	set subtypename=$S(sfSTN'="":sfSTN,1:stSTN)
 	/*
 	W !,"<table>"
@@ -176,8 +193,8 @@ generate the content of a csp page.]]></Description>
 	
 	
 	W !,"<article>"
-	W !,"<h2>Compare Source ",type," ",typename
-	W:subtype'="" " at ",subtype," ",subtypename // Empty in case of Lookup Table
+	W !,"<h2>Compare Source ",type," <i>",typename,"</i>"
+	W:subtype'="" " at ",subtype," <i>",subtypename,"</i>" // Empty in case of Lookup Table
 	W "</h2>"
 	W !,"<table style='width:100%'>"
 	W !,"<tr>"

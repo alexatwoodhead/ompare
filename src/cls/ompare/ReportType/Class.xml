@@ -1197,7 +1197,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 					} else {
 						// Style to wrap text
 						W !,"<Cell ss:StyleID=""s67""><Data ss:Type=""String"">"
-						Do ##class(ompare.Report.ExportExcelWorkbook).ReportDetailText(..#RPTTypeClasses, classname, env.Name)
+						Do ..SpreadsheetReportDetailText(..#RPTTypeClasses, classname, env.Name)
 						W "</Data></Cell>"
 					}
 				}
@@ -1205,6 +1205,60 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 			W !,"</Row>"
 		}	
  	}
+]]></Implementation>
+</Method>
+
+<Method name="SpreadsheetReportDetailText">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>type="",name="",env=""</FormalSpec>
+<Implementation><![CDATA[
+	set return=""
+	set out=""
+	quit:type="" "type is empty"
+	quit:name="" "name is empty"
+	quit:env="" "env is empty"
+	
+	set sec=0
+	set subname=""
+	
+	
+	set subtype=""
+	for {
+		set subtype=$O(^||ReportData(type,name,"d",subtype))
+		quit:subtype=""
+		
+		for {
+			set subname=$Order(^||ReportData(type,name,"d",subtype,subname))
+			quit:subname=""
+		
+			set ns=$Order(^||ReportData(type,name,"d",subtype,subname,env,""),+1,result)
+			continue:ns=""
+		
+			set next=$I(out(subtype))
+			set out(subtype,next,"name")=subname
+			set out(subtype,next,"result")=result
+		}
+	}
+	set first=1
+	
+	// Start customization
+	
+	// Add customizations here
+	for subTypeList=$LB(..#RPTSubTypeSummary,"Summary"),$LB(..#RPTSubTypeParameter,"Parameters"),
+		$LB(..#RPTSubTypeProperty,"Properties"),$LB(..#RPTSubTypeMethodSignature,"Method Signature"),
+		$LB(..#RPTSubTypeMethod,"Method"),$LB(..#RPTSubTypeXData,"XData"),
+		$LB(..#RPTSubTypeStorage,"Storage") {
+		if +$G(out($LI(subTypeList,1)))>0 {
+			W:'first ..#eol
+			S first=0
+			W ..XMLO($LI(subTypeList,2)_": (Differences)")
+			for i=1:1:out($LI(subTypeList,1)) {
+				W ..#eol,..XMLO(" *"_out($LI(subTypeList,1),i,"name")_" ("_..RTPEnumToText(out($LI(subTypeList,1),i,"result"))_")")
+			}
+		}
+	}
+	
+	Quit
 ]]></Implementation>
 </Method>
 </Class>

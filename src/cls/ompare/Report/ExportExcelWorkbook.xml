@@ -522,7 +522,7 @@ Parameters:<ul>
  // Empty configured report warning
  if definition.IsEmptyReport()
  {
-	// TODO Empty Report Section
+	// Empty Report Section
 	// No Classes, Routines, Ensemble Lookups,
 	W !,"<Row ss:AutoFitHeight=""0"" ss:Height=""",..#LineHeight,""">"
 	W !,"<Cell><Data ss:Type=""String"">",..XMLO("The Report called """_definition.ReportName_""" is not configured to include information."),"</Data></Cell>"
@@ -533,11 +533,6 @@ Parameters:<ul>
  set tSC=definition.ProcessReport()
  if $$$ISERR(tSC)
  {
-	// TODO Display default message for report
-	
-	// Display Text - Report "[Report Name]" not found
-	
-	// WorkSheet TagName = "?"
 	
 	W !,"<Row ss:AutoFitHeight=""0"" ss:Height=""",..#LineHeight,""">"
 	W !,"<Cell><Data ss:Type=""String"">",..XMLO("There was a problem processing the Report called """_definition.ReportName_"""."),"</Data></Cell>"
@@ -614,119 +609,6 @@ end
  
  // Tidy up process
  kill ^||ReportData
-]]></Implementation>
-</Method>
-
-<Method name="ReportDetailText">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>type="",name="",env=""</FormalSpec>
-<Implementation><![CDATA[
-	// ^||ReportData(type,name,"d",subtype,subname,toEnv,toNs)
-	set return=""
-	set out=""
-	quit:type="" "type is empty"
-	quit:name="" "name is empty"
-	quit:env="" "env is empty"
-	
-	set sec=0
-	set subname=""
-	
-	
-	set subtype=""
-	for {
-		set subtype=$O(^||ReportData(type,name,"d",subtype))
-		quit:subtype=""
-		
-		for {
-			set subname=$Order(^||ReportData(type,name,"d",subtype,subname))
-			quit:subname=""
-		
-			set ns=$Order(^||ReportData(type,name,"d",subtype,subname,env,""),+1,result)
-			continue:ns=""
-		
-			set next=$I(out(subtype))
-			set out(subtype,next,"name")=subname
-			set out(subtype,next,"result")=result
-		}
-	}
-	//quit $Data(out)
-	set first=1
-	//if +$G(out(..#RPTSubTypeSuper))=1 {
-	//	W ..XMLO("Inheritance: "_..RTPEnumToText(out(..#RPTSubTypeSuper,1)))
-	//	S first=0
-	//}
-	if +$G(out(..#RPTSubTypeSummary))>0 {
-		W:'first ..#eol
-		S first=0
-		W ..XMLO("Summary: (Differences)")
-		// TODO: List count differences??
-		for i=1:1:out(..#RPTSubTypeSummary) {
-			W ..#eol,..XMLO(" *"_out(..#RPTSubTypeSummary,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeSummary,i,"result"))_")")
-		}
-		
-	}
-	
-	// TODO - Parameters
-	if +$G(out(..#RPTSubTypeParameter))>0 {
-		W:'first ..#eol
-		S first=0
-		W ..XMLO("Parameters:")
-		for i=1:1:out(..#RPTSubTypeParameter) {
-			W ..#eol,..XMLO(" *"_out(..#RPTSubTypeParameter,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeParameter,i,"result"))_")")
-		}
-	}
-	
-	if +$G(out(..#RPTSubTypeProperty))>0 {
-		W:'first ..#eol
-		S first=0
-		W ..XMLO("Properties:")
-		for i=1:1:out(..#RPTSubTypeProperty) {
-			W ..#eol,..XMLO(" *"_out(..#RPTSubTypeProperty,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeProperty,i,"result"))_")")
-		}
-	}
-	if +$G(out(..#RPTSubTypeMethodSignature))>0 {
-		W:'first ..#eol
-		S first=0
-		W ..XMLO("Method Signature:")
-		for i=1:1:out(..#RPTSubTypeMethodSignature) {
-			W ..#eol,..XMLO(" *"_out(..#RPTSubTypeMethodSignature,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeMethodSignature,i,"result"))_")")
-		}
-	}
-	if +$G(out(..#RPTSubTypeMethod))>0 {
-		W:'first ..#eol
-		S first=0
-		W ..XMLO("Method:")
-		for i=1:1:out(..#RPTSubTypeMethod) {
-			W ..#eol,..XMLO(" *"_out(..#RPTSubTypeMethod,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeMethod,i,"result"))_")")
-		}
-	}
-	if +$G(out(..#RPTSubTypeXData))>0 {
-		W:'first ..#eol
-		S first=0
-		W ..XMLO("XData:")
-		for i=1:1:out(..#RPTSubTypeXData) {
-			W ..#eol,..XMLO(" *"_out(..#RPTSubTypeXData,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeXData,i,"result"))_")")
-		}
-	}
-	if +$G(out(..#RPTSubTypeStorage))>0 {
-		W:'first ..#eol
-		S first=0
-		W ..XMLO("Storage:")
-		for i=1:1:out(..#RPTSubTypeStorage) {
-			W ..#eol,..XMLO(" *"_$G(out(..#RPTSubTypeStorage,1,"name"))_" ("_..RTPEnumToText($G(out(..#RPTSubTypeStorage,1,"result")))_")")
-		}
-	}
-	
-	if +$G(out(..#RPTSubTypeLineLabel))>0 {
-		W:'first ..#eol
-		S first=0
-		W ..XMLO("Line Label:")
-		for i=1:1:out(..#RPTSubTypeLineLabel) {
-			W ..#eol,..XMLO(" *"_$G(out(..#RPTSubTypeLineLabel,i,"name"))_" ("_..RTPEnumToText($G(out(..#RPTSubTypeLineLabel,i,"result")))_")")
-		}	
-	}
-	
-	quit return
 ]]></Implementation>
 </Method>
 

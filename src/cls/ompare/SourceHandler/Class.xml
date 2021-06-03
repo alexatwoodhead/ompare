@@ -63,9 +63,6 @@ Do ##class(ompare.SourceHandler.Class).IndexNamespace($namespace,1)</Description
 <Implementation><![CDATA[
 	if '$IsObject(schedule) {
 		set schedule=##class(ompare.Schedule).%New()
-		//W !,"schedule.SrcVersionParameter:",schedule.SrcVersionParameter
-		//W !,"schedule.SrcVersionTokenStart:",schedule.SrcVersionTokenStart
-		//W !,"schedule.SrcVersionTokenEnd:",schedule.SrcVersionTokenEnd
 		// Uses defaults
 	}
 #define RPTType "C"

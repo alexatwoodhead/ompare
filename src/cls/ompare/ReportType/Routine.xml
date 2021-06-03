@@ -609,7 +609,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 						W ..XMLO($Case(result,..#RPTSame:"Same",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - ")_" Routine")
 					} else {
 						// Style to wrap text
-						Do ##class(ompare.Report.ExportExcelWorkbook).ReportDetailText(..#RPTTypeRoutines, routinename, env.Name)
+						Do ..SpreadsheetReportDetailText(..#RPTTypeRoutines, routinename, env.Name)
 					}
 					W "</Data></Cell>"
 				}
@@ -619,6 +619,53 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 	
  	//Routine Content
  	}
+]]></Implementation>
+</Method>
+
+<Method name="SpreadsheetReportDetailText">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>type="",name="",env=""</FormalSpec>
+<Implementation><![CDATA[
+	set return=""
+	set out=""
+	quit:type="" "type is empty"
+	quit:name="" "name is empty"
+	quit:env="" "env is empty"
+	
+	set sec=0
+	set subname=""
+	
+	
+	set subtype=""
+	for {
+		set subtype=$O(^||ReportData(type,name,"d",subtype))
+		quit:subtype=""
+		
+		for {
+			set subname=$Order(^||ReportData(type,name,"d",subtype,subname))
+			quit:subname=""
+		
+			set ns=$Order(^||ReportData(type,name,"d",subtype,subname,env,""),+1,result)
+			continue:ns=""
+		
+			set next=$I(out(subtype))
+			set out(subtype,next,"name")=subname
+			set out(subtype,next,"result")=result
+		}
+	}
+	set first=1
+	
+	// Start customization
+	if +$G(out(..#RPTSubTypeLineLabel))>0 {
+		W:'first ..#eol
+		S first=0
+		W ..XMLO("Line Label:")
+		for i=1:1:out(..#RPTSubTypeLineLabel) {
+			W ..#eol,..XMLO(" *"_$G(out(..#RPTSubTypeLineLabel,i,"name"))_" ("_..RTPEnumToText($G(out(..#RPTSubTypeLineLabel,i,"result")))_")")
+		}	
+	}
+	
+	Quit
 ]]></Implementation>
 </Method>
 </Class>

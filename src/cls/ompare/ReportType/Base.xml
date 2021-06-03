@@ -16,7 +16,25 @@ Version: 1.0
 Serverside component for reporting
 Does NOT need to be deploying to target servers for profiling source signatures and 
 optional capturing source detail
-Extensible configuration and processing for ReportTypes eg: Class, Lookup, Mapping, Routine, SQL]]></Description>
+Extensible configuration and processing for ReportTypes eg: Class, Lookup, Mapping, Routine, SQL<br/>
+The report frameworks leverages the following conventions:<ul>
+<li>Use the Parameter prefix "RPTType*" for the distinct Report type code</li>
+<li>Use one or more Parameter prefix "RPTSubType*" to code for components within a large document type or configuration</li>
+</ul>
+Methods that may be overriden in subclasses
+<table class="Summary" border="0" cellspacing="0" cellpadding="1">
+<tr><th>Method name</th><th>Description</th></tr>
+<tr><td>CreateDynamicReport</td><td>Generates a report defintion on the fly for a single code item</td></tr>
+<tr><td>DrawDetailAltText</td><td>Draw detailed difference breakdown in HTML report</td></tr>
+<tr><td>DrawDetailAltTextWithLink</td><td>Draw detailed difference breakdown in HTML report with hyperlinks to drill down code / config difference</td></tr>
+<tr><td>DrawEditConfigForm</td><td>Draw HTML for Inputs and TextAreas to configuring this information area of a report definition</td></tr>
+<tr><td>DrawExcelReportSection</td><td>Draw XML for spreadsheet rows that include information for this report type</td></tr>
+<tr><td>DrawReport</td><td>Draw XML for spreadsheet rows that include information for this report type</td></tr>
+<tr><td>IsEmptyReport</td><td>Used to determine whether a defintion includes a section of information for this report type</td></tr>
+<tr><td>IsEmptyReportType</td><td>Used to determine whether a defintion includes a section of information for this report type</td></tr>
+<tr><td>PopulateFromHttpRequest</td><td>Load settings from a Config web page post ("Save" action)</td></tr>
+<tr><td>PopulateReportParams</td><td>Transfers settings for this report type to a defintion for generic difference processing</td></tr>
+</table>]]></Description>
 <Super>%Persistent</Super>
 <TimeCreated>65745,33325.644919</TimeCreated>
 
@@ -177,6 +195,56 @@ Override in subclass</Description>
 <CodeMode>expression</CodeMode>
 <FormalSpec>val</FormalSpec>
 <Implementation><![CDATA[$Case(val,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - ")
+]]></Implementation>
+</Method>
+
+<Method name="SpreadsheetReportDetailText">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>type="",name="",env=""</FormalSpec>
+<Implementation><![CDATA[
+	set return=""
+	set out=""
+	quit:type="" "type is empty"
+	quit:name="" "name is empty"
+	quit:env="" "env is empty"
+	
+	set sec=0
+	set subname=""
+	
+	
+	set subtype=""
+	for {
+		set subtype=$O(^||ReportData(type,name,"d",subtype))
+		quit:subtype=""
+		
+		for {
+			set subname=$Order(^||ReportData(type,name,"d",subtype,subname))
+			quit:subname=""
+		
+			set ns=$Order(^||ReportData(type,name,"d",subtype,subname,env,""),+1,result)
+			continue:ns=""
+		
+			set next=$I(out(subtype))
+			set out(subtype,next,"name")=subname
+			set out(subtype,next,"result")=result
+		}
+	}
+	set first=1
+	
+	/* Add customizations here 
+	if +$G(out(..#RPTSubTypeSummary))>0 {
+		W:'first ..#eol
+		S first=0
+		W ..XMLO("Summary: (Differences)")
+		// TODO: List count differences??
+		for i=1:1:out(..#RPTSubTypeSummary) {
+			W ..#eol,..XMLO(" *"_out(..#RPTSubTypeSummary,i,"name")_" ("_..RTPEnumToText(out(..#RPTSubTypeSummary,i,"result"))_")")
+		}
+	}
+		
+	*/
+	
+	Quit
 ]]></Implementation>
 </Method>
 

@@ -502,8 +502,6 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
  
  //set indexParameters=$Get(^ompare("Config","SQL",rules))
  set overrideIncludeSource=$Piece(rules,",",2)
- //W !,"rules=",rules
- //W !,"overrideIncludeSource is ",overrideIncludeSource
  if $Piece(rules,",",2)="" {
 	 set overrideIncludeSource=includeSource
  }else {
@@ -521,11 +519,9 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
 	set filterCount=filterCount+1
 	quit:filterCount>filterLen
 	set filterData=$P(filter,"~",filterCount)
-	//W !,"filterData=",filterData
 	
 	set operatorPos=9999,operatorNext=0,operatorUse=""
 	for operator="<",">","!=","=","![","[" {
-		//W !,"$F(""",filterData,""",""",operator,""")"
 		set operatorNext=$F(filterData,operator)
 		if operatorNext>0,operatorNext<operatorPos {
 			set operatorUse=operator
@@ -534,7 +530,6 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
 }
 	continue:operatorPos=9999
 	continue:operatorUse=""
-	//W !,"operatorUse=",operatorUse
 	// Support comparison operators
 	// < - less than 
 	// > - more than
@@ -551,22 +546,15 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
 	continue:filterKey="&"
 	if $E(filterKey,1)="&" {
 		// composite condition
-		//W !,"Composite key"
 		set filterKey=$E(filterKey,2,*)
 	} else {
-		//W !,"Increment group"
 		set filterGroup=filterGroup+1	
 	}
 	set filterVal=$ZSTRIP($P(filterData,operatorUse,2,99),"<>W")
 	set:filterVal="" filterVal=$C(0) // Support null or empty values
-	//set filter(filterKey)=filterVal
 	// All operators MUST match within a given filterGroup
 	set filter(filterGroup,filterKey,operatorUse,filterVal)=""
  }
- //W !,"Before Filter",!
- //zw filter
- //W !,"After Filter"
- //W !,"rowSpec initial=",rowSpec
  set:rowSpec="" rowSpec="*"
  // SQL names are case insensitive
  set rowSpec="~"_$ZCVT(rowSpec,"U")_"~"
@@ -589,8 +577,6 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
 	 set idSeq(1)="ID"
 	 set idListM("ID")="ID"
  }
- 
- //set:idList="" idList="%ID as ID",idList("ID")=""
  
  set rs=##class(%ResultSet).%New("%DynamicQuery:SQL")
  // Decide what the columns are and pre-filter on SQL statement
@@ -685,7 +671,6 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
 	if $Data(colsU(scol)) {
 		Do:logging Log("INFO","Exact Match on column "_scol_" with match pattern "_mcol)
 		set colMixed=$G(colsU(scol))
-		//W !,"scol is ",scol
 		if $E(mcol,1)="-" {
 			Do:logging Log("INFO","Exclude Single column "_scol_" matches "_mcol)
 			kill:colMixed'="" cols(colMixed)
@@ -751,9 +736,6 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
 		quit
 	}
 	Do:logging Log("INFO","Data Row "_rowCount)
-	//W !,"Start Filter",!
-	//zw filter
-	//W !,"End Filter"
 	// for each filter
 	set filterAndGroup=0
 	// If there are no filters then just include all records for the table
@@ -848,7 +830,6 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
 		set colSeq=$O(idSeq(colSeq),1,col)
 		quit:colSeq=""
 		continue:col=""
-		//W !,"Col was ",col
 		set mcol=$G(idListM(col)) // Same as colMixed
 		// unexpected - Bad rule configuration
 		if mcol="" {
@@ -856,19 +837,10 @@ IndexSQLTable(sqlTable,sqlTableAlias,rules,writeHeaders=1)
 			//kill colsUse  // terminate processing
 			continue 
 		}else {
-			//W !,"Process Key ",col
 		}
 		set:key'="" key=key_"¬"
 		set key=key_$$ToString($G(rs.Data(mcol)))
 	}
-
-	
-	
- 	// W !,"Key was ",key
- 	/* if $Data(filter(colMixed))=1,rs.Data(colMixed)'=filter(colMixed) {
-	 	Do:logging Log("INFO","Filtering out row="_rowCount_";Column="_colMixed_";Expected="_filter(colMixed)_";Actual="_rs.Data(colMixed))
-	 	continue	
- 	} */
 
 	 // Assumes cols collection is set up
 	quit:'$Data(colsUse)
