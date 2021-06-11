@@ -286,6 +286,7 @@ IndexerMain
 		set ^ompare("Config","Exclude","2.1.hl7")=1
 		set ^ompare("Config","Exclude","2.2.hl7")=1
 		set ^ompare("Config","Exclude","2.3.hl7")=1
+		set ^ompare("Config","Exclude","2.3.1.hl7")=1
 		set ^ompare("Config","Exclude","2.4.hl7")=1
 		set ^ompare("Config","Exclude","2.5.hl7")=1
 		set ^ompare("Config","Exclude","2.5.1.hl7")=1
@@ -296,7 +297,7 @@ IndexerMain
 		set ^ompare("Config","Exclude","2.8.1.hl7")=1
 		set ^ompare("Config","Exclude","2.8.2.hl7")=1
 		set ^ompare("Config","Exclude","HealthShare_2.5.hl7")=1
-		set ^ompare("Config","Exclude","ITK.HL7.hl7")=1
+		set ^ompare("Config","Exclude","ITK.hl7")=1
 	}
 	// End set once in first run namespace
 
