@@ -20,7 +20,7 @@ What makes ompare different from other code comparison utilities:
 8) Privacy - It is an option to profile only signatures of code and config instead of actual implementation, in case code is commercially sensitive.
 - When "signature only", then drill-down to source link is not available in HTML reporting but other functionality can work.
 9) Pre-Filtered extract - Exclude system or platform code from being profiled to focus only on your product or customizations.
-10) Profile code once and configure multilpe reports that slice or focus on specific areas of differences.
+10) Profile code once and configure multipl reports that slice or focus on specific areas of differences.
 11) Profile 2, 10 or even 50 different namespaces accross an instance with a single task.
 12) Recently used for porting between code Cache 2010.2 and IRIS 2019.3. The Class Source Handler has been reimplemented to *replace with* IRIS naming conventions and defaults, to focus on real code differences while excluding platform version default differences.
 
