@@ -126,7 +126,7 @@ set tSC1=tRPT.OnTask()
 
 Select a source namespace in the "From Environment" and then namespaces from other environments to compare.
 
-![Image Create New Report](https://github.com/alexatwoodhead/ompare/blob/main/docs/img/AddNewReport_1.png)
+![Image Create New Report](docs/img/AddNewReport_1.png)
 
 ## Classes, routines or compare just everything
 After saving first time there will be a slew of options for what subset of reporting you actually require.
