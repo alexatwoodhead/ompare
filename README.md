@@ -169,7 +169,7 @@ Subsequent columns are for each logical target environment where differences exi
 *Missing* class means a whole resource is missing in a *target environment* (TEST) than compared with *From Environment* (BASE).
 For sub-types have their own descreet section. This is followed by a bulleted list of sub-type name. For example names of properties or Method Signature or Method Implementation with actual difference.
 
-![Create New Report 3](docs/img/AddNewReport_3.png)
+![Image Create New Report 3](docs/img/AddNewReport_3.png)
 
 In brackets in there is a hyperlink (Different, Extra, Missing), this will launch drill down source code difference view
 This uses functionality from the CodeMirror project to highlight code differences and also collapse sections of code that are the same to understand differences in large methods or routine LineLabels.
@@ -177,23 +177,23 @@ This uses functionality from the CodeMirror project to highlight code difference
 Examples of drill down code diff
 
 Method signature:<br>
-![Method signature difference](docs/img/AddNewReport_4.png)
+![Image Method signature difference](docs/img/AddNewReport_4.png)
 
 Method implementation:<br>
-![Method implementation difference](docs/img/AddNewReport_5.png)
+![Image Method implementation difference](docs/img/AddNewReport_5.png)
 
 Global Mapping of Namespace difference<br>
-![Global mapping difference](docs/img/AddNewReport_6.png)
+![Image Global mapping difference](docs/img/AddNewReport_6.png)
 
 ## Comment collaberation
 Activated to be visible in reports by the option "Show Comments" in report defintions.
 When the detail of code difference is viewed there is an option to add a comment.
 
-![Add Report Detail Comment](docs/img/AddNewReport_7.png)
+![Image Add Report Detail Comment](docs/img/AddNewReport_7.png)
 
 When the HTML report summary view is refreshed this comment is displayed against that specific code item.
 
-![View Report Comment](docs/img/AddNewReport_8.png)
+![Image View Report Comment](docs/img/AddNewReport_8.png)
 
 
 # Excel Report
@@ -203,29 +203,29 @@ Fill out the text items.
 New Report Tabs are added by selecting from the worksheets select list.
 To delete existing Report Tabs click the *X* in the Report column. (NB: This doesn't destroy the original source report).
 
-![New Excel Report](docs/img/AddNewExcel_1.png)
+![Image New Excel Report](docs/img/AddNewExcel_1.png)
 
 When there are multiple tabs already added their order can be rearranged by toggling the up-n-down buttons on the left.
 A lot more conventient than forcing to be added in correct order.
 
-![New Excel Download](docs/img/AddNewExcel_2.png)
+![Image New Excel Download](docs/img/AddNewExcel_2.png)
 
 The Excel Report is downloaded from the *List Excel Workbooks* view.
 Click the link and select save. Open the Excel document to review. Resave as binary Excel if required.
 
-![New Excel Download](docs/img/AddNewExcel_3.png)
+![Image New Excel Download](docs/img/AddNewExcel_3.png)
 
 A workbook has a coversheet (first tab) based on Excel Report settings given.
 
-![New Excel Coversheet](docs/img/AddNewExcel_4.png)
+![Image New Excel Coversheet](docs/img/AddNewExcel_4.png)
 
 Examples of Report Tab. Demonstrates:
 - Rows are pre-expanded to to view contents easily.
 - There are no links to differences, only a summary with counts of differences encountered
 
-![New Excel Summary Tab Various](docs/img/AddNewExcel_5.png)
+![Image New Excel Summary Tab Various](docs/img/AddNewExcel_5.png)
 
-![New Excel Summary Tab Classes](docs/img/AddNewExcel_5.png)
+![Image New Excel Summary Tab Classes](docs/img/AddNewExcel_5.png)
 
 
 
