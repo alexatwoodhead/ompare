@@ -1,28 +1,28 @@
 # ompare
-Extensible compare across two and more disconnected IRIS / Cache environments.
+Extensible side-by-side compare across two and more disconnected IRIS / Cache environments.
 This code has had a lot of useful exercise in production environments and has been re-packaged to share freely in the hope it will be useful to wider Cache / IRIS user community. 
 
 What makes ompare different from other code comparison utilities:
-1) Can compare configuration and data as well as code
+1) Compare configuration, data and code
  - For example: Namespace mappings, Scheduled Tasks (The Useful columns), Productions, Lookup Tables 
-3) Compare side-by-side 2,5,10 or even 20 environments that are deployed on different isolated networks
-5) See a summary of *what actual thing* is different ie: Parameter, Property, Method Code, Method Signature, XData, Lookup Table, SQL View
- - Then drill down into *that thing* summary to view property, method signature, code or row difference.
-6) See *real* functional differences in code not just formatting
+2) Compare side-by-side 2,5,10 or even 20 environments that are deployed on different isolated networks
+3) See a summary of *what actual thing* is different ie: Parameter, Property, Method Code, Method Signature, XData, Lookup Table, SQL View, HL7 structure, Include definiton
+ - Then drill down into *that thing* summary to view the detail of that property, method signature, code or row difference.
+4) See only *real* functional differences:
   -  Ignores the order of Methods in Classes or LineLabels in Routines
   -  Ignores comments in Classes or routines
   -  Ignores irrelevant whitespace or empty lines.
   -  Ignores routine legacy formatting differences
   -  Can ignore version control strings in code
-7) Extensible - Please suggest or add custom new comparitors and reuse the existing reporting framework
-8) Reporting as interactive HTML application and also Excel for sharing ofline difference summaries with customers.
-9) Excel Workbook - Aggregate multiple reports as summary level worsheets into a downloadable Excel Workbook. 
-10) Privacy - It is an option to profile only signatures of code and config instead of actual implementation, in case code is commercially sensitive.
-- When "signature only", the drill-down to source link is not available in HTML reporting but other functionality can work.
-11) Exclude system or platform code from being profiled to focus only on your product or customizations.
-12) Profile code once and configure multilpe reports that slice or focus on specific areas of differences.
-13) Profile 2, 10 or even 50 different namespaces accross an instance with a single task.
-14) Recently used for porting between code Cache 2010.2 and IRIS 2019.3. The Class Source Handler has been reimplemented to *replace with* IRIS naming conventions and defaults, to focus on real code differences while excluding platform version default differences.
+5) Extensible - Please suggest or add custom new comparitors and reuse the existing reporting framework
+6) Reporting as interactive HTML application and also Excel for sharing ofline difference summaries with customers.
+7) Excel Workbook - Aggregate multiple reports as summary level worsheets into a downloadable Excel Workbook. 
+8) Privacy - It is an option to profile only signatures of code and config instead of actual implementation, in case code is commercially sensitive.
+- When "signature only", then drill-down to source link is not available in HTML reporting but other functionality can work.
+9) Pre-Filtered extract - Exclude system or platform code from being profiled to focus only on your product or customizations.
+10) Profile code once and configure multilpe reports that slice or focus on specific areas of differences.
+11) Profile 2, 10 or even 50 different namespaces accross an instance with a single task.
+12) Recently used for porting between code Cache 2010.2 and IRIS 2019.3. The Class Source Handler has been reimplemented to *replace with* IRIS naming conventions and defaults, to focus on real code differences while excluding platform version default differences.
 
 # Client install
 Excludes any reporting elements of code that are not required for profiling systems
