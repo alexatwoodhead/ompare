@@ -1,28 +1,28 @@
 # ompare
-Extensible compare across two and more disconnected IRIS / Cache environments.
+Extensible side-by-side compare across two and more disconnected IRIS / Cache environments.
 This code has had a lot of useful exercise in production environments and has been re-packaged to share freely in the hope it will be useful to wider Cache / IRIS user community. 
 
 What makes ompare different from other code comparison utilities:
-1) Can compare configuration and data as well as code
+1) Compare configuration, data and code
  - For example: Namespace mappings, Scheduled Tasks (The Useful columns), Productions, Lookup Tables 
-3) Compare side-by-side 2,5,10 or even 20 environments that are deployed on different isolated networks
-5) See a summary of *what actual thing* is different ie: Parameter, Property, Method Code, Method Signature, XData, Lookup Table, SQL View
- - Then drill down into *that thing* summary to view property, method signature, code or row difference.
-6) See *real* functional differences in code not just formatting
+2) Compare side-by-side 2,5,10 or even 20 environments that are deployed on different isolated networks
+3) See a summary of *what actual thing* is different ie: Parameter, Property, Method Code, Method Signature, XData, Lookup Table, SQL View, HL7 structure, Include definiton
+ - Then drill down into *that thing* summary to view the detail of that property, method signature, code or row difference.
+4) See only *real* functional differences:
   -  Ignores the order of Methods in Classes or LineLabels in Routines
   -  Ignores comments in Classes or routines
   -  Ignores irrelevant whitespace or empty lines.
   -  Ignores routine legacy formatting differences
   -  Can ignore version control strings in code
-7) Extensible - Please suggest or add custom new comparitors and reuse the existing reporting framework
-8) Reporting as interactive HTML application and also Excel for sharing ofline difference summaries with customers.
-9) Excel Workbook - Aggregate multiple reports as summary level worsheets into a downloadable Excel Workbook. 
-10) Privacy - It is an option to profile only signatures of code and config instead of actual implementation, in case code is commercially sensitive.
-- When "signature only", the drill-down to source link is not available in HTML reporting but other functionality can work.
-11) Exclude system or platform code from being profiled to focus only on your product or customizations.
-12) Profile code once and configure multilpe reports that slice or focus on specific areas of differences.
-13) Profile 2, 10 or even 50 different namespaces accross an instance with a single task.
-14) Recently used for porting between code Cache 2010.2 and IRIS 2019.3. The Class Source Handler has been reimplemented to *replace with* IRIS naming conventions and defaults, to focus on real code differences while excluding platform version default differences.
+5) Extensible - Please suggest or add custom new comparitors and reuse the existing reporting framework
+6) Reporting as interactive HTML application and also Excel for sharing ofline difference summaries with customers.
+7) Excel Workbook - Aggregate multiple reports as summary level worsheets into a downloadable Excel Workbook. 
+8) Privacy - It is an option to profile only signatures of code and config instead of actual implementation, in case code is commercially sensitive.
+- When "signature only", then drill-down to source link is not available in HTML reporting but other functionality can work.
+9) Pre-Filtered extract - Exclude system or platform code from being profiled to focus only on your product or customizations.
+10) Profile code once and configure multiple reports that slice or focus on specific areas of differences.
+11) Profile 2, 10 or even 50 different namespaces accross an instance with a single task.
+12) Recently used for porting between code Cache 2010.2 and IRIS 2019.3. The Class Source Handler has been reimplemented to *replace with* IRIS naming conventions and defaults, to focus on real code differences while excluding platform version default differences.
 
 # Client install
 Excludes any reporting elements of code that are not required for profiling systems
@@ -126,7 +126,7 @@ set tSC1=tRPT.OnTask()
 
 Select a source namespace in the "From Environment" and then namespaces from other environments to compare.
 
-![Create New Report](docs/img/AddNewReport_1.png)
+![Image Create New Report](docs/img/AddNewReport_1.png)
 
 ## Classes, routines or compare just everything
 After saving first time there will be a slew of options for what subset of reporting you actually require.
@@ -155,7 +155,7 @@ This would give:
 
 This form is extensible by adding new profile and report types.
 
-![Create New Report 2](docs/img/AddNewReport_2.png)
+![Image Create New Report 2](docs/img/AddNewReport_2.png)
 
 # HTML Report View
 
@@ -169,7 +169,7 @@ Subsequent columns are for each logical target environment where differences exi
 *Missing* class means a whole resource is missing in a *target environment* (TEST) than compared with *From Environment* (BASE).
 For sub-types have their own descreet section. This is followed by a bulleted list of sub-type name. For example names of properties or Method Signature or Method Implementation with actual difference.
 
-![Create New Report 3](docs/img/AddNewReport_3.png)
+![Image Create New Report 3](docs/img/AddNewReport_3.png)
 
 In brackets in there is a hyperlink (Different, Extra, Missing), this will launch drill down source code difference view
 This uses functionality from the CodeMirror project to highlight code differences and also collapse sections of code that are the same to understand differences in large methods or routine LineLabels.
@@ -177,23 +177,23 @@ This uses functionality from the CodeMirror project to highlight code difference
 Examples of drill down code diff
 
 Method signature:<br>
-![Method signature difference](docs/img/AddNewReport_4.png)
+![Image Method signature difference](docs/img/AddNewReport_4.png)
 
 Method implementation:<br>
-![Method implementation difference](docs/img/AddNewReport_5.png)
+![Image Method implementation difference](docs/img/AddNewReport_5.png)
 
 Global Mapping of Namespace difference<br>
-![Global mapping difference](docs/img/AddNewReport_6.png)
+![Image Global mapping difference](docs/img/AddNewReport_6.png)
 
 ## Comment collaberation
 Activated to be visible in reports by the option "Show Comments" in report defintions.
 When the detail of code difference is viewed there is an option to add a comment.
 
-![Add Report Detail Comment](docs/img/AddNewReport_7.png)
+![Image Add Report Detail Comment](docs/img/AddNewReport_7.png)
 
 When the HTML report summary view is refreshed this comment is displayed against that specific code item.
 
-![View Report Comment](docs/img/AddNewReport_8.png)
+![Image View Report Comment](docs/img/AddNewReport_8.png)
 
 
 # Excel Report
@@ -203,29 +203,29 @@ Fill out the text items.
 New Report Tabs are added by selecting from the worksheets select list.
 To delete existing Report Tabs click the *X* in the Report column. (NB: This doesn't destroy the original source report).
 
-![New Excel Report](docs/img/AddNewExcel_1.png)
+![Image New Excel Report](docs/img/AddNewExcel_1.png)
 
 When there are multiple tabs already added their order can be rearranged by toggling the up-n-down buttons on the left.
 A lot more conventient than forcing to be added in correct order.
 
-![New Excel Download](docs/img/AddNewExcel_2.png)
+![Image New Excel Download](docs/img/AddNewExcel_2.png)
 
 The Excel Report is downloaded from the *List Excel Workbooks* view.
 Click the link and select save. Open the Excel document to review. Resave as binary Excel if required.
 
-![New Excel Download](docs/img/AddNewExcel_3.png)
+![Image New Excel Download](docs/img/AddNewExcel_3.png)
 
 A workbook has a coversheet (first tab) based on Excel Report settings given.
 
-![New Excel Coversheet](docs/img/AddNewExcel_4.png)
+![Image New Excel Coversheet](docs/img/AddNewExcel_4.png)
 
 Examples of Report Tab. Demonstrates:
 - Rows are pre-expanded to to view contents easily.
 - There are no links to differences, only a summary with counts of differences encountered
 
-![New Excel Summary Tab Various](docs/img/AddNewExcel_5.png)
+![Image New Excel Summary Tab Various](docs/img/AddNewExcel_5.png)
 
-![New Excel Summary Tab Classes](docs/img/AddNewExcel_5.png)
+![Image New Excel Summary Tab Classes](docs/img/AddNewExcel_5.png)
 
 
 
