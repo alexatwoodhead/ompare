@@ -670,14 +670,7 @@ Override in ReportType</Description>
 <FormalSpec><![CDATA[&out,return:%String,&lnk,eol,displayComments]]></FormalSpec>
 <Implementation><![CDATA[
 	
-	for lstSubType=$LB(..#RPTSubTypeCategory,"Category"),
-		$LB(..#RPTSubTypeMessageGroup,"MessageGroup"),
-		$LB(..#RPTSubTypeMessageEvent,"MessageEvent"),
-		$LB(..#RPTSubTypeMessageType,"MessageType"),
-		$LB(..#RPTSubTypeMessageStructure,"MessageStructure"),
-		$LB(..#RPTSubTypeSegmentStructure,"SegmentStructure"),
-		$LB(..#RPTSubTypeDataType,"DataType"),
-		$LB(..#RPTSubTypeCodeTable,"CodeTable") {
+	for lstSubType=$LB(..#RPTSubTypeCategory,"Category"),$LB(..#RPTSubTypeMessageGroup,"MessageGroup"),$LB(..#RPTSubTypeMessageEvent,"MessageEvent"),$LB(..#RPTSubTypeMessageType,"MessageType"),$LB(..#RPTSubTypeMessageStructure,"MessageStructure"),$LB(..#RPTSubTypeSegmentStructure,"SegmentStructure"),$LB(..#RPTSubTypeDataType,"DataType"),$LB(..#RPTSubTypeCodeTable,"CodeTable") {
 	
 		if +$G(out($LI(lstSubType,1)))>0 {
 			W $S($L(return):eol,1:"")_$LI(lstSubType,2)_":"
@@ -838,10 +831,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 	set first=1
 	
 	// Add customizations here
-	for subTypeList=$LB(..#RPTSubTypeCategory,"Category"),$LB(..#RPTSubTypeMessageGroup,"MessageGroup"),
-		$LB(..#RPTSubTypeMessageEvent,"MessageEvent"),$LB(..#RPTSubTypeMessageType,"MessageType"),
-		$LB(..#RPTSubTypeMessageStructure,"MessageStructure"),$LB(..#RPTSubTypeSegmentStructure,"SegmentStructure"),
-		$LB(..#RPTSubTypeDataType,"DataType"),$LB(..#RPTSubTypeCodeTable,"CodeTable") {
+	for subTypeList=$LB(..#RPTSubTypeCategory,"Category"),$LB(..#RPTSubTypeMessageGroup,"MessageGroup"),$LB(..#RPTSubTypeMessageEvent,"MessageEvent"),$LB(..#RPTSubTypeMessageType,"MessageType"),$LB(..#RPTSubTypeMessageStructure,"MessageStructure"),$LB(..#RPTSubTypeSegmentStructure,"SegmentStructure"),$LB(..#RPTSubTypeDataType,"DataType"),$LB(..#RPTSubTypeCodeTable,"CodeTable") {
 		if +$G(out($LI(subTypeList,1)))>0 {
 			W:'first ..#eol
 			S first=0

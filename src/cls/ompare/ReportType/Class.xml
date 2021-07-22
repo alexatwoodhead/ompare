@@ -1244,10 +1244,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 	// Start customization
 	
 	// Add customizations here
-	for subTypeList=$LB(..#RPTSubTypeSummary,"Summary"),$LB(..#RPTSubTypeParameter,"Parameters"),
-		$LB(..#RPTSubTypeProperty,"Properties"),$LB(..#RPTSubTypeMethodSignature,"Method Signature"),
-		$LB(..#RPTSubTypeMethod,"Method"),$LB(..#RPTSubTypeXData,"XData"),
-		$LB(..#RPTSubTypeStorage,"Storage") {
+	for subTypeList=$LB(..#RPTSubTypeSummary,"Summary"),$LB(..#RPTSubTypeParameter,"Parameters"),$LB(..#RPTSubTypeProperty,"Properties"),$LB(..#RPTSubTypeMethodSignature,"Method Signature"),$LB(..#RPTSubTypeMethod,"Method"),$LB(..#RPTSubTypeXData,"XData"),$LB(..#RPTSubTypeStorage,"Storage") {
 		if +$G(out($LI(subTypeList,1)))>0 {
 			W:'first ..#eol
 			S first=0

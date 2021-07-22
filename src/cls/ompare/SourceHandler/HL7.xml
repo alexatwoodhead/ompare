@@ -384,9 +384,7 @@ Indexhl7(hl7name,tmpStream,includeSource)
 	set hl7Summary=hl7name
 	// After completing detail for line labels make a signature for the whole routine
 	// Note that the order of the line labels is not functionally important
-	for subtypeKey=$$$RPTSubTypeCategory,$$$RPTSubTypeMessageGroup,$$$RPTSubTypeMessageEvent,
-		$$$RPTSubTypeMessageType,$$$RPTSubTypeMessageStructure,$$$RPTSubTypeSegmentStructure,
-		$$$RPTSubTypeDataType,$$$RPTSubTypeCodeTable {
+	for subtypeKey=$$$RPTSubTypeCategory,$$$RPTSubTypeMessageGroup,$$$RPTSubTypeMessageEvent,$$$RPTSubTypeMessageType,$$$RPTSubTypeMessageStructure,$$$RPTSubTypeSegmentStructure,$$$RPTSubTypeDataType,$$$RPTSubTypeCodeTable {
 	
 		set currentItem=""
 		for {
