@@ -212,7 +212,7 @@ set tSC=##class(LabTechUK.SourceUtil.Report.Definition).CreateDynamicReport(,, t
 	// Eg: BASE / TEST / UAT / LIVE
 	set nsEnvironment=$G(^Ens.LookupTable("ompare.Namespace","Environment"))
 	
-	set report.FilterNSSystem=nsSystem
+	set report.FilterSystem=nsSystem
 	if nsSystem="" {
 		set report=$$$NULLOREF
 		quit $$$ERROR(5001,"ProcessDynamicReport::ompare.Namespace lookup not configured for System")
@@ -545,7 +545,7 @@ Generates counts for lines that are Missing, Extra, Different or Same<br/>]]></D
 		quit:line=""
 		set key=$P(data,keyDelim,1)
 		continue:key=""
-		set ^||fromDataSrc(key)=$P(data,keyDelim,2)
+		set ^||fromDataSrc(key)=$P(data,keyDelim,2,9999)
 	}
 	// Unpack "To"-Target data
 	for {
@@ -556,7 +556,7 @@ Generates counts for lines that are Missing, Extra, Different or Same<br/>]]></D
 		continue:key=""
 		// Can check "Extra" entries at the same time
 		if '$Data(^||fromDataSrc(key)) set extra=extra+1
-		set ^||toDataSrc(key)=$P(data,keyDelim,2)
+		set ^||toDataSrc(key)=$P(data,keyDelim,2,9999)
 	}	
 	if $Data(^||toDataSrc)=0 K ^||fromDataSrc quit
 	if $Data(^||fromDataSrc)=0 K ^||toDataSrc quit
@@ -1069,9 +1069,13 @@ Replaces existing or creates new</Description>
 		quit:$E(rptnsi,1,5)'="rptns"
 
 		set envns=$E(rptnsi,6,*)
-		set env=$P(envns,".",1)
+		// Allow for environments name with a dot in name "."
+		// All content before the last dot (".") delimiter
+		set env=$P(envns,".",1,($L(envns,".")-1))  
 		continue:env=""
-		set ns=$P(envns,".",2)
+		set ns=$P(envns,".",$L(envns,"."))
+		// Allow for environments name with a dot in name "."
+		// Only content after the last dot (".") delimiter
 		continue:ns=""
 		set rptns(env,ns)=1
 		set ..EnvironmentsMD(env,ns)=1
