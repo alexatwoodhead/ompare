@@ -75,6 +75,8 @@ set tSC1=tBASE.OnTask()
  IncludeSourceCode | This collects actual code not just signatures for export
  OnTask | This method starts the profile
  
+# SQL extract Configuration for comparining CPF, Scheduled Tasks, Integration Productions
+Please see detailed notes [Reporting differences via SQL](docs/SQLReporting.md) 
 
 
 # Server install
