@@ -51,9 +51,14 @@ set tBASE.RunSourceHandlers=1
 set tBASE.ExportToFile=1
 set tBASE.ExportDirectory="C:\TMP\ompare\"
 set tBASE.ExportCompression=0
+set tBASE.EnableLogging=0
+set tBASE.RetainExportDays=100
+set tBASE.IncludeSourceCode=1
+set tBASE.EnableLogging=0
+set tBASE.RetainSigSrcHistoricVersions=-1
+set tBASE.Debug=0
 set tBASE.DiscardProfileData=1
 set tBASE.RetainExportDays=0
-set tBASE.IncludeSourceCode=1
 set tSC1=tBASE.OnTask()
 ```
 
