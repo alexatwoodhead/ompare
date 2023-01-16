@@ -1,6 +1,6 @@
 # ompare
 Extensible side-by-side compare across two and more disconnected IRIS / Cache environments.
-This code has had a lot of useful exercise in production environments and has been re-packaged to share freely in the hope it will be useful to wider Cache / IRIS user community. 
+This code has had a lot of useful exercise in production environments and has been re-packaged to share freely in the hope it will be useful to wider Cache / IRIS user community.
 
 What makes ompare different from other code comparison utilities:
 1) Compare configuration, data and code
@@ -24,9 +24,11 @@ What makes ompare different from other code comparison utilities:
 11) Profile 2, 10 or even 50 different namespaces accross an instance with a single task.
 12) Recently used for porting between code Cache 2010.2 and IRIS 2019.3. The Class Source Handler has been reimplemented to *replace with* IRIS naming conventions and defaults, to focus on real code differences while excluding platform version default differences.
 
-# Client install
+# Target Cache / IRIS instance install
+Minimum components to Import to the Cache / IRIS instances that require analysis
 Excludes any reporting elements of code that are not required for profiling systems
 
+For Cache convenience a single XML install is available [ here ](install/OmpareCacheClient.xml).
 
  Name | Purpose
  -----|---------------------------------------------------
@@ -80,9 +82,11 @@ Please see detailed notes [Reporting differences via SQL](docs/SQLReporting.md)
 
 
 # Server install
-Includes all code elements.
+Includes all elements required for reporting.
 
-Copy the export files from target instances to the report server.
+For Cache / IRIS (preferred) convenience a single XML install is available [ here ](install/OmpareCacheReporting.xml).
+
+Copy the generated export files from target instances to the report server.
 Then load signatures and code profiled into the report instance.
 
 Example from IRIS Session
