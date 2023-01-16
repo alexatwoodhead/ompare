@@ -77,10 +77,6 @@ set tSC1=tBASE.OnTask()
  IncludeSourceCode | This collects actual code not just signatures for export
  OnTask | This method starts the profile
  
-# SQL extract Configuration for comparining CPF, Scheduled Tasks, Integration Productions
-Please see detailed notes [Reporting differences via SQL](docs/SQLReporting.md) 
-
-
 # Server install
 Includes all elements required for reporting.
 
@@ -119,6 +115,9 @@ set tSC1=tRPT.OnTask()
  DeleteImportedFiles | Once processed can delete obsolte files
  RetainExportDays | Number of days to retain files in import directory before deleting
  OverwriteSourceOnReLoad | Can be useful when itterating new versions Source Handlers for the comare tool.
+ 
+ # SQL extract Configuration for comparing CPF, Scheduled Tasks, Integration Productions
+Please see detailed notes [Reporting differences via SQL](docs/SQLReporting.md) 
  
  # Reporting
  
