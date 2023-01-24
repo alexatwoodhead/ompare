@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="24" zv="Cache for Windows (x86-64) 2010.2.8 (Build 1104U)" ts="2023-01-16 14:55:59">
+<Export generator="Cache" version="24" zv="Cache for Windows (x86-64) 2010.2.8 (Build 1104U)" ts="2023-01-24 19:01:12">
 <Class name="ompare.Report.Definition">
 <Description><![CDATA[
 <pre>
@@ -1623,7 +1623,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>%CSP.Page</Super>
-<TimeChanged>66490,53193</TimeChanged>
+<TimeChanged>66498,38448.5871257</TimeChanged>
 <TimeCreated>64049,58538.896425</TimeCreated>
 
 <Parameter name="LineHeight">
@@ -2184,7 +2184,7 @@ Parameters:<ul>
 	set reportType=definition.ReportTypes.GetNext(.key)
 	quit:key=""
 	continue:'$IsObject(reportType)
-	do:'reportType.IsEmptyReport() reportType.DrawExcelReportSection(definition,numberofenvironments)
+	do:'reportType.IsEmptyReport() reportType.DrawExcelReportSection(definition,numberofenvironments,reportType)
 
  }
 end
@@ -14906,7 +14906,7 @@ Methods that may be overriden in subclasses
 <tr><td>PopulateReportParams</td><td>Transfers settings for this report type to a defintion for generic difference processing</td></tr>
 </table>]]></Description>
 <Super>%Persistent</Super>
-<TimeChanged>66490,53323.169718</TimeChanged>
+<TimeChanged>66498,39000.4210273</TimeChanged>
 <TimeCreated>65745,33325.644919</TimeCreated>
 
 <Parameter name="RPTSame">
@@ -15259,7 +15259,7 @@ Override in ReportType</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[	// TO DO
 ]]></Implementation>
 </Method>
@@ -15302,7 +15302,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
-<TimeChanged>66490,53565.605181</TimeChanged>
+<TimeChanged>66498,68245.041079</TimeChanged>
 <TimeCreated>65745,33693.930298</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -16276,7 +16276,7 @@ ClassMethod ReportDetailAltText(tname = "", env = "", eol = {$C(10)})
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// Class Report Header Information
  	for i=1:1:2 {
@@ -16309,7 +16309,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
  	
  	if $Data(^||ReportData(..#RPTTypeClasses))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameClasses,definition.SummaryShowDifferentClasses,definition.SummaryShowMissingClasses,definition.SummaryShowExtraClasses)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameClasses,reportType.SummaryShowDifferentClasses,reportType.SummaryShowMissingClasses,reportType.SummaryShowExtraClasses)
  	} else {
 	 
 	 	// Class Content
@@ -16565,7 +16565,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
-<TimeChanged>66490,53599.313995</TimeChanged>
+<TimeChanged>66498,68268.816005</TimeChanged>
 <TimeCreated>65746,46105.239443</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -17249,7 +17249,7 @@ Override in ReportType</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// TO DO
 	set sequenceNumber=0
@@ -17283,7 +17283,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  
  
  	if $Data(^||ReportData(..#RPTTypeHL7))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameHL7,definition.SummaryShowDifferentHL7,definition.SummaryShowMissingHL7,definition.SummaryShowExtraHL7)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameHL7,reportType.SummaryShowDifferentHL7,reportType.SummaryShowMissingHL7,reportType.SummaryShowExtraHL7)
  	} else {
 		 // Routine Header
  		set hl7name=""
@@ -17543,7 +17543,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
-<TimeChanged>66490,53623.26858</TimeChanged>
+<TimeChanged>66498,68302.427588</TimeChanged>
 <TimeCreated>65746,46105.239443</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -18036,7 +18036,7 @@ Override in ReportType</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// TO DO
 	set sequenceNumber=0
@@ -18070,7 +18070,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  
  
  	if $Data(^||ReportData(..#RPTTypeINC))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameINC,definition.SummaryShowDifferentINC,definition.SummaryShowMissingINC,definition.SummaryShowExtraINC)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameINC,reportType.SummaryShowDifferentINC,reportType.SummaryShowMissingINC,reportType.SummaryShowExtraINC)
  	} else {
 		 // INC Header
  		set incName=""
@@ -18277,7 +18277,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
-<TimeChanged>66490,53642.354836</TimeChanged>
+<TimeChanged>66498,68326.966349</TimeChanged>
 <TimeCreated>65746,51047.929189</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -18632,7 +18632,7 @@ Override in subclass</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	set sequenceNumber=0
  	W !,"<Row>"
@@ -18666,7 +18666,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
  
  	if $Data(^||ReportData(..#RTPTypeEnsLookup))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameLookup,definition.SummaryShowDifferentLookup,definition.SummaryShowMissingLookup,definition.SummaryShowExtraLookup)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameLookup,reportType.SummaryShowDifferentLookup,reportType.SummaryShowMissingLookup,reportType.SummaryShowExtraLookup)
  	} else {
 	 	set fromNs=$O(^ompare("Data",definition.FromEnvironment,""))
  			// Lookup  content summary
@@ -18843,7 +18843,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
-<TimeChanged>66490,53657.155668</TimeChanged>
+<TimeChanged>66498,68348.781815</TimeChanged>
 <TimeCreated>65746,52054.401337</TimeCreated>
 
 <Parameter name="RPTTypeMapping">
@@ -19135,7 +19135,7 @@ Override in subclass</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// TO DO
 	set sequenceNumber=0
@@ -19170,7 +19170,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
  
  	if $Data(^||ReportData(..#RPTTypeMapping))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameMaps,definition.SummaryShowDifferentMaps,definition.SummaryShowMissingMaps,definition.SummaryShowExtraMaps)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameMaps,reportType.SummaryShowDifferentMaps,reportType.SummaryShowMissingMaps,reportType.SummaryShowExtraMaps)
  	} else {
  			// Lookup  content summary
  		set sequenceNumber=0
@@ -19360,7 +19360,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
-<TimeChanged>66490,53670.389783</TimeChanged>
+<TimeChanged>66498,68419.355896</TimeChanged>
 <TimeCreated>65746,46105.239443</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -19819,7 +19819,7 @@ Override in ReportType</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// TO DO
 	set sequenceNumber=0
@@ -19853,7 +19853,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  
  
  	if $Data(^||ReportData(..#RPTTypeRoutines))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameRoutines,definition.SummaryShowDifferentRoutines,definition.SummaryShowMissingRoutines,definition.SummaryShowExtraRoutines)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameRoutines,reportType.SummaryShowDifferentRoutines,reportType.SummaryShowMissingRoutines,reportType.SummaryShowExtraRoutines)
  	} else {
 		 // Routine Header
  		set routinename=""
@@ -20033,7 +20033,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
-<TimeChanged>66490,53684.828522</TimeChanged>
+<TimeChanged>66498,68432.810117</TimeChanged>
 <TimeCreated>65746,54091.035321</TimeCreated>
 
 <Parameter name="RPTTypeSQL">
@@ -20114,7 +20114,7 @@ Override in subclass</Description>
 	set ..SummaryShowMissingSQL=$G(%request.Data(..#RPTTypeSQL_"SummaryShowMissingSQL",1),0)
 	set ..SummaryShowExtraSQL=$G(%request.Data(..#RPTTypeSQL_"SummaryShowExtraSQL",1),0)
 	do ..PatternSQLExclude.Clear()
-	set data=$TR($G(%request.Data("PatternSQLExclude",1),""),$C(13))
+	set data=$TR($G(%request.Data(..#RPTTypeSQL_"PatternSQLExclude",1),""),$C(13))
 	kill ary
 	set pattern=""
 	set len=$L(data,$C(10))
@@ -20129,8 +20129,9 @@ Override in subclass</Description>
 		quit:pattern=""
 		do ..PatternSQLExclude.Insert(pattern)	
 	}
+	kill ary
 	do ..PatternSQLInclude.Clear()
-	set data=$TR($G(%request.Data("PatternSQLInclude",1),""),$C(13))
+	set data=$TR($G(%request.Data(..#RPTTypeSQL_"PatternSQLInclude",1),""),$C(13))
 	set pattern=""
 	set len=$L(data,$C(10))
 	for i=1:1:len {
@@ -20318,7 +20319,7 @@ Override in subclass</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	set sequenceNumber=0
  	W !,"<Row>"
@@ -20352,7 +20353,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
  
  	if $Data(^||ReportData(..#RPTTypeSQL))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameSQL,definition.SummaryShowDifferentSQL,definition.SummaryShowMissingSQL,definition.SummaryShowExtraSQL)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameSQL,reportType.SummaryShowDifferentSQL,reportType.SummaryShowMissingSQL,reportType.SummaryShowExtraSQL)
  	} else {
  			// Lookup  content summary
  		set sequenceNumber=0
@@ -20517,7 +20518,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>%SYS.Task.Definition</Super>
-<TimeChanged>66490,53245.242589</TimeChanged>
+<TimeChanged>66487,51930.541105</TimeChanged>
 <TimeCreated>64118,65813.451823</TimeCreated>
 
 <Property name="Environment">
