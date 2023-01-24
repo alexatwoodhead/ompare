@@ -14,6 +14,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
+<TimeChanged>66498,38788.9494808</TimeChanged>
 <TimeCreated>65746,52054.401337</TimeCreated>
 
 <Parameter name="RPTTypeMapping">
@@ -305,7 +306,7 @@ Override in subclass</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// TO DO
 	set sequenceNumber=0
@@ -340,7 +341,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
  
  	if $Data(^||ReportData(..#RPTTypeMapping))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameMaps,definition.SummaryShowDifferentMaps,definition.SummaryShowMissingMaps,definition.SummaryShowExtraMaps)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameMaps,reportType.SummaryShowDifferentMaps,reportType.SummaryShowMissingMaps,reportType.SummaryShowExtraMaps)
  	} else {
  			// Lookup  content summary
  		set sequenceNumber=0
@@ -456,61 +457,5 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-<DefaultData>MappingDefaultData</DefaultData>
-<Data name="MappingDefaultData">
-<Subscript>"Mapping"</Subscript>
-<Value name="1">
-<Value>SummaryShowSameMaps</Value>
-</Value>
-<Value name="2">
-<Value>SummaryShowDifferentMaps</Value>
-</Value>
-<Value name="3">
-<Value>SummaryShowMissingMaps</Value>
-</Value>
-<Value name="4">
-<Value>SummaryShowExtraMaps</Value>
-</Value>
-<Value name="5">
-<Value>DetailShowSameMapsGlobal</Value>
-</Value>
-<Value name="6">
-<Value>DetailShowDifferentMapsGlobal</Value>
-</Value>
-<Value name="7">
-<Value>DetailShowMissingMapsGlobal</Value>
-</Value>
-<Value name="8">
-<Value>DetailShowExtraMapsGlobal</Value>
-</Value>
-<Value name="9">
-<Value>DetailShowSameMapsRoutine</Value>
-</Value>
-<Value name="10">
-<Value>DetailShowDifferentMapsRoutine</Value>
-</Value>
-<Value name="11">
-<Value>DetailShowMissingMapsRoutine</Value>
-</Value>
-<Value name="12">
-<Value>DetailShowExtraMapsRoutine</Value>
-</Value>
-<Value name="13">
-<Value>DetailShowSameMapsPackage</Value>
-</Value>
-<Value name="14">
-<Value>DetailShowDifferentMapsPackage</Value>
-</Value>
-<Value name="15">
-<Value>DetailShowMissingMapsPackage</Value>
-</Value>
-<Value name="16">
-<Value>DetailShowExtraMapsPackage</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

@@ -14,6 +14,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
+<TimeChanged>66498,38558.9999056</TimeChanged>
 <TimeCreated>65745,33693.930298</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -982,128 +983,12 @@ ClassMethod ReportDetailAltText(tname = "", env = "", eol = {$C(10)})
 ]]></Content>
 </UDLText>
 
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-<DefaultData>ClassDefaultData</DefaultData>
-<Data name="ClassDefaultData">
-<Subscript>"Class"</Subscript>
-<Value name="1">
-<Value>PatternClassesExclude</Value>
-</Value>
-<Value name="2">
-<Value>PatternClassesInclude</Value>
-</Value>
-<Value name="3">
-<Value>PatternMethodsExclude</Value>
-</Value>
-<Value name="4">
-<Value>PatternMethodsInclude</Value>
-</Value>
-<Value name="5">
-<Value>SummaryShowSameClasses</Value>
-</Value>
-<Value name="6">
-<Value>SummaryShowDifferentClasses</Value>
-</Value>
-<Value name="7">
-<Value>SummaryShowMissingClasses</Value>
-</Value>
-<Value name="8">
-<Value>SummaryShowExtraClasses</Value>
-</Value>
-<Value name="9">
-<Value>SummaryIncludeMappedClasses</Value>
-</Value>
-<Value name="10">
-<Value>SummaryIncludeUncontrolledClasses</Value>
-</Value>
-<Value name="11">
-<Value>DetailShowSameSummary</Value>
-</Value>
-<Value name="12">
-<Value>DetailShowDifferentSummary</Value>
-</Value>
-<Value name="13">
-<Value>DetailShowSameStorage</Value>
-</Value>
-<Value name="14">
-<Value>DetailShowDifferentStorage</Value>
-</Value>
-<Value name="15">
-<Value>DetailShowMissingStorage</Value>
-</Value>
-<Value name="16">
-<Value>DetailShowExtraStorage</Value>
-</Value>
-<Value name="17">
-<Value>DetailShowSameParameters</Value>
-</Value>
-<Value name="18">
-<Value>DetailShowDifferentParameters</Value>
-</Value>
-<Value name="19">
-<Value>DetailShowMissingParameters</Value>
-</Value>
-<Value name="20">
-<Value>DetailShowExtraParameters</Value>
-</Value>
-<Value name="21">
-<Value>DetailShowSameProperties</Value>
-</Value>
-<Value name="22">
-<Value>DetailShowDifferentProperties</Value>
-</Value>
-<Value name="23">
-<Value>DetailShowMissingProperties</Value>
-</Value>
-<Value name="24">
-<Value>DetailShowExtraProperties</Value>
-</Value>
-<Value name="25">
-<Value>DetailShowSameMethodsSig</Value>
-</Value>
-<Value name="26">
-<Value>DetailShowDifferentMethodsSig</Value>
-</Value>
-<Value name="27">
-<Value>DetailShowMissingMethodsSig</Value>
-</Value>
-<Value name="28">
-<Value>DetailShowExtraMethodsSig</Value>
-</Value>
-<Value name="29">
-<Value>DetailShowSameMethods</Value>
-</Value>
-<Value name="30">
-<Value>DetailShowDifferentMethods</Value>
-</Value>
-<Value name="31">
-<Value>DetailShowMissingMethods</Value>
-</Value>
-<Value name="32">
-<Value>DetailShowExtraMethods</Value>
-</Value>
-<Value name="33">
-<Value>DetailShowSameXData</Value>
-</Value>
-<Value name="34">
-<Value>DetailShowDifferentXData</Value>
-</Value>
-<Value name="35">
-<Value>DetailShowMissingXData</Value>
-</Value>
-<Value name="36">
-<Value>DetailShowExtraXData</Value>
-</Value>
-</Data>
-</Storage>
-
 <Method name="DrawExcelReportSection">
 <Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// Class Report Header Information
  	for i=1:1:2 {
@@ -1136,7 +1021,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
  	
  	if $Data(^||ReportData(..#RPTTypeClasses))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameClasses,definition.SummaryShowDifferentClasses,definition.SummaryShowMissingClasses,definition.SummaryShowExtraClasses)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameClasses,reportType.SummaryShowDifferentClasses,reportType.SummaryShowMissingClasses,reportType.SummaryShowExtraClasses)
  	} else {
 	 
 	 	// Class Content

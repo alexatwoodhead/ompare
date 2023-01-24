@@ -14,6 +14,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
+<TimeChanged>66498,38864.5521446</TimeChanged>
 <TimeCreated>65746,46105.239443</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -467,62 +468,12 @@ Override in ReportType</Description>
 ]]></Implementation>
 </Method>
 
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-<DefaultData>RoutineDefaultData</DefaultData>
-<Data name="RoutineDefaultData">
-<Subscript>"Routine"</Subscript>
-<Value name="1">
-<Value>PatternRoutinesExclude</Value>
-</Value>
-<Value name="2">
-<Value>PatternRoutinesInclude</Value>
-</Value>
-<Value name="3">
-<Value>SummaryShowDifferentRoutines</Value>
-</Value>
-<Value name="4">
-<Value>SummaryShowMissingRoutines</Value>
-</Value>
-<Value name="5">
-<Value>SummaryShowExtraRoutines</Value>
-</Value>
-<Value name="6">
-<Value>SummaryIncludeMappedRoutines</Value>
-</Value>
-<Value name="7">
-<Value>SummaryIncludeUncontrolledRoutines</Value>
-</Value>
-<Value name="8">
-<Value>DetailShowSameLabels</Value>
-</Value>
-<Value name="9">
-<Value>DetailShowDifferentLabels</Value>
-</Value>
-<Value name="10">
-<Value>DetailShowMissingLabels</Value>
-</Value>
-<Value name="11">
-<Value>DetailShowExtraLabels</Value>
-</Value>
-<Value name="12">
-<Value>SummaryShowSameRoutines</Value>
-</Value>
-<Value name="13">
-<Value>PatternLabelsExclude</Value>
-</Value>
-<Value name="14">
-<Value>PatternLabelsInclude</Value>
-</Value>
-</Data>
-</Storage>
-
 <Method name="DrawExcelReportSection">
 <Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// TO DO
 	set sequenceNumber=0
@@ -556,7 +507,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  
  
  	if $Data(^||ReportData(..#RPTTypeRoutines))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameRoutines,definition.SummaryShowDifferentRoutines,definition.SummaryShowMissingRoutines,definition.SummaryShowExtraRoutines)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameRoutines,reportType.SummaryShowDifferentRoutines,reportType.SummaryShowMissingRoutines,reportType.SummaryShowExtraRoutines)
  	} else {
 		 // Routine Header
  		set routinename=""

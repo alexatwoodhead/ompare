@@ -14,6 +14,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
+<TimeChanged>66498,38739.3071596</TimeChanged>
 <TimeCreated>65746,51047.929189</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -363,50 +364,12 @@ Override in subclass</Description>
 ]]></Implementation>
 </Method>
 
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-<DefaultData>LookupDefaultData</DefaultData>
-<Data name="LookupDefaultData">
-<Subscript>"Lookup"</Subscript>
-<Value name="1">
-<Value>SummaryShowSameLookup</Value>
-</Value>
-<Value name="2">
-<Value>SummaryShowDifferentLookup</Value>
-</Value>
-<Value name="3">
-<Value>SummaryShowMissingLookup</Value>
-</Value>
-<Value name="4">
-<Value>SummaryShowExtraLookup</Value>
-</Value>
-<Value name="5">
-<Value>DetailShowSameKeys</Value>
-</Value>
-<Value name="6">
-<Value>DetailShowDifferentKeys</Value>
-</Value>
-<Value name="7">
-<Value>DetailShowMissingKeys</Value>
-</Value>
-<Value name="8">
-<Value>DetailShowExtraKeys</Value>
-</Value>
-<Value name="9">
-<Value>PatternLookupExclude</Value>
-</Value>
-<Value name="10">
-<Value>PatternLookupInclude</Value>
-</Value>
-</Data>
-</Storage>
-
 <Method name="DrawExcelReportSection">
 <Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	set sequenceNumber=0
  	W !,"<Row>"
@@ -440,7 +403,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
  
  	if $Data(^||ReportData(..#RTPTypeEnsLookup))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameLookup,definition.SummaryShowDifferentLookup,definition.SummaryShowMissingLookup,definition.SummaryShowExtraLookup)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameLookup,reportType.SummaryShowDifferentLookup,reportType.SummaryShowMissingLookup,reportType.SummaryShowExtraLookup)
  	} else {
 	 	set fromNs=$O(^ompare("Data",definition.FromEnvironment,""))
  			// Lookup  content summary

@@ -14,6 +14,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
+<TimeChanged>66498,38618.7513365</TimeChanged>
 <TimeCreated>65746,46105.239443</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -697,7 +698,7 @@ Override in ReportType</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// TO DO
 	set sequenceNumber=0
@@ -731,7 +732,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  
  
  	if $Data(^||ReportData(..#RPTTypeHL7))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameHL7,definition.SummaryShowDifferentHL7,definition.SummaryShowMissingHL7,definition.SummaryShowExtraHL7)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameHL7,reportType.SummaryShowDifferentHL7,reportType.SummaryShowMissingHL7,reportType.SummaryShowExtraHL7)
  	} else {
 		 // Routine Header
  		set hl7name=""
@@ -845,133 +846,5 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 	Quit
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-<DefaultData>HL7DefaultData</DefaultData>
-<Data name="HL7DefaultData">
-<Subscript>"HL7"</Subscript>
-<Value name="1">
-<Value>SummaryShowSameHL7</Value>
-</Value>
-<Value name="2">
-<Value>SummaryShowDifferentHL7</Value>
-</Value>
-<Value name="3">
-<Value>SummaryShowMissingHL7</Value>
-</Value>
-<Value name="4">
-<Value>SummaryShowExtraHL7</Value>
-</Value>
-<Value name="5">
-<Value>SummaryIncludeMappedHL7</Value>
-</Value>
-<Value name="6">
-<Value>SummaryIncludeUncontrolledHL7</Value>
-</Value>
-<Value name="7">
-<Value>DetailShowSameCategory</Value>
-</Value>
-<Value name="8">
-<Value>DetailShowDifferentCategory</Value>
-</Value>
-<Value name="9">
-<Value>DetailShowMissingCategory</Value>
-</Value>
-<Value name="10">
-<Value>DetailShowExtraCategory</Value>
-</Value>
-<Value name="11">
-<Value>DetailShowSameMessageGroup</Value>
-</Value>
-<Value name="12">
-<Value>DetailShowDifferentMessageGroup</Value>
-</Value>
-<Value name="13">
-<Value>DetailShowMissingMessageGroup</Value>
-</Value>
-<Value name="14">
-<Value>DetailShowExtraMessageGroup</Value>
-</Value>
-<Value name="15">
-<Value>DetailShowSameMessageEvent</Value>
-</Value>
-<Value name="16">
-<Value>DetailShowDifferentMessageEvent</Value>
-</Value>
-<Value name="17">
-<Value>DetailShowMissingMessageEvent</Value>
-</Value>
-<Value name="18">
-<Value>DetailShowExtraMessageEvent</Value>
-</Value>
-<Value name="19">
-<Value>DetailShowSameMessageType</Value>
-</Value>
-<Value name="20">
-<Value>DetailShowDifferentMessageType</Value>
-</Value>
-<Value name="21">
-<Value>DetailShowMissingMessageType</Value>
-</Value>
-<Value name="22">
-<Value>DetailShowExtraMessageType</Value>
-</Value>
-<Value name="23">
-<Value>DetailShowSameMessageStructure</Value>
-</Value>
-<Value name="24">
-<Value>DetailShowDifferentMessageStructure</Value>
-</Value>
-<Value name="25">
-<Value>DetailShowMissingMessageStructure</Value>
-</Value>
-<Value name="26">
-<Value>DetailShowExtraMessageStructure</Value>
-</Value>
-<Value name="27">
-<Value>DetailShowSameSegmentStructure</Value>
-</Value>
-<Value name="28">
-<Value>DetailShowDifferentSegmentStructure</Value>
-</Value>
-<Value name="29">
-<Value>DetailShowMissingSegmentStructure</Value>
-</Value>
-<Value name="30">
-<Value>DetailShowExtraSegmentStructure</Value>
-</Value>
-<Value name="31">
-<Value>DetailShowSameDataType</Value>
-</Value>
-<Value name="32">
-<Value>DetailShowDifferentDataType</Value>
-</Value>
-<Value name="33">
-<Value>DetailShowMissingDataType</Value>
-</Value>
-<Value name="34">
-<Value>DetailShowExtraDataType</Value>
-</Value>
-<Value name="35">
-<Value>DetailShowSameCodeTable</Value>
-</Value>
-<Value name="36">
-<Value>DetailShowDifferentCodeTable</Value>
-</Value>
-<Value name="37">
-<Value>DetailShowMissingCodeTable</Value>
-</Value>
-<Value name="38">
-<Value>DetailShowExtraCodeTable</Value>
-</Value>
-<Value name="39">
-<Value>PatternHL7Exclude</Value>
-</Value>
-<Value name="40">
-<Value>PatternHL7Include</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

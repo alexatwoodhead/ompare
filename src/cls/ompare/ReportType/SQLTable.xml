@@ -14,6 +14,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
+<TimeChanged>66498,38979.9026122</TimeChanged>
 <TimeCreated>65746,54091.035321</TimeCreated>
 
 <Parameter name="RPTTypeSQL">
@@ -94,7 +95,7 @@ Override in subclass</Description>
 	set ..SummaryShowMissingSQL=$G(%request.Data(..#RPTTypeSQL_"SummaryShowMissingSQL",1),0)
 	set ..SummaryShowExtraSQL=$G(%request.Data(..#RPTTypeSQL_"SummaryShowExtraSQL",1),0)
 	do ..PatternSQLExclude.Clear()
-	set data=$TR($G(%request.Data("PatternSQLExclude",1),""),$C(13))
+	set data=$TR($G(%request.Data(..#RPTTypeSQL_"PatternSQLExclude",1),""),$C(13))
 	kill ary
 	set pattern=""
 	set len=$L(data,$C(10))
@@ -109,8 +110,9 @@ Override in subclass</Description>
 		quit:pattern=""
 		do ..PatternSQLExclude.Insert(pattern)	
 	}
+	kill ary
 	do ..PatternSQLInclude.Clear()
-	set data=$TR($G(%request.Data("PatternSQLInclude",1),""),$C(13))
+	set data=$TR($G(%request.Data(..#RPTTypeSQL_"PatternSQLInclude",1),""),$C(13))
 	set pattern=""
 	set len=$L(data,$C(10))
 	for i=1:1:len {
@@ -298,7 +300,7 @@ Override in subclass</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	set sequenceNumber=0
  	W !,"<Row>"
@@ -332,7 +334,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
  
  	if $Data(^||ReportData(..#RPTTypeSQL))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameSQL,definition.SummaryShowDifferentSQL,definition.SummaryShowMissingSQL,definition.SummaryShowExtraSQL)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameSQL,reportType.SummaryShowDifferentSQL,reportType.SummaryShowMissingSQL,reportType.SummaryShowExtraSQL)
  	} else {
  			// Lookup  content summary
  		set sequenceNumber=0
@@ -453,31 +455,5 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-<DefaultData>SQLTableDefaultData</DefaultData>
-<Data name="SQLTableDefaultData">
-<Subscript>"SQLTable"</Subscript>
-<Value name="1">
-<Value>PatternSQLExclude</Value>
-</Value>
-<Value name="2">
-<Value>PatternSQLInclude</Value>
-</Value>
-<Value name="3">
-<Value>SummaryShowSameSQL</Value>
-</Value>
-<Value name="4">
-<Value>SummaryShowDifferentSQL</Value>
-</Value>
-<Value name="5">
-<Value>SummaryShowMissingSQL</Value>
-</Value>
-<Value name="6">
-<Value>SummaryShowExtraSQL</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

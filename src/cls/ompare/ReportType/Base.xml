@@ -36,6 +36,7 @@ Methods that may be overriden in subclasses
 <tr><td>PopulateReportParams</td><td>Transfers settings for this report type to a defintion for generic difference processing</td></tr>
 </table>]]></Description>
 <Super>%Persistent</Super>
+<TimeChanged>66498,39000.4210273</TimeChanged>
 <TimeCreated>65745,33325.644919</TimeCreated>
 
 <Parameter name="RPTSame">
@@ -388,7 +389,7 @@ Override in ReportType</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer=0,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[	// TO DO
 ]]></Implementation>
 </Method>
@@ -401,18 +402,5 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 ]]></Implementation>
 </Method>
 
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-<DataLocation>^ompare.ReportType.BaseD</DataLocation>
-<DefaultData>BaseDefaultData</DefaultData>
-<IdLocation>^ompare.ReportType.BaseD</IdLocation>
-<IndexLocation>^ompare.ReportType.BaseI</IndexLocation>
-<StreamLocation>^ompare.ReportType.BaseS</StreamLocation>
-<Data name="BaseDefaultData">
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

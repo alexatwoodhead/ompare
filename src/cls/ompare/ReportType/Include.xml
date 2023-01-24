@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26">
+<Export generator="IRIS" version="26" zv="IRIS for Windows (x86-64) 2021.2 (Build 651U)" ts="2023-01-24 11:08:01">
 <Class name="ompare.ReportType.Include">
 <Description><![CDATA[
 <pre>
@@ -14,6 +14,7 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
+<TimeChanged>66498,38686.6844381</TimeChanged>
 <TimeCreated>65746,46105.239443</TimeCreated>
 
 <Parameter name="DocumentType">
@@ -506,7 +507,7 @@ Override in ReportType</Description>
 Add new sections to generated Excel Report projection
 Subclass in ompare.ReportType.[ViewName]</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer</FormalSpec>
+<FormalSpec>definition:ompare.Report.Definition,numberofenvironments:%Integer,reportType:ompare.ReportType.Base</FormalSpec>
 <Implementation><![CDATA[
 	// TO DO
 	set sequenceNumber=0
@@ -540,7 +541,7 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  
  
  	if $Data(^||ReportData(..#RPTTypeINC))=0 {	 	
-	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(definition.SummaryShowSameINC,definition.SummaryShowDifferentINC,definition.SummaryShowMissingINC,definition.SummaryShowExtraINC)
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameINC,reportType.SummaryShowDifferentINC,reportType.SummaryShowMissingINC,reportType.SummaryShowExtraINC)
  	} else {
 		 // INC Header
  		set incName=""
@@ -655,79 +656,5 @@ Subclass in ompare.ReportType.[ViewName]</Description>
 	Quit
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-<DefaultData>IncludeDefaultData</DefaultData>
-<Data name="IncludeDefaultData">
-<Subscript>"Include"</Subscript>
-<Value name="1">
-<Value>SummaryShowSameINC</Value>
-</Value>
-<Value name="2">
-<Value>SummaryShowDifferentINC</Value>
-</Value>
-<Value name="3">
-<Value>SummaryShowMissingINC</Value>
-</Value>
-<Value name="4">
-<Value>SummaryShowExtraINC</Value>
-</Value>
-<Value name="5">
-<Value>SummaryIncludeMappedINC</Value>
-</Value>
-<Value name="6">
-<Value>SummaryIncludeUncontrolledINC</Value>
-</Value>
-<Value name="7">
-<Value>DetailShowSameDefine</Value>
-</Value>
-<Value name="8">
-<Value>DetailShowDifferentDefine</Value>
-</Value>
-<Value name="9">
-<Value>DetailShowMissingDefine</Value>
-</Value>
-<Value name="10">
-<Value>DetailShowExtraDefine</Value>
-</Value>
-<Value name="11">
-<Value>DetailShowSameDeflarg</Value>
-</Value>
-<Value name="12">
-<Value>DetailShowDifferentDeflarg</Value>
-</Value>
-<Value name="13">
-<Value>DetailShowMissingDeflarg</Value>
-</Value>
-<Value name="14">
-<Value>DetailShowExtraDeflarg</Value>
-</Value>
-<Value name="15">
-<Value>DetailShowSameInclude</Value>
-</Value>
-<Value name="16">
-<Value>DetailShowDifferentInclude</Value>
-</Value>
-<Value name="17">
-<Value>DetailShowMissingInclude</Value>
-</Value>
-<Value name="18">
-<Value>DetailShowExtraInclude</Value>
-</Value>
-<Value name="19">
-<Value>DetailShowSameFull</Value>
-</Value>
-<Value name="20">
-<Value>DetailShowDifferentFull</Value>
-</Value>
-<Value name="21">
-<Value>PatternINCExclude</Value>
-</Value>
-<Value name="22">
-<Value>PatternINCInclude</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>
