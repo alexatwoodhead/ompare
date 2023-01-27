@@ -14,8 +14,6 @@ Source: https://github.com/alexatwoodhead/ompare
 Version: 1.0
 </pre>]]></Description>
 <Super>ompare.ReportType.Base</Super>
-<TimeChanged>66498,38979.9026122</TimeChanged>
-<TimeCreated>65746,54091.035321</TimeCreated>
 
 <Parameter name="RPTTypeSQL">
 <Default>SQL</Default>
@@ -59,6 +57,10 @@ Subscript 8 = pattern</Description>
 
 <Parameter name="PageAnchor">
 <Default>SQL-Tables</Default>
+</Parameter>
+
+<Parameter name="PageSourceView">
+<Default>ompare.Report.TableView.cls?</Default>
 </Parameter>
 
 <Method name="PopulateReportParams">
@@ -455,5 +457,6 @@ Subclass in ompare.ReportType.[ViewName]</Description>
  	}
 ]]></Implementation>
 </Method>
+
 </Class>
 </Export>
