@@ -178,7 +178,6 @@ set ^ompare("Config","SQL","%SYS.Ta*,TaskA")="1"
   </tr>
 </table>	]]></Description>
 <Super>ompare.SourceHandler.Base</Super>
-<TimeCreated>64751,42188.599008</TimeCreated>
 
 <Parameter name="TypeCode">
 <Description>
@@ -309,6 +308,43 @@ IndexerMain
 	 End Template
 	 Add sub-class code and supporting line labels from this point forward.
 	******************************/
+	set hasClassConfig=$Data(^ompare("Config","SQL"))
+	if 'hasClassConfig,$NAMESPACE="%SYS" {
+		// Default collect TaskSchedule Information when run in %SYS
+		set ^ompare("Config","SQL","%SYS.Task")="1,1,10000,Name,Namespace~Description~RescheduleOnStart~DailyEndTime~DailyFrequency~DailyFrequencyTime~DailyIncrement~DailyStartTime~DisplayRun~DisplayRunAfter~Priority~RunAsUser~Settings~TaskClass"
+		// Default collect CPF Information when run in %SYS
+		set ^ompare("Config","SQL","Config.Cluster")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Cluster"
+		set ^ompare("Config","SQL","Config.ComPorts")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=ComPorts"
+		set ^ompare("Config","SQL","Config.Conversions")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Conversions"
+		set ^ompare("Config","SQL","Config.Databases")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Databases"
+		set ^ompare("Config","SQL","Config.Debug")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Debug"
+		set ^ompare("Config","SQL","Config.DeviceSubTypes")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=DeviceSubTypes"
+		set ^ompare("Config","SQL","Config.Devices")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Devices"
+		set ^ompare("Config","SQL","Config.ECP")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=ECP"
+		set ^ompare("Config","SQL","Config.ECPServers")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=ECPServers"
+		set ^ompare("Config","SQL","Config.Gateways")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Gateways"
+		set ^ompare("Config","SQL","Config.IO")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=IO"
+		set ^ompare("Config","SQL","Config.Journal")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Journal"
+		set ^ompare("Config","SQL","Config.LicenseServers")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=LicenseServers"
+		set ^ompare("Config","SQL","Config.MagTapes")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=MagTapes"
+		set ^ompare("Config","SQL","Config.MapGlobals")="1,1,10000,SectionHeader~Namespace~Name~-ID,*~-CPFName~-SectionHeader~-Namespace~-Name,SectionHeader=MapGlobals"
+		set ^ompare("Config","SQL","Config.MapMirrors")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=MapMirrors"
+		set ^ompare("Config","SQL","Config.MapPackages")="1,1,10000,SectionHeader~Namespace~Name,*~-CPFName~-SectionHeader~-Namespace~-Name~-ID,SectionHeader=MapPackages"
+		set ^ompare("Config","SQL","Config.MapRoutines")="1,1,10000,SectionHeader~Namespace~Name,*~-CPFName~-SectionHeader~-Namespace~-Name~-ID,SectionHeader=MapRoutines"
+		set ^ompare("Config","SQL","Config.MirrorMember")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=MirrorMember"
+		set ^ompare("Config","SQL","Config.Mirrors")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Mirrors"
+		set ^ompare("Config","SQL","Config.Miscellaneous")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Miscellaneous"
+		set ^ompare("Config","SQL","Config.Monitor")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Monitor"
+		set ^ompare("Config","SQL","Config.Namespaces")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Namespaces"
+		set ^ompare("Config","SQL","Config.SQL")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=SQL"
+		set ^ompare("Config","SQL","Config.Shadows")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Shadows"
+		set ^ompare("Config","SQL","Config.SqlSysDatatypes")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=SqlSysDatatypes"
+		set ^ompare("Config","SQL","Config.SqlUserDatatypes")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=SqlUserDatatypes"
+		set ^ompare("Config","SQL","Config.Startup")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Startup"
+		set ^ompare("Config","SQL","Config.Telnet")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=Telnet"
+		set ^ompare("Config","SQL","Config.WorkQueues")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=WorkQueues"
+		set ^ompare("Config","SQL","Config.config")="1,1,10000,SectionHeader~Name,*~-CPFName~-SectionHeader~-Name~-ID,SectionHeader=config"
+	}
 	
 	
 	// Initialise process
