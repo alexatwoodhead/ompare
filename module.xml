@@ -3,7 +3,7 @@
   <Document name="alwo-ompare.ZPM">
     <Module>
       <Name>alwo-ompare</Name>
-      <Version>1.0.0</Version>
+      <Version>1.0.1</Version>
       <Description>Compare CPF Task Class Routine INC HL7 Lookup anything SQL across multiple systems</Description>
       <Keywords>compare code data configuration reporting</Keywords>
       <Packaging>module</Packaging>
