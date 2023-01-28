@@ -1,0 +1,499 @@
+/// <pre>
+/// Copyright (c) Alex Woodhead 2020
+/// 
+/// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+/// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/// 
+/// License MIT
+/// Source: https://github.com/alexatwoodhead/ompare
+/// Version: 1.0
+/// </pre>
+Class ompare.ReportType.Lookup Extends ompare.ReportType.Base
+{
+
+Parameter DocumentType As %String = "lut";
+
+Parameter RTPTypeEnsLookup = "LUT";
+
+Parameter RPTSubTypeEnsLookupKey = "Key";
+
+Property SummaryShowSameLookup As %Boolean [ InitialExpression = 0 ];
+
+Property SummaryShowDifferentLookup As %Boolean [ InitialExpression = 1 ];
+
+Property SummaryShowMissingLookup As %Boolean [ InitialExpression = 1 ];
+
+Property SummaryShowExtraLookup As %Boolean [ InitialExpression = 1 ];
+
+Property DetailShowSameKeys As %Boolean [ InitialExpression = 0 ];
+
+Property DetailShowDifferentKeys As %Boolean [ InitialExpression = 1 ];
+
+Property DetailShowMissingKeys As %Boolean [ InitialExpression = 1 ];
+
+Property DetailShowExtraKeys As %Boolean [ InitialExpression = 1 ];
+
+/// Subscript 3 = pattern
+Property PatternLookupExclude As list Of %String(MAXLEN = 10000);
+
+/// Subscript 4 = pattern
+Property PatternLookupInclude As list Of %String(MAXLEN = 10000);
+
+Parameter PageAnchor = "Lookups";
+
+/// Called from ompare.Report.Defintion on subclass on ompare.ReportType.Base
+/// Override in subclass
+ClassMethod CreateDynamicReport(name As %String) As ompare.ReportType.Base
+{
+	set obj=..%New()
+	set obj.SummaryShowSameLookup=1
+	set obj.SummaryShowDifferentLookup=1
+	set obj.SummaryShowMissingLookup=1
+	set obj.SummaryShowExtraLookup=1
+	set obj.DetailShowSameKeys=1
+	set obj.DetailShowDifferentKeys=1
+	set obj.DetailShowMissingKeys=1
+	set obj.DetailShowExtraKeys=1
+	do obj.PatternLookupExclude.Insert("*")
+	do obj.PatternLookupInclude.Insert(name)
+	quit obj
+}
+
+/// Called from ompare.Report.Defintion on subclass on ompare.ReportType.Base
+/// Override in subclass
+Method PopulateReportParams(ByRef config, ByRef summary, ByRef detail, ByRef exclude, ByRef include)
+{
+	set:..SummaryShowSameLookup summary(..#RTPTypeEnsLookup,..#RPTSame)=""
+	set:..SummaryShowDifferentLookup summary(..#RTPTypeEnsLookup,..#RPTDifferent)=""
+	set:..SummaryShowMissingLookup summary(..#RTPTypeEnsLookup,..#RPTMissing)=""
+	set:..SummaryShowExtraLookup summary(..#RTPTypeEnsLookup,..#RPTExtra)=""
+	
+	set:..DetailShowSameKeys detail(..#RPTSubTypeEnsLookupKey,..#RPTSame)=""
+	set:..DetailShowDifferentKeys detail(..#RPTSubTypeEnsLookupKey,..#RPTDifferent)=""
+	set:..DetailShowMissingKeys detail(..#RPTSubTypeEnsLookupKey,..#RPTMissing)=""
+	set:..DetailShowExtraKeys detail(..#RPTSubTypeEnsLookupKey,..#RPTExtra)=""
+	
+	set key=""
+	for {
+		set pattern=..PatternLookupExclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		set exclude(..#RTPTypeEnsLookup,pattern)=""	
+	}
+	for {
+		set pattern=..PatternLookupInclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		set include(..#RTPTypeEnsLookup,pattern)=""	
+	}
+}
+
+Method PopulateFromHttpRequest()
+{
+	set ..SummaryShowSameLookup=$G(%request.Data(..#DocumentType_"SummaryShowSameLookup",1),0)
+	set ..DetailShowSameKeys=$G(%request.Data(..#DocumentType_"DetailShowSameKeys",1),0)
+	set ..SummaryShowDifferentLookup=$G(%request.Data(..#DocumentType_"SummaryShowDifferentLookup",1),0)
+	set ..DetailShowDifferentKeys=$G(%request.Data(..#DocumentType_"DetailShowDifferentKeys",1),0)
+	set ..SummaryShowMissingLookup=$G(%request.Data(..#DocumentType_"SummaryShowMissingLookup",1),0)
+	set ..DetailShowMissingKeys=$G(%request.Data(..#DocumentType_"DetailShowMissingKeys",1),0)
+	set ..SummaryShowExtraLookup=$G(%request.Data(..#DocumentType_"SummaryShowExtraLookup",1),0)
+	set ..DetailShowExtraKeys=$G(%request.Data(..#DocumentType_"DetailShowExtraKeys",1),0)
+	
+	do ..PatternLookupExclude.Clear()
+	set data=$TR($G(%request.Data(..#DocumentType_"PatternLookupExclude",1),""),$C(13))
+	kill ary
+	set pattern=""
+	set len=$L(data,$C(10))
+	for i=1:1:len {
+		set pattern=$ZSTRIP($P(data,$C(10),i),"<>W")
+		continue:pattern=""
+		set ary(pattern)="" // Sort the user input
+	}
+	set pattern=""
+	for {
+		set pattern=$O(ary(pattern))
+		quit:pattern=""
+		do ..PatternLookupExclude.Insert(pattern)	
+	}
+	do ..PatternLookupInclude.Clear()
+	set data=$TR($G(%request.Data(..#DocumentType_"PatternLookupInclude",1),""),$C(13))
+	kill ary
+	set pattern=""
+	set len=$L(data,$C(10))
+	for i=1:1:len {
+		set pattern=$ZSTRIP($P(data,$C(10),i),"<>W")
+		continue:pattern=""
+		set ary(pattern)="" // Sort the user input
+	}
+	set pattern=""
+	for {
+		set pattern=$O(ary(pattern))
+		quit:pattern=""
+		do ..PatternLookupInclude.Insert(pattern)	
+	}
+}
+
+Method DrawEditConfigForm()
+{
+	W !,"<fieldset><legend>Ensemble Lookup Table Configuration</legend>"
+	W !,"Show Same Tables <input name="""_..#DocumentType_"SummaryShowSameLookup"" type=""checkbox"" value=""1""",$Select(..SummaryShowSameLookup:" checked",1:""),"/><br/>"
+	W !,"Show Different Tables <input name="""_..#DocumentType_"SummaryShowDifferentLookup"" type=""checkbox"" value=""1""",$Select(..SummaryShowDifferentLookup:" checked",1:""),"/><br/>"
+	W !,"Show Missing Tables <input name="""_..#DocumentType_"SummaryShowMissingLookup"" type=""checkbox"" value=""1""",$Select(..SummaryShowMissingLookup:" checked",1:""),"/><br/>"
+	W !,"Show Extra Tables <input name="""_..#DocumentType_"SummaryShowExtraLookup"" type=""checkbox"" value=""1""",$Select(..SummaryShowExtraLookup:" checked",1:""),"/><br/>"
+	W !,"Exclude&nbsp;pattern&nbsp;<textarea name="""_..#DocumentType_"PatternLookupExclude"" rows=""4"" cols=""50"">"
+	set key="",pattern=""
+	for {
+		set pattern=..PatternLookupExclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		W $ZCONVERT(pattern,"O","HTML"),$C(10)
+	}
+	W "</textarea><br/>"
+	W !,"Include&nbsp;pattern&nbsp;<textarea name="""_..#DocumentType_"PatternLookupInclude"" rows=""4"" cols=""50"">"
+	set key="",pattern=""
+	for {
+		set pattern=..PatternLookupInclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""  
+		W $ZCONVERT(pattern,"O","HTML"),$C(10)
+	}
+	W "</textarea><br/>"
+	W !,"<fieldset><legend>Key Configuration</legend>"
+	W !,"Show Same Keys <input name="""_..#DocumentType_"DetailShowSameKeys"" type=""checkbox"" value=""1""",$Select(..DetailShowSameKeys:" checked",1:""),"/><br/>"
+	W !,"Show Different Keys <input name="""_..#DocumentType_"DetailShowDifferentKeys"" type=""checkbox"" value=""1""",$Select(..DetailShowDifferentKeys:" checked",1:""),"/><br/>"
+	W !,"Show Missing Keys <input name="""_..#DocumentType_"DetailShowMissingKeys"" type=""checkbox"" value=""1""",$Select(..DetailShowMissingKeys:" checked",1:""),"/><br/>"
+	W !,"Show Extra Keys <input name="""_..#DocumentType_"DetailShowExtraKeys"" type=""checkbox"" value=""1""",$Select(..DetailShowExtraKeys:" checked",1:""),"/><br/>"
+	W !,"</fieldset>"
+	W !,"</fieldset>"
+}
+
+Method DrawReport(definition As ompare.Report.Definition, isFirstDisplayed As %Boolean = 0)
+{
+	quit:..IsEmptyReport()
+
+	set elapstart=$P($ZTS,",",2)
+	// TABLE for Ensemble Lookup Tables
+	W !,"<span class=""SectionTitle"">Section: LookupTables</span>"
+	W !,"<a name=""show",..#PageAnchor,"""></a>"
+	W:'isFirstDisplayed "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<a href=""#showTop"">Back to Top</a>]"
+	W !,"<table border=1>"
+	W !," <tr>"
+	W !,"  <th>Item</th>"
+	W !,"  <th>Lookup Table</th>"
+	//  Put From Environment as the first column
+	W !,"  <th>",definition.FromEnvironment,"</th>"
+	set env=""
+	for {
+		set env=$Order(^||ReportData("Meta","To",env),+1,date)
+		quit:env=""
+		W !,"  <th>",$ZCONVERT(env,"O","HTML"),"<br/>",$ZD(date,3),"</th>"
+	}
+	W !," <tr>"
+	
+	set tablename=""
+	set sequence=0
+	for {
+		set tablename=$O(^||ReportData(..#RTPTypeEnsLookup,tablename))
+		quit:tablename=""
+		
+		W !," <tr>"
+		W !,"<td>",$Increment(sequence),"</td>"
+		W !,"  <td>",$ZCONVERT(tablename,"O","HTML"),"</td>"
+		
+		set toNs=$O(^||ReportData(..#RTPTypeEnsLookup,tablename,"s",definition.FromEnvironment,""),+1,result)
+		if toNs="" {
+			W "<td> - </td>"
+		} else {
+			W "<td>",$Case(result,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - "),"</td>"
+		}
+		
+		set env=""	
+		for {
+			set env=$Order(^||ReportData("Meta","To",env),+1,date)
+			quit:env=""
+		
+			set toNs=$O(^||ReportData(..#RTPTypeEnsLookup,tablename,"s",env,""),+1,result)
+			if toNs="" {
+				W "<td> - </td>"
+			} else {
+				
+				W "<td style=""vertical-align:top"">"
+				k lnk
+				set lnk("sfEnv")=definition.FromEnvironment
+				set lnk("sfNS")=$Select($D(lnk("sfEnv")):$O(definition.EnvironmentsMD(lnk("sfEnv"),"")),1:"")
+				set lnk("sfT")=..#RTPTypeEnsLookup
+				set lnk("sfTN")=tablename	
+				kill lnk("sfST")
+				kill lnk("sfSTN")
+				if definition.HistoricView {
+					set lnk("stD")=date
+					set lnk("stEnv")=$ZSTRIP($P(env,"("),">W")  // Remove History Discriptor
+				} else {
+					kill lnk("stD")
+					set lnk("stEnv")=env
+				}
+				set lnk("stNS")=$Select($D(lnk("stEnv")):$O(definition.EnvironmentsMD(lnk("stEnv"),"")),1:"")
+				set lnk("stT")=..#RTPTypeEnsLookup
+				set lnk("stTN")=tablename
+				kill lnk("stST")
+				kill lnk("stSTN")
+				
+				set missing=0
+				set extra=0
+				set different=0
+				set same=0
+				
+				set fromSignature=""
+					set toSignature=""	
+				// Assumes comparison is always with current
+				// Otherwise need to copy signatures to ^||ReportData
+				if lnk("sfEnv")'="",lnk("sfNS")'="",lnk("sfT")'="",lnk("sfTN")'="" {
+					set fromSignature=$G(^ompare("Data",lnk("sfEnv"),lnk("sfNS"),lnk("sfT"),lnk("sfTN")))
+				}
+				if lnk("stEnv")'="",lnk("stNS")'="",lnk("stT")'="",lnk("stTN")'="" {
+					if $G(lnk("stD"))'="" {
+						set toSignature=$G(^ompare("History",lnk("stD"),lnk("stEnv"),lnk("stNS"),lnk("stT"),lnk("stTN")))	
+					} else {
+						set toSignature=$G(^ompare("Data",lnk("stEnv"),lnk("stNS"),lnk("stT"),lnk("stTN")))
+					}
+				}
+				Set (same,missing,different,extra)=0
+				if fromSignature'="",toSignature'="" {
+					Set (same,missing,different,extra)=0
+					Do definition.DiffSignatureByNVP(fromSignature,toSignature,"¬¬",.same,.missing,.different,.extra)
+					W:same>0 "same key=",same,"<br/>"
+					W:missing>0 "missing key=",missing,"<br/>"
+					W:extra>0 "extra key=",extra,"<br/>"
+					W:different>0 "different key=",different,"<br/>"	
+				}
+				if (missing+different+extra)>0 {
+					do ..AddSourceLink("Differences",.lnk,..#RPTDifferent)	
+				} else {
+					do ..AddSourceLink($Case(result,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - "),.lnk,..#RPTDifferent)	
+				}
+				
+				W "</td>"
+			}
+		}
+		W !," </tr>"
+	}
+	W !,"</table>"	
+	set elapend=$P($ZTS,",",2)
+	W !,"(Time taken:",$FN(elapend-elapstart,"",2)," seconds)"
+	W !,"<hr/>"
+}
+
+Method IsEmptyReport() As %Boolean
+{
+	quit:..SummaryShowSameLookup 0
+	quit:..SummaryShowDifferentLookup 0
+	quit:..SummaryShowMissingLookup 0
+	quit:..SummaryShowExtraLookup 0
+	Q 1
+}
+
+Method IsEmptyReportType(type As %String) As %Boolean
+{
+	Quit:type'=..#RTPTypeEnsLookup 1
+	Quit ..IsEmptyReport()
+}
+
+/// Add new sections to generated Excel Report projection
+/// Subclass in ompare.ReportType.[ViewName]
+ClassMethod DrawExcelReportSection(definition As ompare.Report.Definition, numberofenvironments As %Integer, reportType As ompare.ReportType.Base)
+{
+	set sequenceNumber=0
+ 	W !,"<Row>"
+ 	for i=0:1:numberofenvironments+1 { W "<Cell ss:StyleID=""s64""></Cell>" }
+ 	W !,"</Row>"
+ 
+	 for i=1:1:2 {
+ 		W !,"<Row ss:AutoFitHeight=""0"" ss:StyleID=""s62"">"
+ 		if i=1 {
+	 		W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String""></Data></Cell>"  //seq
+		 	W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String""></Data></Cell>"
+			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(definition.FromEnvironment),"</Data></Cell>" 	
+ 		} else {
+			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">Item</Data></Cell>"  //seq
+ 			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">Lookup Table Name</Data></Cell>"
+ 			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(definition.GetDateTimeOfData(definition.FromEnvironment)),"</Data></Cell>"
+  		}
+  		set env="",key=""
+  		for {
+			set env=definition.Environments.GetNext(.key)
+			quit:key=""
+			continue:'$IsObject(env)
+			continue:definition.FromEnvironment=env.Name	
+			if i=1 {
+				W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(env.Name),"</Data></Cell>" 	
+ 			} else {
+				W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(definition.GetDateTimeOfData(env.Name)),"</Data></Cell>"
+  			}
+ 		}
+ 		W !,"</Row>" 	
+ 	}
+ 
+ 	if $Data(^||ReportData(..#RTPTypeEnsLookup))=0 {	 	
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameLookup,reportType.SummaryShowDifferentLookup,reportType.SummaryShowMissingLookup,reportType.SummaryShowExtraLookup)
+ 	} else {
+	 	set fromNs=$O(^ompare("Data",definition.FromEnvironment,""))
+ 			// Lookup  content summary
+ 		set sequenceNumber=0
+ 		set tablename=""
+			for {
+				set tablename=$O(^||ReportData(..#RTPTypeEnsLookup,tablename))
+				quit:tablename=""
+				
+				
+				// Need to calculate content clines=0
+				// 1 to 4
+				kill count
+				set count=0
+				set clines=1 // the maximum number of sub-report lines required in any one cell for this row.
+				set countEnv=""
+				for {
+					set countEnv=$O(^||ReportData(..#RTPTypeEnsLookup,tablename,"s",countEnv))
+					quit:countEnv=""  // Each subtype item prints a line
+					
+					set countNs=""
+					for {
+						set countNs=$O(^||ReportData(..#RTPTypeEnsLookup,tablename,"s",countEnv,countNs),+1,result)
+						quit:countNs=""
+						
+						//set ns=$Order(^||ReportData(..#RTPTypeEnsLookup,tablename,"d",..#RPTSubTypeEnsLookupKey,subname,env,""),+1,result)
+						continue:result<1
+						
+						if '$Data(count(result)) {
+							set count=count+1
+							set count(result)=1	
+						}
+					}
+				}
+
+				// If any of the comapre environments have differences then display row over 4 lines for counts
+				// Else display a single line for summary information
+				set:$Data(count(..#RPTDifferent)) clines=4
+				
+				W !,"<Row ss:AutoFitHeight=""0"" ss:Height=""",##class(ompare.Report.ExportExcelWorkbook).CapLineHeight((clines)*$PARAMETER("ompare.Report.ExportExcelWorkbook","LineHeight")),""">"
+				W !,"<Cell><Data ss:Type=""String"">",$Increment(sequenceNumber),"</Data></Cell>"  //seq
+				W !,"<Cell><Data ss:Type=""String"">",..XMLO(tablename),"</Data></Cell>"
+				
+				set toNs=$O(^||ReportData(..#RTPTypeEnsLookup,tablename,"s",definition.FromEnvironment,""),+1,result)
+				if toNs="" {
+					W !,"<Cell><Data ss:Type=""String""> - </Data></Cell>"
+				} else {
+					W !,"<Cell><Data ss:Type=""String"">",..XMLO($Case(result,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - ")),"</Data></Cell>"
+				}
+						
+				set env="",key=""
+				for {
+					set env=definition.Environments.GetNext(.key)
+					quit:key=""
+					quit:'$IsObject(env)
+					continue:definition.FromEnvironment=env.Name
+				
+					set toNs=$O(^||ReportData(..#RTPTypeEnsLookup,tablename,"s",env.Name,""),+1,result)
+					if toNs="" {
+						W !,"<Cell><Data ss:Type=""String""> - </Data></Cell>"
+					} else {
+						
+						if result=..#RPTExtra {
+							W !,"<Cell><Data ss:Type=""String"">Extra Table</Data></Cell>"
+						} elseif result=..#RPTMissing {
+							W !,"<Cell><Data ss:Type=""String"">Missing Table</Data></Cell>"
+						} elseif result=..#RPTSame {
+							W !,"<Cell><Data ss:Type=""String"">Table Identical</Data></Cell>"
+						} else {
+							set (missing,extra,different,same)=0
+							// Different content - provide details.
+							set fromDate=$P($G(^||ReportData("Meta","From")),"^",2)
+							//set fromNs=$O(definition.Environments(definition.FromEnvironment,""))
+							
+							if fromNs'="" {
+								set toDate=+$G(^||ReportData("Meta","To",env.Name))
+								set (fromSignature,toSignature)=""
+								//set:fromDate'="" fromSignature=$G(^TLabTechUK.SourceUtil("History",fromDate,definition.FromEnvironment,fromNs,..#RTPTypeEnsLookup,tablename))
+								set:fromSignature="" fromSignature=$G(^ompare("Data",definition.FromEnvironment,fromNs,..#RTPTypeEnsLookup,tablename))
+								//set:toDate'="" toSignature=$G(^TLabTechUK.SourceUtil("History",toDate,env.Name,toNs,..#RTPTypeEnsLookup,tablename))
+								set:toSignature="" toSignature=$G(^ompare("Data",env.Name,toNs,..#RTPTypeEnsLookup,tablename))
+								
+								if fromSignature'="",toSignature'="" {
+									Do definition.DiffSignatureByNVP(fromSignature,toSignature,"¬¬",.same,.missing,.different,.extra)	
+						  		}
+							}
+						  
+							// Style to wrap text
+							W "<Cell ss:StyleID=""s67""><Data ss:Type=""String"">"
+							set first=1
+								//if same {
+									set first=0
+									Write ..XMLO(" * same key="_same)
+								//}
+								//if missing {
+									write:'first ..#eol
+									set first=0
+									Write ..XMLO(" * missing key="_missing)
+								//}
+								//if extra {
+									write:'first ..#eol
+									set first=0
+									Write ..XMLO(" * extra key="_extra)
+								//}
+								//if different {
+									write:'first ..#eol
+									set first=0
+									Write ..XMLO(" * different key="_different)
+								//}
+						
+							Write "</Data></Cell>"
+						}
+					}
+				}
+				
+				W !,"</Row>"
+			}
+ 	}
+}
+
+Storage Default
+{
+<Data name="LookupDefaultData">
+<Subscript>"Lookup"</Subscript>
+<Value name="1">
+<Value>SummaryShowSameLookup</Value>
+</Value>
+<Value name="2">
+<Value>SummaryShowDifferentLookup</Value>
+</Value>
+<Value name="3">
+<Value>SummaryShowMissingLookup</Value>
+</Value>
+<Value name="4">
+<Value>SummaryShowExtraLookup</Value>
+</Value>
+<Value name="5">
+<Value>DetailShowSameKeys</Value>
+</Value>
+<Value name="6">
+<Value>DetailShowDifferentKeys</Value>
+</Value>
+<Value name="7">
+<Value>DetailShowMissingKeys</Value>
+</Value>
+<Value name="8">
+<Value>DetailShowExtraKeys</Value>
+</Value>
+<Value name="9">
+<Value>PatternLookupExclude</Value>
+</Value>
+<Value name="10">
+<Value>PatternLookupInclude</Value>
+</Value>
+</Data>
+<DefaultData>LookupDefaultData</DefaultData>
+<Type>%Storage.Persistent</Type>
+}
+
+}
+

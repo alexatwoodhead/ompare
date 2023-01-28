@@ -1,0 +1,442 @@
+/// <pre>
+/// Copyright (c) Alex Woodhead 2020
+/// 
+/// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+/// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/// 
+/// License MIT
+/// Source: https://github.com/alexatwoodhead/ompare
+/// Version: 1.0
+/// </pre>
+Class ompare.ReportType.SQLTable Extends ompare.ReportType.Base
+{
+
+Parameter RPTTypeSQL = "SQL";
+
+/// Subscript 7 = pattern
+Property PatternSQLExclude As list Of %String(MAXLEN = 10000);
+
+/// Subscript 8 = pattern
+Property PatternSQLInclude As list Of %String(MAXLEN = 10000);
+
+Property SummaryShowSameSQL As %Boolean [ InitialExpression = 0 ];
+
+Property SummaryShowDifferentSQL As %Boolean [ InitialExpression = 1 ];
+
+Property SummaryShowMissingSQL As %Boolean [ InitialExpression = 1 ];
+
+Property SummaryShowExtraSQL As %Boolean [ InitialExpression = 1 ];
+
+Parameter PageAnchor = "SQL-Tables";
+
+Parameter PageSourceView = "ompare.Report.TableView.cls?";
+
+/// Called from ompare.Report.Defintion on subclass on ompare.ReportType.Base
+/// Override in subclass
+Method PopulateReportParams(ByRef config, ByRef summary, ByRef detail, ByRef exclude, ByRef include)
+{
+	set:..SummaryShowSameSQL summary(..#RPTTypeSQL,..#RPTSame)=""
+	set:..SummaryShowDifferentSQL summary(..#RPTTypeSQL,..#RPTDifferent)=""
+	set:..SummaryShowMissingSQL summary(..#RPTTypeSQL,..#RPTMissing)=""
+	set:..SummaryShowExtraSQL summary(..#RPTTypeSQL,..#RPTExtra)=""
+	
+	set key=""
+	for {
+		set pattern=..PatternSQLExclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		set exclude(..#RPTTypeSQL,pattern)=""	
+	}
+	for {
+		set pattern=..PatternSQLInclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		set include(..#RPTTypeSQL,pattern)=""	
+	}
+}
+
+Method PopulateFromHttpRequest()
+{
+	set ..SummaryShowSameSQL=$G(%request.Data(..#RPTTypeSQL_"SummaryShowSameSQL",1),0)
+	set ..SummaryShowDifferentSQL=$G(%request.Data(..#RPTTypeSQL_"SummaryShowDifferentSQL",1),0)
+	set ..SummaryShowMissingSQL=$G(%request.Data(..#RPTTypeSQL_"SummaryShowMissingSQL",1),0)
+	set ..SummaryShowExtraSQL=$G(%request.Data(..#RPTTypeSQL_"SummaryShowExtraSQL",1),0)
+	do ..PatternSQLExclude.Clear()
+	set data=$TR($G(%request.Data(..#RPTTypeSQL_"PatternSQLExclude",1),""),$C(13))
+	kill ary
+	set pattern=""
+	set len=$L(data,$C(10))
+	for i=1:1:len {
+		set pattern=$ZSTRIP($P(data,$C(10),i),"<>W")
+		continue:pattern=""
+		set ary(pattern)="" // Sort the user input
+	}
+	set pattern=""
+	for {
+		set pattern=$O(ary(pattern))
+		quit:pattern=""
+		do ..PatternSQLExclude.Insert(pattern)	
+	}
+	kill ary
+	do ..PatternSQLInclude.Clear()
+	set data=$TR($G(%request.Data(..#RPTTypeSQL_"PatternSQLInclude",1),""),$C(13))
+	set pattern=""
+	set len=$L(data,$C(10))
+	for i=1:1:len {
+		set pattern=$ZSTRIP($P(data,$C(10),i),"<>W")
+		continue:pattern=""
+		set ary(pattern)="" // Sort the user input
+	}
+	set pattern=""
+	for {
+		set pattern=$O(ary(pattern))
+		quit:pattern=""
+		do ..PatternSQLInclude.Insert(pattern)	
+	}
+}
+
+Method DrawEditConfigForm()
+{
+	W !,"<fieldset><legend>SQL TABLE Configuration</legend>"
+	W !,"Show Same Table <input name=""",..#RPTTypeSQL,"SummaryShowSameSQL"" type=""checkbox"" value=""1""",$Select(..SummaryShowSameSQL:" checked",1:""),"/><br/>"
+	W !,"Show Different Table <input name=""",..#RPTTypeSQL,"SummaryShowDifferentSQL"" type=""checkbox"" value=""1""",$Select(..SummaryShowDifferentSQL:" checked",1:""),"/><br/>"
+	W !,"Show Missing Table <input name=""",..#RPTTypeSQL,"SummaryShowMissingSQL"" type=""checkbox"" value=""1""",$Select(..SummaryShowMissingSQL:" checked",1:""),"/><br/>"
+	W !,"Show Extra Table <input name=""",..#RPTTypeSQL,"SummaryShowExtraSQL"" type=""checkbox"" value=""1""",$Select(..SummaryShowExtraSQL:" checked",1:""),"/><br/>"
+	W !,"Exclude&nbsp;pattern&nbsp;<textarea name=""",..#RPTTypeSQL,"PatternSQLExclude"" rows=""4"" cols=""50"">"
+	set key="",pattern=""
+	for {
+		set pattern=..PatternSQLExclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		W $ZCONVERT(pattern,"O","HTML"),$C(10)
+	}
+	W "</textarea><br/>"
+	W !,"Include&nbsp;pattern&nbsp;<textarea name=""",..#RPTTypeSQL,"PatternSQLInclude"" rows=""4"" cols=""50"">"
+	set key="",pattern=""
+	for {
+		set pattern=..PatternSQLInclude.GetNext(.key)
+		quit:key=""
+		continue:pattern=""
+		W $ZCONVERT(pattern,"O","HTML"),$C(10)
+	}
+	W "</textarea><br/>"
+	W !,"</fieldset>"
+}
+
+Method DrawReport(definition As ompare.Report.Definition, isFirstDisplayed As %Boolean = 0)
+{
+	quit:..IsEmptyReport()
+	set elapstart=$P($ZTS,",",2)
+	// TABLE for SQL Tables
+	W !,"<span class=""SectionTitle"">Section: SQL Tables</span>"
+	W !,"<a name=""show",..#PageAnchor,"""></a>"
+	w:'isFirstDisplayed "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<a href=""#showTop"">Back to Top</a>]"
+	W !,"<table border=1>"
+	W !," <tr>"
+	W !,"  <th>Item</th>"
+	W !,"  <th>SQL Table</th>"
+	//  Put From Environment as the first column
+	W !,"  <th>",definition.FromEnvironment,"</th>"
+	set env=""
+	for {
+		set env=$Order(^||ReportData("Meta","To",env),+1,date)
+		quit:env=""
+		W !,"  <th>",$ZCONVERT(env,"O","HTML"),"<br/>",$ZD(date,3),"</th>"
+	}
+	W !," <tr>"
+		
+	set tablename=""
+	set sequence=0
+	for {
+		set tablename=$O(^||ReportData(..#RPTTypeSQL,tablename))
+		quit:tablename=""
+		
+		W !," <tr>"
+		W !,"<td>",$Increment(sequence),"</td>"
+		W !,"  <td>",$ZCONVERT(tablename,"O","HTML"),"</td>"
+		
+		set toNs=$O(^||ReportData(..#RPTTypeSQL,tablename,"s",definition.FromEnvironment,""),+1,result)
+		if toNs="" {
+			W "<td> - </td>"
+		} else {
+			W "<td>",$Case(result,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - "),"</td>"
+		}
+			
+		set env=""	
+		for {
+			set env=$Order(^||ReportData("Meta","To",env),+1,date)
+			quit:env=""
+		
+			set toNs=$O(^||ReportData(..#RPTTypeSQL,tablename,"s",env,""),+1,result)
+			if toNs="" {
+				W "<td> - </td>"
+				} else {
+					
+					W "<td style=""vertical-align:top"">"
+					k lnk
+					set lnk("sfEnv")=definition.FromEnvironment
+					set lnk("sfNS")=$Select($D(lnk("sfEnv")):$O(definition.EnvironmentsMD(lnk("sfEnv"),"")),1:"")
+					set lnk("sfT")=..#RPTTypeSQL
+					set lnk("sfTN")=tablename	
+					kill lnk("sfST")
+					kill lnk("sfSTN")
+					if definition.HistoricView {
+						set lnk("stD")=date
+						set lnk("stEnv")=$ZSTRIP($P(env,"("),">W")  // Remove History Discriptor
+					} else {
+						kill lnk("stD")
+						set lnk("stEnv")=env
+					}
+					set lnk("stNS")=$Select($D(lnk("stEnv")):$O(definition.EnvironmentsMD(lnk("stEnv"),"")),1:"")
+					set lnk("stT")=..#RPTTypeSQL
+					set lnk("stTN")=tablename
+					kill lnk("stST")
+					kill lnk("stSTN")
+					
+					set missing=0
+					set extra=0
+					set different=0
+					set same=0
+					
+					set fromSignature=""
+						set toSignature=""	
+					// Assumes comparison is always with current
+					// Otherwise need to copy signatures to ^||ReportData
+					if lnk("sfEnv")'="",lnk("sfNS")'="",lnk("sfT")'="",lnk("sfTN")'="" {
+						set fromSignature=$G(^ompare("Data",lnk("sfEnv"),lnk("sfNS"),lnk("sfT"),lnk("sfTN")))
+					}
+					if lnk("stEnv")'="",lnk("stNS")'="",lnk("stT")'="",lnk("stTN")'="" {
+						if $G(lnk("stD"))'="" {
+							set toSignature=$G(^ompare("History",lnk("stD"),lnk("stEnv"),lnk("stNS"),lnk("stT"),lnk("stTN")))	
+						} else {
+							set toSignature=$G(^ompare("Data",lnk("stEnv"),lnk("stNS"),lnk("stT"),lnk("stTN")))
+						}
+					}
+					Set (same,missing,different,extra)=0
+					if fromSignature'="",toSignature'="" {
+						Set (same,missing,different,extra)=0
+						Do definition.DiffSignatureByNVP(fromSignature,toSignature,"¬¬",.same,.missing,.different,.extra)
+						W:same>0 "same row=",same,"<br/>"
+						W:missing>0 "missing row=",missing,"<br/>"
+						W:extra>0 "extra row=",extra,"<br/>"
+						W:different>0 "different row=",different,"<br/>"	
+					}
+					if (missing+different+extra)>0 {
+						do ..AddSourceLink("Differences",.lnk,..#RPTDifferent)	
+					} else {
+						do ..AddSourceLink($Case(result,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - "),.lnk,..#RPTDifferent)	
+					}
+					
+					W "</td>"
+				}
+			}
+			W !," </tr>"
+		}
+		W !,"</table>"	
+		set elapend=$P($ZTS,",",2)
+		W !,"(Time taken:",$FN(elapend-elapstart,"",2)," seconds)"
+		W !,"<hr/>"
+}
+
+Method IsEmptyReport() As %Boolean
+{
+	Quit:..SummaryShowSameSQL 0
+	Quit:..SummaryShowDifferentSQL 0
+	Quit:..SummaryShowMissingSQL 0
+	Quit:..SummaryShowExtraSQL 0
+	Quit 1
+}
+
+Method IsEmptyReportType(type As %String) As %Boolean
+{
+	Quit:type'=..#RPTTypeSQL 1
+	Quit ..IsEmptyReport()
+}
+
+/// Add new sections to generated Excel Report projection
+/// Subclass in ompare.ReportType.[ViewName]
+ClassMethod DrawExcelReportSection(definition As ompare.Report.Definition, numberofenvironments As %Integer = 0, reportType As ompare.ReportType.Base)
+{
+	set sequenceNumber=0
+ 	W !,"<Row>"
+ 	for i=0:1:numberofenvironments+1 { W "<Cell ss:StyleID=""s64""></Cell>" }
+ 	W !,"</Row>"
+ 
+	 for i=1:1:2 {
+ 		W !,"<Row ss:AutoFitHeight=""0"" ss:StyleID=""s62"">"
+ 		if i=1 {
+	 		W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String""></Data></Cell>"  //seq
+		 	W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String""></Data></Cell>"
+			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(definition.FromEnvironment),"</Data></Cell>" 	
+ 		} else {
+			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">Item</Data></Cell>"  //seq
+ 			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">SQL Table Name</Data></Cell>"
+ 			W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",definition.GetDateTimeOfData(definition.FromEnvironment),"</Data></Cell>"
+  		}
+  		set env="",key=""
+  		for {
+			set env=definition.Environments.GetNext(.key)
+			quit:key=""
+			continue:'$IsObject(env)
+			continue:definition.FromEnvironment=env.Name
+			if i=1 {
+				W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",..XMLO(env.Name),"</Data></Cell>" 	
+ 			} else {
+				W !,"<Cell ss:StyleID=""s64""><Data ss:Type=""String"">",definition.GetDateTimeOfData(env),"</Data></Cell>"
+  			}
+ 		}
+ 		W !,"</Row>" 	
+ 	}
+ 
+ 	if $Data(^||ReportData(..#RPTTypeSQL))=0 {	 	
+	 	Do ##class(ompare.Report.ExportExcelWorkbook).ReportIfEmptySection(reportType.SummaryShowSameSQL,reportType.SummaryShowDifferentSQL,reportType.SummaryShowMissingSQL,reportType.SummaryShowExtraSQL)
+ 	} else {
+ 			// Lookup  content summary
+ 		set sequenceNumber=0
+ 		set tablename=""
+			for {
+				set tablename=$O(^||ReportData(..#RPTTypeSQL,tablename))
+				quit:tablename=""
+				
+				// Need to calculate content clines=0
+				// 1 to 4
+				kill count
+				set count=0
+				set clines=1 // the maximum number of sub-report lines required in any one cell for this row.
+				set countEnv=""
+				for {
+					set countEnv=$O(^||ReportData(..#RPTTypeSQL,tablename,"s",countEnv))
+					quit:countEnv=""  // Each subtype item prints a line
+					
+					set countNs=""
+					for {
+						set countNs=$O(^||ReportData(..#RPTTypeSQL,tablename,"s",countEnv,countNs),+1,result)
+						quit:countNs=""
+						
+						//set ns=$Order(^||ReportData(..#RTPTypeEnsLookup,tablename,"d",..#RPTSubTypeEnsLookupKey,subname,env,""),+1,result)
+						continue:result<1
+						
+						if '$Data(count(result)) {
+							set count=count+1
+							set count(result)=1	
+						}
+					}
+					//set tlines=(missing+extra+different+same)
+					//set:tlines>clines clines=tlines
+				}
+
+				// If any of the comapre environments have differences then display row over 4 lines for counts
+				// Else display a single line for summary information
+				set:$Data(count(..#RPTDifferent)) clines=4
+				
+				W !,"<Row ss:AutoFitHeight=""0"" ss:Height=""",##class(ompare.Report.ExportExcelWorkbook).CapLineHeight((clines)*$PARAMETER("ompare.Report.ExportExcelWorkbook","LineHeight")),""">"
+				W !,"<Cell><Data ss:Type=""String"">",$Increment(sequenceNumber),"</Data></Cell>"  //seq
+				W !,"<Cell><Data ss:Type=""String"">",..XMLO(tablename),"</Data></Cell>"
+				
+				set toNs=$O(^||ReportData(..#RPTTypeSQL,tablename,"s",definition.FromEnvironment,""),+1,result)
+				if toNs="" {
+					W !,"<Cell><Data ss:Type=""String""> - </Data></Cell>"
+				} else {
+					W !,"<Cell><Data ss:Type=""String"">",..XMLO($Case(result,..#RPTSame:"Same",..#RPTDifferent:"Different",..#RPTMissing:"Missing",..#RPTExtra:"Extra",:" - ")),"</Data></Cell>"
+				}
+				
+				set env="",key=""
+				set fromNs=definition.FromEnvironmentNameSpace()
+  				for {
+					set env=definition.Environments.GetNext(.key)
+					quit:key=""
+					continue:'$IsObject(env)
+					continue:definition.FromEnvironment=env.Name
+				
+					set toNs=$O(^||ReportData(..#RPTTypeSQL,tablename,"s",env.Name,""),+1,result)
+					if toNs="" {
+						W !,"<Cell><Data ss:Type=""String""> - </Data></Cell>"
+					} else {
+						
+						if result=..#RPTExtra {
+							W !,"<Cell><Data ss:Type=""String"">Extra Table</Data></Cell>"
+						} elseif result=..#RPTMissing {
+							W !,"<Cell><Data ss:Type=""String"">Missing Table</Data></Cell>"
+						} elseif result=..#RPTSame {
+							W !,"<Cell><Data ss:Type=""String"">Table Identical</Data></Cell>"
+						} else {
+							set (missing,extra,different,same)=0
+							// Different content - provide details.
+							set fromDate=$P($G(^||ReportData("Meta","From")),"^",2)
+							//set fromNs=$O(definition.Environments(definition.FromEnvironment,""))
+							if fromNs'="" {
+								set toDate=+$G(^||ReportData("Meta","To",env))
+								set (fromSignature,toSignature)=""
+								//set:fromDate'="" fromSignature=$G(^TLabTechUK.SourceUtil("History",fromDate,definition.FromEnvironment,fromNs,..#RTPTypeSQL,tablename))
+								set:fromSignature="" fromSignature=$G(^ompare("Data",definition.FromEnvironment,fromNs,..#RPTTypeSQL,tablename))
+								//set:toDate'="" toSignature=$G(^TLabTechUK.SourceUtil("History",toDate,env,toNs,..#RTPTypeSQL,tablename))
+								set:toSignature="" toSignature=$G(^ompare("Data",env.Name,toNs,..#RPTTypeSQL,tablename))
+								
+								if fromSignature'="",toSignature'="" {
+									Do definition.DiffSignatureByNVP(fromSignature,toSignature,"¬¬",.same,.missing,.different,.extra)	
+						  		}
+							}
+						  
+							// Style to wrap text
+							W "<Cell ss:StyleID=""s67""><Data ss:Type=""String"">"
+							set first=1
+								//if same {
+									set first=0
+									Write ..XMLO(" * same record="_same)
+								//}
+								//if missing {
+									write:'first ..#eol
+									set first=0
+									Write ..XMLO(" * missing record="_missing)
+								//}
+								//if extra {
+									write:'first ..#eol
+									set first=0
+									Write ..XMLO(" * extra record="_extra)
+								//}
+								//if different {
+									write:'first ..#eol
+									set first=0
+									Write ..XMLO(" * different record="_different)
+								//}
+						
+							Write "</Data></Cell>"
+						}
+					}
+				}
+				
+				W !,"</Row>"
+			}
+ 	}
+}
+
+Storage Default
+{
+<Data name="SQLTableDefaultData">
+<Subscript>"SQLTable"</Subscript>
+<Value name="1">
+<Value>PatternSQLExclude</Value>
+</Value>
+<Value name="2">
+<Value>PatternSQLInclude</Value>
+</Value>
+<Value name="3">
+<Value>SummaryShowSameSQL</Value>
+</Value>
+<Value name="4">
+<Value>SummaryShowDifferentSQL</Value>
+</Value>
+<Value name="5">
+<Value>SummaryShowMissingSQL</Value>
+</Value>
+<Value name="6">
+<Value>SummaryShowExtraSQL</Value>
+</Value>
+</Data>
+<DefaultData>SQLTableDefaultData</DefaultData>
+<Type>%Storage.Persistent</Type>
+}
+
+}
+

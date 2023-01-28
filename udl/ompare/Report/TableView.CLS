@@ -1,0 +1,421 @@
+/// <pre>
+/// Copyright (c) Alex Woodhead 2020
+/// 
+/// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+/// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/// 
+/// License MIT
+/// Source: https://github.com/alexatwoodhead/ompare
+/// Version: 1.0
+/// </pre>
+/// Utility methods for displaying HTML view of a Table
+Class ompare.Report.TableView Extends %CSP.Page
+{
+
+ClassMethod OnPage() As %Status [ ServerOnly = 1 ]
+{
+	set sfD=$G(%request.Data("sfD",1))
+ 	set sfEnv=$G(%request.Data("sfEnv",1))
+ 	set sfNS=$G(%request.Data("sfNS",1))
+	set sfT=$G(%request.Data("sfT",1))
+	set sfTN=$G(%request.Data("sfTN",1))
+	set sfST=$G(%request.Data("sfST",1))
+	set sfSTN=$G(%request.Data("sfSTN",1))
+	set stD=$G(%request.Data("stD",1))
+ 	set stEnv=$G(%request.Data("stEnv",1))
+ 	set stNS=$G(%request.Data("stNS",1))
+ 	set stT=$G(%request.Data("stT",1))
+ 	set stTN=$G(%request.Data("stTN",1))
+ 	set stST=$G(%request.Data("stST",1))
+ 	set stSTN=$G(%request.Data("stSTN",1))
+ 	
+ 	set typeCode=$Select(sfT'="":sfT,1:stT)
+	&SQL(SELECT $PIECE(p."Name",'RPTType',2) into :type
+		FROM %Dictionary.CompiledParameter p,%Dictionary.CompiledClass c
+		WHERE p."Name" %STARTSWITH 'RPTType'
+		AND p.parent=c.%ID
+		AND c.Super='ompare.ReportType.Base'
+		AND p._Default=:typeCode)
+	set:'SQLCODE=0 type=""
+	set typename=$S(sfTN'="":sfTN,1:stTN)
+	//set subtype=$CASE($Select(sfST'="":sfST,1:stST),"M":"Method","MS":"Method Signature","PR":"Parameter","P":"Property","S":"Summary","L":"Line Label","X":"XData",:"")
+	set subtypeCode=$Select(sfST'="":sfST,1:stST)
+	&SQL(SELECT $PIECE(p."Name",'RPTSubType',2) into :subtype
+		FROM %Dictionary.CompiledParameter p,%Dictionary.CompiledClass c
+		WHERE p."Name" %STARTSWITH 'RPTSubType'
+		AND p.parent=c.%ID
+		AND c.Super='ompare.ReportType.Base'
+		AND p._Default=:subtypeCode)
+	set:'SQLCODE=0 subtype=""
+	set subtypename=$S(sfSTN'="":sfSTN,1:stSTN)
+	
+	// Text Block identifier for "From" target
+	set fromSignature=""
+	if sfEnv'="",sfNS'="",sfT'="",sfTN'="" {
+		if sfST'="",sfSTN'="" {
+			set fromSignature=$G(^ompare("Data",sfEnv,sfNS,sfT,sfTN,sfST,sfSTN))
+		} else {
+			set fromSignature=$G(^ompare("Data",sfEnv,sfNS,sfT,sfTN))
+		}
+	}
+	// Text Block identifier for "To" target
+	set toSignature=""
+	if stEnv'="",stNS'="",stT'="",stTN'="" {
+		if stST'="",stSTN'="" {
+			if stD'="" {
+				set toSignature=$G(^ompare("History",stD,stEnv,stNS,stT,stTN,stST,stSTN))
+			} else {
+				set toSignature=$G(^ompare("Data",stEnv,stNS,stT,stTN,stST,stSTN))
+			}
+		} else {
+			if stD'="" {
+				set toSignature=$G(^ompare("History",stD,stEnv,stNS,stT,stTN))
+			} else {
+				set toSignature=$G(^ompare("Data",stEnv,stNS,stT,stTN))
+			}
+		}
+	}
+	
+	W !,"<h2>Compare Source ",type," <i>",typename,"</i>"
+	W:subtype'="" " at ",subtype," <i>",subtypename,"</i>" // Empty in case of Lookup Table
+	W "</h2>"
+	
+	do ..ReshapeData(fromSignature, toSignature, .colsDifference,.rowsDifference, .rowCount)
+	
+	// Allow toggle for same columns and same rows display
+	&html<<form>
+	
+	<input type="hidden" name="sfD" value="#(sfD)#"/>
+	<input type="hidden" name="sfEnv" value="#(sfEnv)#"/>
+	<input type="hidden" name="sfNS" value="#(sfNS)#"/>
+	<input type="hidden" name="sfT" value="#(sfT)#"/>
+ 	<input type="hidden" name="sfTN" value="#(sfTN)#"/>
+	<input type="hidden" name="sfST" value="#(sfST)#"/>
+	<input type="hidden" name="stD" value="#(stD)#"/>
+	<input type="hidden" name="stEnv" value="#(stEnv)#"/>
+	<input type="hidden" name="stNS" value="#(stNS)#"/>
+	<input type="hidden" name="stT" value="#(stT)#"/>
+	<input type="hidden" name="stTN" value="#(stTN)#"/>
+	<input type="hidden" name="stST" value="#(stST)#"/>
+	<input type="hidden" name="stSTN" value="#(stSTN)#"/>
+
+	<input type="checkbox" name="sameCols" #($S(1=$G(%request.Data("sameCols",1)):"checked",1:""))# onchange="this.form.submit()" value="1">Show same Cols</input>
+	<input type="checkbox" name="sameRows" #($S(1=$G(%request.Data("sameRows",1)):"checked",1:""))# onchange="this.form.submit()" value="1" #($Select(1=rowCount:"disabled",1:""))#><span #($Select(1=rowCount:"class=""disabled""",1:""))#>Show same Rows</span></input>
+
+	
+	</form>>
+	
+	do ..Header()
+	
+	// Options: ignoreSameColumns, ignoreSameRows
+	set ignoreSameRows='$G(%request.Data("sameRows",1),0)
+	set ignoreSameColumns='$G(%request.Data("sameCols",1),0)
+	
+	&html<<div>
+	
+<table style="width:100%">
+<tr>
+ <td style="width:48%">
+ <p>#($G(sfEnv))#</p><br/>>
+	
+	do ..DrawPanel("left","f",ignoreSameRows,ignoreSameColumns,.colsDifference,.rowsDifference)
+	
+	&html<</td>
+  <td style="width:48%">
+  <p>#($G(stEnv))#</p><br/>>
+	
+	do ..DrawPanel("right","t",ignoreSameRows,ignoreSameColumns,.colsDifference,.rowsDifference)
+	
+	&html<</td>
+</tr>
+
+</table>
+</div>>
+ //&html<<pre>>
+ //zw colsDifference
+ //&html<</pre>>
+ quit $$$OK
+}
+
+// end of method
+
+ClassMethod DrawPanel(direction As %String(VALUELIST=",left,right"), mode As %String(VALUELIST=",f,l"), ignoreSameRows = 1, ignoreSameColumns = 1, ByRef colsDifference, ByRef rowsDifference)
+{
+	&HTML<<div class="tableSQL" id="view#(direction)#" onscroll="syncScroll#(direction)#()">
+   <table>
+     <thead>
+	   <tr>>
+	
+	set keyComposite=""
+	for {
+		set keyComposite=$O(^||columnData(keyComposite))
+		quit:keyComposite=""
+		set colname=""
+		for {
+			set colname=$O(^||columnData(keyComposite,colname))
+			quit:colname=""
+			set isPrimary=$E(colname,1)=" "
+			if (isPrimary||(ignoreSameColumns&&(+$G(colsDifference(colname))>0))||('ignoreSameColumns)) {
+				&html<<th>#(colname)#</th>>	
+			}
+		}
+		quit  // only need a first row for headers
+	}
+ &html<</tr>
+	 </thead>
+	 <tbody>>
+	 
+	 set keyComposite=""
+	for {
+		set keyComposite=$O(^||columnData(keyComposite))
+		quit:keyComposite=""
+		
+		set outstr=""
+		set colname=""
+		set colCount=0,diffCount=0
+		for {
+			set colname=$O(^||columnData(keyComposite,colname))
+			quit:colname=""
+			set colCount=colCount+1
+			set isPrimary=$E(colname,1)=" "
+			if (isPrimary||(ignoreSameColumns&&(+$G(colsDifference(colname))>0))||('ignoreSameColumns)) {
+				set outstr=outstr_"<td"
+				if $G(^||columnData(keyComposite,colname,mode))'=$G(^||columnData(keyComposite,colname,$S(mode="f":"t",1:"f"))) {
+					set outstr=outstr_" class=""tdDiff"""
+					set diffCount=diffCount+1
+				}
+				set outstr=outstr_">"_$ZCVT($G(^||columnData(keyComposite,colname,mode)),"O","HTML")_"</td>"
+			}
+		}
+		// Filter out same rows if requested
+		if (('ignoreSameRows)||(ignoreSameRows&&($D(rowsDifference(keyComposite))))) {
+			W !,"<tr>",outstr,"</tr>"
+		}
+	}
+	
+	&html<</tr>
+	 </tbody>
+   </table>
+   </div>>
+}
+
+// end of method
+
+ClassMethod ReshapeData(fromSignature As %String = "", toSignature As %String = "", Output colsDifference, Output rowsDifference, Output rowCount)
+{
+	//W !,"<P>ReshapeData:fromSignature",fromSignature,"</P>"
+	//W !,"<P>ReshapeData:toSignature",toSignature,"</P>"
+	// Handling for missing columns on source vs target
+	// Handling for different order of columns in source vs target
+	//   Could have a greyed out column where missing in source or target
+	
+	Kill ^||columnData,colsDifference,rowsDifference
+	set:fromSignature'="" setCols("f")=fromSignature
+	set:toSignature'="" setCols("t")=toSignature
+	
+	set setCol=""
+	for {
+		set setCol=$O(setCols(setCol),+1,signature)
+		quit:setCol=""
+		
+		set seq=0
+		for {
+			set seq=$O(^ompare("DataSrc",signature,seq),1,checkCols)
+			quit:seq=""
+			if checkCols'="" {
+				set keyNameComposite=""
+				set keys=$P(checkCols,"¬¬")
+				set values=$P(checkCols,"¬¬",2,99999)
+				set keyLen=$L(keys,"¬")
+				kill KeyData
+				for keyItem=1:1:keyLen {
+					set key=$ZCVT($ZSTRIP($P(keys,"¬",keyItem),"<>W"),"U")
+					quit:keyItem=""
+					continue:key=""
+					
+					if seq=1 {
+						//set num=$I(availableColumnsKI(setCol))
+						// even though we should expect same key names
+						set lookupColNameFromPositionKI(setCol,keyItem)=" "_key // Lookup the uppercase column name from a column position 
+						set availableColumnsK(" "_key,setCol)=keyItem
+						set colname=" "_key
+					} else {
+						
+						set colname=$G(lookupColNameFromPositionKI(setCol,keyItem),"")
+						continue:colname=""
+						// Key Composite helps sort by original key identities
+					}
+					set keyNameComposite=keyNameComposite_$S($L(keyNameComposite)=0:key,1:"¬"_key)
+					set KeyData(colname,setCol)=key
+				}
+				continue:keyNameComposite=""
+				merge:seq>1 ^||columnData(keyNameComposite)=KeyData
+
+				set valueLen=$L(values,"¬")
+				for valueItem=1:1:valueLen {
+					if seq=1 {
+						// Make column headers UPPERCASE
+						set value=$ZCVT($ZSTRIP($P(values,"¬",valueItem),"<>W"),"U")
+					} else {
+						set value=$P(values,"¬",valueItem)	
+					}
+					//quit:valueItem=""
+					//continue:value=""
+					
+					if seq=1,value'="" {
+						//set num=$I(availableColumnsVI(setCol))
+						// is reasonable that value names will deviate
+						set lookupColNameFromPositionVI(setCol,valueItem)=value  // Lookup the uppercase column name from a column position 
+						set availableColumnsV(value,setCol)=valueItem
+					} else {
+						set colname=$G(lookupColNameFromPositionVI(setCol,valueItem),"")
+						continue:colname=""
+						set ^||columnData(keyNameComposite,colname,setCol)=value
+					}
+					
+				}
+			}
+		}
+	}
+	
+	// find out which columns are identical for all rows present
+	set keyComposite=""
+	set rowCount=0
+	for {
+		set keyComposite=$O(^||columnData(keyComposite))
+		quit:keyComposite=""
+		set colname=""
+		set rowChange=0
+		set rowCount=rowCount+1
+		for {
+			set colname=$O(^||columnData(keyComposite,colname))
+			quit:colname=""
+			if ('$Data(^||columnData(keyComposite,colname,"f"))||('$Data(^||columnData(keyComposite,colname,"t")))) {
+				set colsDifference(colname)=(1+$G(colsDifference(colname)))
+				set rowChange=rowChange+1
+				continue
+			}
+			
+			if $G(^||columnData(keyComposite,colname,"f"))'=$G(^||columnData(keyComposite,colname,"t")) {
+				set colsDifference(colname)=(1+$G(colsDifference(colname)))
+				set rowChange=rowChange+1
+				continue
+			}
+			//set colsDifference(colname)=0
+		}
+		set:rowChange rowsDifference(keyComposite)=1
+	}
+}
+
+ClassMethod Header()
+{
+	&html<<html>
+<head>
+
+<style>
+  .tableSQL {
+	overflow-y: auto;
+	height: 600px;
+	overflow-x: auto;
+	width: 400px;
+  }
+  .tableSQL thead th {
+	position: sticky;
+	top: 0px;
+	white-space: nowrap;
+  }
+  .tableSQL table {
+        border-collapse: collapse; /* make the table borders collapse to each other */
+        width: 100%;
+      }
+  .tdDiff {
+	  background-color: #FFD6C1;
+	  height:36px;  /* Incase an empty cell */
+  }
+  .disabled {
+	color: #c0c0c0;  
+  }
+  th,
+  td {
+    padding: 5px 5px;
+    border: 1px solid #ccc;
+  }
+  th {
+    background: #eee;
+  }
+</style>
+<script language="javascript">
+/* After the page is loaded, rescale the widths to give better overflow
+   Gets rid of main browser horizonal scrollbar clutter
+*/
+function fixWidth() {
+	document.getElementById("viewleft").style.width = ""+ (screen.width/2.1) + "px";
+	document.getElementById("viewright").style.width = ""+ (screen.width/2.1) + "px";
+}
+var sqlScrollTop=0
+var sqlScrollLeft=0
+function syncScroll(item) {
+	viewright=document.getElementById("viewright")
+	viewleft=document.getElementById("viewleft")
+	if (item="viewleft") {
+		if (viewleft.scrollTop!=sqlScrollTop) {
+			viewright.scrollTop=viewleft.scrollTop
+			sqlScrollTop=viewleft.scrollTop
+		} else {
+			viewright.scrollLeft=viewleft.scrollLeft
+			sqlScrollLeft=viewleft.scrollLeft
+		}
+		//viewright.scrollLeft=viewleft.scrollLeft
+	} else {
+		if (viewright.scrollTop!=sqlScrollTop) {
+			viewleft.scrollTop=viewright.scrollTop
+			sqlScrollTop=viewright.scrollTop
+		} else {
+		    viewleft.scrollLeft=viewright.scrollLeft
+			sqlScrollLeft=viewright.scrollLeft
+		}
+	}
+}
+function syncScrollleft() {
+	viewright=document.getElementById("viewright")
+	viewleft=document.getElementById("viewleft")
+	if (viewleft.scrollTop!=sqlScrollTop) {
+		viewright.scrollTop=viewleft.scrollTop
+		sqlScrollTop=viewleft.scrollTop
+	} else {
+		viewright.scrollLeft=viewleft.scrollLeft
+		sqlScrollLeft=viewleft.scrollLeft
+	}
+}
+
+function syncScrollright() {
+	viewright=document.getElementById("viewright")
+	viewleft=document.getElementById("viewleft")
+	if (viewright.scrollTop!=sqlScrollTop) {
+		viewleft.scrollTop=viewright.scrollTop
+		sqlScrollTop=viewleft.scrollTop
+	} else {
+		viewleft.scrollLeft=viewright.scrollLeft
+		sqlScrollLeft=viewright.scrollLeft
+	}
+}
+</script>
+</head>
+<body onLoad=fixWidth()>>
+}
+
+ClassMethod DoFooter()
+{
+ &html<</td>
+</tr>
+
+</table>
+</div>
+
+</body>
+</html>>
+}
+
+}
+
