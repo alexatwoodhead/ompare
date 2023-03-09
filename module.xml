@@ -7,34 +7,9 @@
       <Description>Compare CPF Task Class Routine INC HL7 Lookup anything SQL across multiple systems</Description>
       <Keywords>compare code data configuration reporting</Keywords>
       <Packaging>module</Packaging>
+      <SourcesRoot>udl</SourcesRoot>
       <Resource Name="ompare.PKG"/>
       <SourcesRoot>udl</SourcesRoot>
-      <Resource Name="ompare.Schedule.CLS"/>
-      <Resource Name="ompare.ReportType.Base.CLS"/>
-      <Resource Name="ompare.ReportType.Class.CLS"/>
-      <Resource Name="ompare.ReportType.HL7.CLS"/>
-      <Resource Name="ompare.ReportType.Include.CLS"/>
-      <Resource Name="ompare.ReportType.Lookup.CLS"/>
-      <Resource Name="ompare.ReportType.Mapping.CLS"/>
-      <Resource Name="ompare.ReportType.Routine.CLS"/>
-      <Resource Name="ompare.ReportType.SQLTable.CLS"/>
-      <Resource Name="ompare.Report.Definition.CLS"/>
-      <Resource Name="ompare.Report.Environment.CLS"/>
-      <Resource Name="ompare.Report.ExportExcelWorkbook.CLS"/>
-      <Resource Name="ompare.Report.Main.CLS"/>
-      <Resource Name="ompare.Report.SourceView.CLS"/>
-      <Resource Name="ompare.Report.SourceViewBase.CLS"/>
-      <Resource Name="ompare.Report.TableView.CLS"/>
-      <Resource Name="ompare.Report.Workbook.CLS"/>
-      <Resource Name="ompare.SourceHandler.Base.CLS"/>
-      <Resource Name="ompare.SourceHandler.Class.CLS"/>
-      <Resource Name="ompare.SourceHandler.HL7.CLS"/>
-      <Resource Name="ompare.SourceHandler.Include.CLS"/>
-      <Resource Name="ompare.SourceHandler.Lookup.CLS"/>
-      <Resource Name="ompare.SourceHandler.Mapping.CLS"/>
-      <Resource Name="ompare.SourceHandler.Namespace.CLS"/>
-      <Resource Name="ompare.SourceHandler.Routine.CLS"/>
-      <Resource Name="ompare.SourceHandler.SQLTable.CLS"/>
     </Module>
   </Document>
 </Export>
